@@ -1,8 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dsa86bd670lcv"]
+[gd_scene load_steps=5 format=3 uid="uid://u28tcv2pwrxj"]
 
-[ext_resource type="Script" path="res://shop.gd" id="1_blqjs"]
+[ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://bd50h0lo7kxnf" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
-[ext_resource type="Script" path="res://capsule_machine.gd" id="3_fgaav"]
+[ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://scripts/arcade/capsule_machine.gd" id="3_fgaav"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)

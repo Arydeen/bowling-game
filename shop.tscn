@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://u28tcv2pwrxj"]
+
+[ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://shop.gd" id="1_blqjs"]
+[ext_resource type="Texture2D" uid="uid://bd50h0lo7kxnf" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
+[ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://capsule_machine.gd" id="3_fgaav"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
+size = Vector2(31, 73)
+
+[node name="Shop" type="Node2D"]
+script = ExtResource("1_blqjs")
+
+[node name="Arcade" type="Sprite2D" parent="."]
+position = Vector2(160, 90)
+texture = ExtResource("1_viryw")
+
+[node name="CapsuleMachine" type="Area2D" parent="."]
+script = ExtResource("3_fgaav")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CapsuleMachine"]
+position = Vector2(102.5, 137.5)
+shape = SubResource("RectangleShape2D_6lah5")
+
+[node name="ShopCenter" type="Marker2D" parent="."]
+position = Vector2(160, 90)

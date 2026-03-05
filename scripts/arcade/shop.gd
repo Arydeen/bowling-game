@@ -2,7 +2,8 @@ extends Node2D
 
 @onready var capsule_machine: Area2D = $CapsuleMachine
 @onready var shop_center: Marker2D = $ShopCenter
-@onready var coin_exchange_machine: Area2D = $PinExchange
+@onready var coin_exchange_machine := $PinExchange
+@onready var currency_ui := $CurrencyUI
 
 const CAPSULE_COMMON_TEX: Texture2D = preload("res://textures/capsules/CapsuleCommon.png")
 const CAPSULE_RARE_TEX: Texture2D = preload("res://textures/capsules/CapsuleRare.png")
@@ -47,7 +48,7 @@ var _open_light: PointLight2D = null
 var _open_light_tween: Tween = null
 
 #Currency
-@export var capsule_spin_cost_coins: int = 1
+@export var capsule_spin_cost_tokens: int = 1
 
 enum Rarity { COMMON, RARE, EPIC, LEGENDARY }
 var _current_rarity: Rarity = Rarity.COMMON
@@ -69,7 +70,10 @@ func _ready() -> void:
 	randomize()
 	_setup_open_light()
 	capsule_machine.clicked.connect(_on_capsule_machine_clicked)
+
+	# pin exchange + shutter
 	coin_exchange_machine.clicked.connect(_on_pin_exchange_clicked)
+	coin_exchange_machine.shutter_opened.connect(_on_pin_exchange_shutter_opened)
 
 	_setup_background_blink()
 
@@ -79,22 +83,41 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _on_pin_exchange_clicked() -> void:
-	if _busy:
+	# First click: open shutter ONLY
+	if not coin_exchange_machine.is_open:
+		coin_exchange_machine.open_shutter()
 		return
 
+	# After it's open: trade 5 pins -> 1 coin
 	if not CurrencyManager.convert_pins_to_coin(5, 1):
+		currency_ui.show_random_not_enough_pins_toast()
 		print("Not enough pins!")
 		return
 
-	print("Exchanged 5 pins for 1 coin")
+	if currency_ui != null and currency_ui.has_method("show_random_exchange_toast"):
+		currency_ui.show_random_exchange_toast()	
+
+	print("Exchanged 5 pins -> 1 coin")
+
+func _on_pin_exchange_shutter_opened() -> void:
+	_stop_background_blink(true) # true = freeze to BG_ON
+
+func _stop_background_blink(freeze_to_on: bool) -> void:
+	if _background_timer != null and _background_timer.is_inside_tree():
+		_background_timer.stop()
+		_background_timer.queue_free()
+
+	_background_timer = null
+	_background_is_on = freeze_to_on
+	background.texture = BG_ON if freeze_to_on else BG_OFF
 
 func _on_capsule_machine_clicked() -> void:
 	if _busy:
 		return
 
 	# Pay 1 coin per spin BEFORE starting
-	if not CurrencyManager.spend_coins(capsule_spin_cost_coins):
-		print("Not enough coins!")
+	if not CurrencyManager.spend_tokens(capsule_spin_cost_tokens):
+		print("Not enough tokens!")
 		return
 
 	_busy = true

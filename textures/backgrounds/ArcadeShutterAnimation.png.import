@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bb4the013nqyl"
-path="res://.godot/imported/ArcadeOpenBackground.png-a238ec3414eb4046c41b7221c9377d30.ctex"
+uid="uid://dy2fiebygv1dh"
+path="res://.godot/imported/ArcadeShutterAnimation.png-a363d22b2e0bda3eca504665b97aa554.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/backgrounds/ArcadeOpenBackground.png"
-dest_files=["res://.godot/imported/ArcadeOpenBackground.png-a238ec3414eb4046c41b7221c9377d30.ctex"]
+source_file="res://textures/backgrounds/ArcadeShutterAnimation.png"
+dest_files=["res://.godot/imported/ArcadeShutterAnimation.png-a363d22b2e0bda3eca504665b97aa554.ctex"]
 
 [params]
 

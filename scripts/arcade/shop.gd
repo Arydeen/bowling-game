@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var capsule_machine: Area2D = $CapsuleMachine
 @onready var shop_center: Marker2D = $ShopCenter
+@onready var coin_exchange_machine: Area2D = $PinExchange
 
 const CAPSULE_COMMON_TEX: Texture2D = preload("res://textures/capsules/CapsuleCommon.png")
 const CAPSULE_RARE_TEX: Texture2D = preload("res://textures/capsules/CapsuleRare.png")
@@ -13,6 +14,17 @@ const CAPSULE_LEGENDARY_TEX: Texture2D = preload("res://textures/capsules/Capsul
 
 @export var rock_angle: float = 0.25
 @export var rock_time: float = 0.12
+
+#FLICKERING SHOP 
+@onready var background: Sprite2D = $Arcade
+
+const BG_ON: Texture2D = preload("res://textures/backgrounds/ArcadeClosedBackground.png")
+const BG_OFF: Texture2D = preload("res://textures/backgrounds/ArcadeClosedOffBackground.png")
+
+@export var background_swap_time: float = .75
+
+var _background_timer: Timer
+var _background_is_on: bool = true
 
 # spam tuning SATISFYING
 @export var rock_speed_boost_per_press: float = 0.35
@@ -34,6 +46,9 @@ const CAPSULE_LEGENDARY_TEX: Texture2D = preload("res://textures/capsules/Capsul
 var _open_light: PointLight2D = null
 var _open_light_tween: Tween = null
 
+#Currency
+@export var capsule_spin_cost_coins: int = 1
+
 enum Rarity { COMMON, RARE, EPIC, LEGENDARY }
 var _current_rarity: Rarity = Rarity.COMMON
 
@@ -54,15 +69,34 @@ func _ready() -> void:
 	randomize()
 	_setup_open_light()
 	capsule_machine.clicked.connect(_on_capsule_machine_clicked)
+	coin_exchange_machine.clicked.connect(_on_pin_exchange_clicked)
+
+	_setup_background_blink()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _busy and _capsule != null and Input.is_action_just_pressed("capsule_open"):
 		_on_space_pressed()
 		get_viewport().set_input_as_handled()
 
+func _on_pin_exchange_clicked() -> void:
+	if _busy:
+		return
+
+	if not CurrencyManager.convert_pins_to_coin(5, 1):
+		print("Not enough pins!")
+		return
+
+	print("Exchanged 5 pins for 1 coin")
+
 func _on_capsule_machine_clicked() -> void:
 	if _busy:
 		return
+
+	# Pay 1 coin per spin BEFORE starting
+	if not CurrencyManager.spend_coins(capsule_spin_cost_coins):
+		print("Not enough coins!")
+		return
+
 	_busy = true
 	_step = Step.NONE
 	_stop_open_light()
@@ -254,3 +288,27 @@ func _get_light_color_for_rarity(r: Rarity) -> Color:
 			return Color8(255, 215, 80)   # yellow
 		_:
 			return Color.WHITE
+
+func _setup_background_blink() -> void:
+	if background == null:
+		push_error("Background node not found. Check the node path in shop.gd.")
+		return
+
+	background.texture = BG_OFF
+	_background_is_on = false
+
+	_background_timer = Timer.new()
+	_background_timer.wait_time = background_swap_time
+	_background_timer.one_shot = false
+	_background_timer.timeout.connect(_toggle_background)
+	add_child(_background_timer)
+	_background_timer.start()
+
+
+func _toggle_background() -> void:
+	_background_is_on = not _background_is_on
+
+	if _background_is_on:
+		background.texture = BG_ON
+	else:
+		background.texture = BG_OFF

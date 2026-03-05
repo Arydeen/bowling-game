@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Bowling Game"
-run/main_scene="uid://60llxltl8avx"
+run/main_scene="res://base.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+CurrencyManager="*res://scripts/currency_manager.gd"
 
 [display]
 

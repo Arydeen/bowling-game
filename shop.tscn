@@ -1,11 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://dsa86bd670lcv"]
+[gd_scene load_steps=8 format=3 uid="uid://bhp7hx2mf8bde"]
 
-[ext_resource type="Script" path="res://shop.gd" id="1_blqjs"]
-[ext_resource type="Texture2D" uid="uid://bd50h0lo7kxnf" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
-[ext_resource type="Script" path="res://capsule_machine.gd" id="3_fgaav"]
+[ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
+[ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
+[ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://scripts/arcade/capsule_machine.gd" id="3_fgaav"]
+[ext_resource type="PackedScene" uid="uid://b57bej5wew8qw" path="res://currency_ui.tscn" id="4_fgaav"]
+[ext_resource type="Script" uid="uid://bv4rkrry38f3q" path="res://pin_exchange.gd" id="5_6lah5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fgaav"]
+size = Vector2(147, 81)
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1_blqjs")
@@ -23,3 +28,12 @@ shape = SubResource("RectangleShape2D_6lah5")
 
 [node name="ShopCenter" type="Marker2D" parent="."]
 position = Vector2(160, 90)
+
+[node name="CurrencyUI" parent="." instance=ExtResource("4_fgaav")]
+
+[node name="PinExchange" type="Area2D" parent="."]
+script = ExtResource("5_6lah5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PinExchange"]
+position = Vector2(202.5, 82.5)
+shape = SubResource("RectangleShape2D_fgaav")

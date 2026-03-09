@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://b57bej5wew8qw"]
+[gd_scene load_steps=7 format=3 uid="uid://b57bej5wew8qw"]
 
 [ext_resource type="Script" uid="uid://cga1ih4206hba" path="res://currency_ui.gd" id="1_pd7pt"]
+[ext_resource type="AudioStream" uid="uid://db0pcw8jesrb7" path="res://music/shopkeepertalk.mp3" id="2_1qljl"]
+[ext_resource type="AudioStream" uid="uid://bfaxibptmml6" path="res://music/CoinAdded.mp3" id="3_b43qj"]
+[ext_resource type="AudioStream" uid="uid://d4h5xgc0ap3wy" path="res://music/CoinInsert.mp3" id="4_42l6i"]
 
 [sub_resource type="FontFile" id="FontFile_pd7pt"]
 cache/0/12/0/ascent = 0.0
@@ -70,3 +73,15 @@ theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ShopkeeperTalk" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_1qljl")
+volume_db = 18.0
+
+[node name="CoinAdded" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_b43qj")
+volume_db = -2.0
+
+[node name="CoinInserted" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_42l6i")
+volume_db = 24.0

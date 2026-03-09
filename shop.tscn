@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=49 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -6,6 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://b57bej5wew8qw" path="res://currency_ui.tscn" id="4_fgaav"]
 [ext_resource type="Script" uid="uid://bv4rkrry38f3q" path="res://pin_exchange.gd" id="5_6lah5"]
 [ext_resource type="Texture2D" uid="uid://dy2fiebygv1dh" path="res://textures/backgrounds/ArcadeShutterAnimation.png" id="6_gmb2m"]
+[ext_resource type="AudioStream" uid="uid://dyd7ebxpqqyu8" path="res://music/CapsuleOpen.mp3" id="7_8kdgp"]
+[ext_resource type="AudioStream" uid="uid://bj1psumx3ylk2" path="res://music/ShutterOpen.mp3" id="8_myf4l"]
+[ext_resource type="AudioStream" uid="uid://be5vs5hcx51wx" path="res://music/CapsuleShake.mp3" id="9_p5a0g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -312,3 +315,15 @@ shape = SubResource("RectangleShape2D_fgaav")
 position = Vector2(160, 90)
 sprite_frames = SubResource("SpriteFrames_0l7ja")
 animation = &"ArcadeShutterAnimation"
+
+[node name="CapsuleOpen" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("7_8kdgp")
+volume_db = 10.0
+
+[node name="ShutterOpen" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_myf4l")
+volume_db = 12.0
+
+[node name="CapsuleShake" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("9_p5a0g")
+volume_db = 15.0

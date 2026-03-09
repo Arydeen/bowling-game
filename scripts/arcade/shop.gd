@@ -4,6 +4,12 @@ extends Node2D
 @onready var shop_center: Marker2D = $ShopCenter
 @onready var coin_exchange_machine := $PinExchange
 @onready var currency_ui := $CurrencyUI
+@onready var capsule_open_sfx: AudioStreamPlayer2D = $CapsuleOpen
+@onready var shutter_open_sfx: AudioStreamPlayer2D = $ShutterOpen
+@onready var capsule_shake_sfx: AudioStreamPlayer2D = $CapsuleShake
+
+#FLICKERING SHOP 
+@onready var background: Sprite2D = $Arcade
 
 const CAPSULE_COMMON_TEX: Texture2D = preload("res://textures/capsules/CapsuleCommon.png")
 const CAPSULE_RARE_TEX: Texture2D = preload("res://textures/capsules/CapsuleRare.png")
@@ -15,9 +21,6 @@ const CAPSULE_LEGENDARY_TEX: Texture2D = preload("res://textures/capsules/Capsul
 
 @export var rock_angle: float = 0.25
 @export var rock_time: float = 0.12
-
-#FLICKERING SHOP 
-@onready var background: Sprite2D = $Arcade
 
 const BG_ON: Texture2D = preload("res://textures/backgrounds/ArcadeClosedBackground.png")
 const BG_OFF: Texture2D = preload("res://textures/backgrounds/ArcadeClosedOffBackground.png")
@@ -85,6 +88,11 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_pin_exchange_clicked() -> void:
 	# First click: open shutter ONLY
 	if not coin_exchange_machine.is_open:
+		if shutter_open_sfx != null:
+			if shutter_open_sfx.playing:
+				shutter_open_sfx.stop()
+			shutter_open_sfx.play()
+		
 		coin_exchange_machine.open_shutter()
 		return
 
@@ -196,6 +204,12 @@ func _on_space_pressed() -> void:
 		Step.WAIT_OPEN:
 			# OPEN CAPSULE
 			_capsule.region_rect = Rect2(0.0, _tex_size.y * 0.5, _tex_size.x, _tex_size.y * 0.5)
+
+			if capsule_open_sfx != null:
+				if capsule_open_sfx.playing:
+					capsule_open_sfx.stop()
+				capsule_open_sfx.play()
+
 			if _open_light != null:
 				_open_light.color = _get_light_color_for_rarity(_current_rarity)
 			_flash_open_light()
@@ -213,6 +227,8 @@ func _on_space_pressed() -> void:
 			pass
 
 func _rock(target_angle: float) -> void:
+	_play_capsule_shake_sfx()
+
 	_capsule.rotation = 0.0
 	_rock_mult = 1.0
 	_rock_target_angle = target_angle
@@ -335,3 +351,11 @@ func _toggle_background() -> void:
 		background.texture = BG_ON
 	else:
 		background.texture = BG_OFF
+
+
+func _play_capsule_shake_sfx() -> void:
+	if capsule_shake_sfx == null:
+		return
+	
+	capsule_shake_sfx.stop()
+	capsule_shake_sfx.play()

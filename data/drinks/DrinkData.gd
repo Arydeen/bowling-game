@@ -13,3 +13,5 @@ class_name DrinkData
 @export var anim_fps = 18.0
 
 @export var use_pour_sfx = false
+@export var open_sfx: AudioStream
+@export var sip: bool = false

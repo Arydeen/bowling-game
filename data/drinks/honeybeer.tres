@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="DrinkData" load_steps=4 format=3 uid="uid://dgu2vvxn7v8sl"]
+
+[ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/BeerBottleOpen.mp3" id="1_qo8y7"]
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="2_mmgx6"]
+[ext_resource type="Texture2D" uid="uid://cg2y5tb04emsh" path="res://textures/drinks/HoneyBeer.png" id="3_cqcdd"]
+
+[resource]
+script = ExtResource("2_mmgx6")
+id = "honeybeer"
+display_name = "Honey Beer"
+cost_tokens = 2
+sprite_sheet = ExtResource("3_cqcdd")
+sheet_cols = 4
+sheet_rows = 4
+frame_count = 16
+anim_fps = 14.0
+open_sfx = ExtResource("1_qo8y7")
+sip = true
+metadata/_custom_type_script = "uid://qvp8cumxjs05"

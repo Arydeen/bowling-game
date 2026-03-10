@@ -12,4 +12,5 @@ sheet_cols = 6
 sheet_rows = 7
 anim_fps = 40.0
 use_pour_sfx = true
+sip = true
 metadata/_custom_type_script = "uid://qvp8cumxjs05"

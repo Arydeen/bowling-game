@@ -7,10 +7,12 @@ extends Node2D
 @onready var capsule_open_sfx: AudioStreamPlayer2D = $CapsuleOpen
 @onready var shutter_open_sfx: AudioStreamPlayer2D = $ShutterOpen
 @onready var capsule_shake_sfx: AudioStreamPlayer2D = $CapsuleShake
+@onready var drink_one_shot_sfx: AudioStreamPlayer2D = $BeerBottleOpen
 
 @onready var soda_fountain: Area2D = $SodaFountain
 @onready var soda_menu: PopupMenu = $SodaFountainMenu
 @onready var pour_noise = $PourNoise
+@onready var sip_drink: AudioStreamPlayer2D = $DrinkSip
 
 #FLICKERING SHOP 
 @onready var background: Sprite2D = $Arcade
@@ -592,6 +594,8 @@ func _start_milk_open() -> void:
 	if _active_drink.use_pour_sfx:
 		_pour_sfx_start()
 
+	_play_drink_open_sfx(_active_drink)
+
 	_milk_sprite.animation_finished.connect(_on_drink_open_finished, Object.CONNECT_ONE_SHOT)
 
 	_drink_close_armed = false
@@ -636,6 +640,11 @@ func _pour_sfx_stop() -> void:
 
 
 func _close_current_drink() -> void:
+	if _active_drink != null and _active_drink.sip and sip_drink != null:
+		if sip_drink.playing:
+			sip_drink.stop()
+		sip_drink.play()
+
 	_milk_waiting_to_close = false
 	_milk_waiting_for_space = false
 
@@ -663,3 +672,25 @@ func _region_has_alpha(img: Image, rect: Rect2i) -> bool:
 			if img.get_pixel(x, y).a > 0.05:
 				return true
 	return false
+
+
+func _play_drink_open_sfx(drink: DrinkData) -> void:
+	if drink_one_shot_sfx == null:
+		return
+	if drink == null or drink.open_sfx == null:
+		return
+
+	if drink_one_shot_sfx.playing:
+		drink_one_shot_sfx.stop()
+
+	drink_one_shot_sfx.stream = drink.open_sfx
+	drink_one_shot_sfx.play()
+
+
+func _play_sip_drink(stream: AudioStream) -> void:
+	if stream == null or sip_drink == null:
+		return
+	if sip_drink.playing:
+		sip_drink.stop()
+	sip_drink.stream = stream
+	sip_drink.play()

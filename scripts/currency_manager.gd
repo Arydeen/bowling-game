@@ -2,7 +2,7 @@ extends Node
 
 signal currencies_changed(new_pins: int, new_tokens: int)
 
-var pins: int = 30
+var pins: int = 100
 var tokens: int = 0
 
 func add_pins(amount: int) -> void:

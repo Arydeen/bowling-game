@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cga1ih4206hba" path="res://currency_ui.gd" id="1_pd7pt"]
 [ext_resource type="AudioStream" uid="uid://db0pcw8jesrb7" path="res://music/shopkeepertalk.mp3" id="2_1qljl"]
-[ext_resource type="FontFile" uid="uid://d04eanqk3tv4n" path="res://textures/fonts/static/PixelifySans-Medium.ttf" id="2_dklbp"]
+[ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="2_dklbp"]
 [ext_resource type="AudioStream" uid="uid://bfaxibptmml6" path="res://music/CoinAdded.mp3" id="3_b43qj"]
 [ext_resource type="AudioStream" uid="uid://d4h5xgc0ap3wy" path="res://music/CoinInsert.mp3" id="4_42l6i"]
 
@@ -14,28 +14,30 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -76.0
-offset_top = 7.0
+offset_top = 13.0
 offset_right = -36.0
-offset_bottom = 30.0
+offset_bottom = 36.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 12
+theme_override_fonts/font = ExtResource("2_dklbp")
+theme_override_font_sizes/font_size = 7
 
 [node name="TokensLabel" type="Label" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -25.0
-offset_top = 7.0
+offset_top = 13.0
 offset_right = 15.0
-offset_bottom = 30.0
+offset_bottom = 36.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(0.93333334, 0.93333334, 0.93333334, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_font_sizes/font_size = 12
+theme_override_fonts/font = ExtResource("2_dklbp")
+theme_override_font_sizes/font_size = 7
 
 [node name="Toast1" type="Label" parent="."]
 offset_left = 115.0
@@ -46,7 +48,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("2_dklbp")
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 5
 horizontal_alignment = 1
 vertical_alignment = 1
 

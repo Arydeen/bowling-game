@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=60 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -6,15 +6,18 @@
 [ext_resource type="Resource" uid="uid://wcowshp7maxq" path="res://data/drinks/milk.tres" id="3_763b7"]
 [ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://scripts/arcade/capsule_machine.gd" id="3_fgaav"]
 [ext_resource type="PackedScene" uid="uid://b57bej5wew8qw" path="res://currency_ui.tscn" id="4_fgaav"]
+[ext_resource type="Resource" uid="uid://dgu2vvxn7v8sl" path="res://data/drinks/honeybeer.tres" id="4_jtxfs"]
+[ext_resource type="Resource" uid="uid://c48y68h7bhe3t" path="res://data/drinks/coffee.tres" id="4_tuxin"]
 [ext_resource type="Script" uid="uid://bv4rkrry38f3q" path="res://pin_exchange.gd" id="5_6lah5"]
 [ext_resource type="Texture2D" uid="uid://dy2fiebygv1dh" path="res://textures/backgrounds/ArcadeShutterAnimation.png" id="6_gmb2m"]
 [ext_resource type="AudioStream" uid="uid://dyd7ebxpqqyu8" path="res://music/CapsuleOpen.mp3" id="7_8kdgp"]
 [ext_resource type="AudioStream" uid="uid://bj1psumx3ylk2" path="res://music/ShutterOpen.mp3" id="8_myf4l"]
 [ext_resource type="AudioStream" uid="uid://be5vs5hcx51wx" path="res://music/CapsuleShake.mp3" id="9_p5a0g"]
 [ext_resource type="Script" uid="uid://d0dq1yl0pufuq" path="res://scripts/soda_fountain.gd" id="10_xqmyw"]
-[ext_resource type="FontFile" uid="uid://bhwv12hlqkbf4" path="res://textures/fonts/static/PixelifySans-Regular.ttf" id="11_msgp6"]
-[ext_resource type="FontFile" uid="uid://d04eanqk3tv4n" path="res://textures/fonts/static/PixelifySans-Medium.ttf" id="12_e23gp"]
 [ext_resource type="AudioStream" uid="uid://qu1c5ed41y06" path="res://music/pourNoise.mp3" id="13_e23gp"]
+[ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="14_763b7"]
+[ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/BeerBottleOpen.mp3" id="16_763b7"]
+[ext_resource type="AudioStream" uid="uid://nclnko47hcke" path="res://music/DrinkSip.mp3" id="18_tuxin"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -295,12 +298,12 @@ animations = [{
 size = Vector2(60, 99)
 
 [sub_resource type="Theme" id="Theme_msgp6"]
-default_font = ExtResource("12_e23gp")
-default_font_size = 14
+default_font = ExtResource("14_763b7")
+default_font_size = 10
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1_blqjs")
-drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7")])
+drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7"), ExtResource("4_tuxin"), ExtResource("4_jtxfs")])
 
 [node name="Arcade" type="Sprite2D" parent="."]
 position = Vector2(160, 90)
@@ -358,8 +361,8 @@ borderless = false
 theme = SubResource("Theme_msgp6")
 theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("11_msgp6")
-theme_override_fonts/font_separator = ExtResource("12_e23gp")
+theme_override_fonts/font = ExtResource("14_763b7")
+theme_override_fonts/font_separator = ExtResource("14_763b7")
 allow_search = false
 item_count = 2
 item_0/text = "Drink | Tokens"
@@ -370,3 +373,11 @@ item_1/id = 1
 [node name="PourNoise" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("13_e23gp")
 volume_db = 24.0
+
+[node name="BeerBottleOpen" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("16_763b7")
+volume_db = 24.0
+
+[node name="DrinkSip" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("18_tuxin")
+volume_db = 20.0

@@ -1,7 +1,9 @@
-[gd_scene load_steps=49 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=57 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="2_gldgk"]
+[ext_resource type="Resource" uid="uid://wcowshp7maxq" path="res://data/drinks/milk.tres" id="3_763b7"]
 [ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://scripts/arcade/capsule_machine.gd" id="3_fgaav"]
 [ext_resource type="PackedScene" uid="uid://b57bej5wew8qw" path="res://currency_ui.tscn" id="4_fgaav"]
 [ext_resource type="Script" uid="uid://bv4rkrry38f3q" path="res://pin_exchange.gd" id="5_6lah5"]
@@ -9,6 +11,10 @@
 [ext_resource type="AudioStream" uid="uid://dyd7ebxpqqyu8" path="res://music/CapsuleOpen.mp3" id="7_8kdgp"]
 [ext_resource type="AudioStream" uid="uid://bj1psumx3ylk2" path="res://music/ShutterOpen.mp3" id="8_myf4l"]
 [ext_resource type="AudioStream" uid="uid://be5vs5hcx51wx" path="res://music/CapsuleShake.mp3" id="9_p5a0g"]
+[ext_resource type="Script" uid="uid://d0dq1yl0pufuq" path="res://scripts/soda_fountain.gd" id="10_xqmyw"]
+[ext_resource type="FontFile" uid="uid://bhwv12hlqkbf4" path="res://textures/fonts/static/PixelifySans-Regular.ttf" id="11_msgp6"]
+[ext_resource type="FontFile" uid="uid://d04eanqk3tv4n" path="res://textures/fonts/static/PixelifySans-Medium.ttf" id="12_e23gp"]
+[ext_resource type="AudioStream" uid="uid://qu1c5ed41y06" path="res://music/pourNoise.mp3" id="13_e23gp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -285,8 +291,16 @@ animations = [{
 "speed": 12.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p5a0g"]
+size = Vector2(60, 99)
+
+[sub_resource type="Theme" id="Theme_msgp6"]
+default_font = ExtResource("12_e23gp")
+default_font_size = 14
+
 [node name="Shop" type="Node2D"]
 script = ExtResource("1_blqjs")
+drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7")])
 
 [node name="Arcade" type="Sprite2D" parent="."]
 position = Vector2(160, 90)
@@ -327,3 +341,32 @@ volume_db = 12.0
 [node name="CapsuleShake" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("9_p5a0g")
 volume_db = 15.0
+
+[node name="SodaFountain" type="Area2D" parent="."]
+script = ExtResource("10_xqmyw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SodaFountain"]
+position = Vector2(46, 124.5)
+shape = SubResource("RectangleShape2D_p5a0g")
+
+[node name="SodaFountainMenu" type="PopupMenu" parent="."]
+oversampling_override = 1.0
+title = "Drinks | Tokens"
+position = Vector2i(90, 50)
+size = Vector2i(140, 80)
+borderless = false
+theme = SubResource("Theme_msgp6")
+theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("11_msgp6")
+theme_override_fonts/font_separator = ExtResource("12_e23gp")
+allow_search = false
+item_count = 2
+item_0/text = "Drink | Tokens"
+item_0/id = 0
+item_1/text = "Milk 1"
+item_1/id = 1
+
+[node name="PourNoise" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("13_e23gp")
+volume_db = 24.0

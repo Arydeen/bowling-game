@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://chehndxvyxrh0"]
+
+[ext_resource type="Script" uid="uid://dyt3qjgq50jem" path="res://scripts/bowling_alley/Pin.cs" id="1_ay5r2"]
+[ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="2_8bins"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1fp4a"]
+radius = 3.0
+height = 6.0
+
+[node name="Pin" type="Area2D" groups=["Pins"]]
+script = ExtResource("1_ay5r2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("CapsuleShape2D_1fp4a")
+
+[node name="Pin_Image" type="Sprite2D" parent="."]
+position = Vector2(0, -9)
+texture = ExtResource("2_8bins")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+visible = false
+offset_right = 4.0
+offset_bottom = 27.0

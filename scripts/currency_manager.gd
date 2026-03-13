@@ -1,9 +1,9 @@
 extends Node
 
-signal currencies_changed(new_pins: int, new_coins: int)
+signal currencies_changed(new_pins: int, new_tokens: int)
 
-var pins: int = 1000
-var coins: int = 0
+var pins: int = 100
+var tokens: int = 0
 
 func add_pins(amount: int) -> void:
 	if amount <= 0:
@@ -11,10 +11,10 @@ func add_pins(amount: int) -> void:
 	pins += amount
 	_emit_changed()
 
-func add_coins(amount: int) -> void:
+func add_tokens(amount: int) -> void:
 	if amount <= 0:
 		return
-	coins += amount
+	tokens += amount
 	_emit_changed()
 
 func spend_pins(amount: int) -> bool:
@@ -26,17 +26,17 @@ func spend_pins(amount: int) -> bool:
 	_emit_changed()
 	return true
 
-func spend_coins(amount: int) -> bool:
+func spend_tokens(amount: int) -> bool:
 	if amount <= 0:
 		return true
-	if coins < amount:
+	if tokens < amount:
 		return false
-	coins -= amount
+	tokens -= amount
 	_emit_changed()
 	return true
 
 func _emit_changed() -> void:
-	currencies_changed.emit(pins, coins)
+	currencies_changed.emit(pins, tokens)
 
 func convert_pins_to_coin(pin_cost: int = 5, coin_amount: int = 1) -> bool:
 	if pin_cost <= 0 or coin_amount <= 0:
@@ -46,7 +46,7 @@ func convert_pins_to_coin(pin_cost: int = 5, coin_amount: int = 1) -> bool:
 		return false
 
 	pins -= pin_cost
-	coins += coin_amount
+	tokens += coin_amount
 	_emit_changed()
 	return true
 

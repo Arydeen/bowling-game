@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="DrinkData" load_steps=3 format=3 uid="uid://wcowshp7maxq"]
+
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="1_th3ie"]
+[ext_resource type="Texture2D" uid="uid://dgmwawav5n5ku" path="res://textures/drinks/CupMilk.png" id="2_egaoi"]
+
+[resource]
+script = ExtResource("1_th3ie")
+id = "milk"
+display_name = "Milk"
+sprite_sheet = ExtResource("2_egaoi")
+sheet_cols = 6
+sheet_rows = 7
+anim_fps = 40.0
+use_pour_sfx = true
+sip = true
+metadata/_custom_type_script = "uid://qvp8cumxjs05"

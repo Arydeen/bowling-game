@@ -1,30 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://b57bej5wew8qw"]
+[gd_scene load_steps=6 format=3 uid="uid://b57bej5wew8qw"]
 
 [ext_resource type="Script" uid="uid://cga1ih4206hba" path="res://currency_ui.gd" id="1_pd7pt"]
-
-[sub_resource type="FontFile" id="FontFile_pd7pt"]
-cache/0/12/0/ascent = 0.0
-cache/0/12/0/descent = 0.0
-cache/0/12/0/underline_position = 0.0
-cache/0/12/0/underline_thickness = 0.0
-cache/0/12/0/scale = 1.0
-cache/0/16/0/ascent = 0.0
-cache/0/16/0/descent = 0.0
-cache/0/16/0/underline_position = 0.0
-cache/0/16/0/underline_thickness = 0.0
-cache/0/16/0/scale = 1.0
-
-[sub_resource type="FontFile" id="FontFile_1qljl"]
-cache/0/12/0/ascent = 0.0
-cache/0/12/0/descent = 0.0
-cache/0/12/0/underline_position = 0.0
-cache/0/12/0/underline_thickness = 0.0
-cache/0/12/0/scale = 1.0
-cache/0/16/0/ascent = 0.0
-cache/0/16/0/descent = 0.0
-cache/0/16/0/underline_position = 0.0
-cache/0/16/0/underline_thickness = 0.0
-cache/0/16/0/scale = 1.0
+[ext_resource type="AudioStream" uid="uid://db0pcw8jesrb7" path="res://music/shopkeepertalk.mp3" id="2_1qljl"]
+[ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="2_dklbp"]
+[ext_resource type="AudioStream" uid="uid://bfaxibptmml6" path="res://music/CoinAdded.mp3" id="3_b43qj"]
+[ext_resource type="AudioStream" uid="uid://d4h5xgc0ap3wy" path="res://music/CoinInsert.mp3" id="4_42l6i"]
 
 [node name="CurrencyUI" type="CanvasLayer"]
 script = ExtResource("1_pd7pt")
@@ -33,28 +13,53 @@ script = ExtResource("1_pd7pt")
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -77.0
-offset_top = 7.0
-offset_right = -37.0
-offset_bottom = 30.0
+offset_left = -76.0
+offset_top = 13.0
+offset_right = -36.0
+offset_bottom = 36.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_fonts/font = SubResource("FontFile_pd7pt")
-theme_override_font_sizes/font_size = 12
+theme_override_fonts/font = ExtResource("2_dklbp")
+theme_override_font_sizes/font_size = 7
 
-[node name="CoinsLabel" type="Label" parent="."]
+[node name="TokensLabel" type="Label" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -25.0
-offset_top = 7.0
+offset_top = 13.0
 offset_right = 15.0
-offset_bottom = 30.0
+offset_bottom = 36.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(0.93333334, 0.93333334, 0.93333334, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
-theme_override_fonts/font = SubResource("FontFile_1qljl")
-theme_override_font_sizes/font_size = 12
+theme_override_fonts/font = ExtResource("2_dklbp")
+theme_override_font_sizes/font_size = 7
+
+[node name="Toast1" type="Label" parent="."]
+offset_left = 115.0
+offset_top = 130.0
+offset_right = 295.0
+offset_bottom = 153.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_dklbp")
+theme_override_font_sizes/font_size = 5
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ShopkeeperTalk" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_1qljl")
+volume_db = 18.0
+
+[node name="CoinAdded" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_b43qj")
+volume_db = -2.0
+
+[node name="CoinInserted" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_42l6i")
+volume_db = 24.0

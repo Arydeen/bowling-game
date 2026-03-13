@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Bowling Game"
-run/main_scene="res://base.tscn"
-config/features=PackedStringArray("4.5", "Forward Plus")
+run/main_scene="res://scenes/Lanes.tscn"
+config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -49,3 +49,5 @@ capsule_open={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

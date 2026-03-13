@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="DrinkData" load_steps=3 format=3 uid="uid://c48y68h7bhe3t"]
+
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="1_5jgnr"]
+[ext_resource type="Texture2D" uid="uid://d2r4w66g8nwdo" path="res://textures/drinks/CupCoffee.png" id="2_38pdk"]
+
+[resource]
+script = ExtResource("1_5jgnr")
+id = "coffee"
+display_name = "Coffee"
+sprite_sheet = ExtResource("2_38pdk")
+sheet_cols = 6
+sheet_rows = 7
+frame_count = 40
+anim_fps = 40.0
+use_pour_sfx = true
+sip = true
+metadata/_custom_type_script = "uid://qvp8cumxjs05"

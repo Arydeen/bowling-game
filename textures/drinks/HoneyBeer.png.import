@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bb4the013nqyl"
-path="res://.godot/imported/ArcadeOpenBackground.png-a238ec3414eb4046c41b7221c9377d30.ctex"
+uid="uid://cg2y5tb04emsh"
+path="res://.godot/imported/HoneyBeer.png-ac9312551c08350d6c9e0fe7fcbcca6b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/backgrounds/ArcadeOpenBackground.png"
-dest_files=["res://.godot/imported/ArcadeOpenBackground.png-a238ec3414eb4046c41b7221c9377d30.ctex"]
+source_file="res://textures/drinks/HoneyBeer.png"
+dest_files=["res://.godot/imported/HoneyBeer.png-ac9312551c08350d6c9e0fe7fcbcca6b.ctex"]
 
 [params]
 

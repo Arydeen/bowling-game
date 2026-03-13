@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4cov5id4skma"
-path="res://.godot/imported/ArcadeCrackedBackground.png-b80ffa69716e8b3cb1efaac0a5557a12.ctex"
+uid="uid://dgmwawav5n5ku"
+path="res://.godot/imported/CupMilk.png-3c1fa208be42c8c9213f41155714a5c5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/backgrounds/ArcadeCrackedBackground.png"
-dest_files=["res://.godot/imported/ArcadeCrackedBackground.png-b80ffa69716e8b3cb1efaac0a5557a12.ctex"]
+source_file="res://textures/drinks/CupMilk.png"
+dest_files=["res://.godot/imported/CupMilk.png-3c1fa208be42c8c9213f41155714a5c5.ctex"]
 
 [params]
 

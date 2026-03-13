@@ -14,4 +14,4 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("go_shop"):
-		get_tree().change_scene_to_file("res://shop.tscn")
+		get_tree().change_scene_to_file("res://scenes/shop.tscn")

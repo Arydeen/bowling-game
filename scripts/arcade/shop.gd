@@ -50,6 +50,8 @@ const BG_OFF: Texture2D = preload("res://textures/backgrounds/ArcadeClosedOffBac
 
 @export var background_swap_time: float = .75
 
+var _pin_shutter_opening: bool = false
+
 var _background_timer: Timer
 var _background_is_on: bool = true
 
@@ -95,6 +97,7 @@ var _rock_mult: float = 1.0
 var _rock_target_angle: float = 0.0
 
 func _ready() -> void:
+	Music.play_arcade()
 	randomize()
 	_setup_open_light()
 	capsule_machine.clicked.connect(_on_capsule_machine_clicked)
@@ -168,11 +171,14 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_pin_exchange_clicked() -> void:
 	# First click: open shutter ONLY
 	if not coin_exchange_machine.is_open:
-		if shutter_open_sfx != null:
-			if shutter_open_sfx.playing:
-				shutter_open_sfx.stop()
+		if _pin_shutter_opening:
+			return
+
+		_pin_shutter_opening = true
+
+		if shutter_open_sfx != null and not shutter_open_sfx.playing:
 			shutter_open_sfx.play()
-		
+
 		coin_exchange_machine.open_shutter()
 		return
 

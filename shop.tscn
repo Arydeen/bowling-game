@@ -1,4 +1,4 @@
-[gd_scene load_steps=60 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=63 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -9,8 +9,11 @@
 [ext_resource type="Resource" uid="uid://dgu2vvxn7v8sl" path="res://data/drinks/honeybeer.tres" id="4_jtxfs"]
 [ext_resource type="Resource" uid="uid://c48y68h7bhe3t" path="res://data/drinks/coffee.tres" id="4_tuxin"]
 [ext_resource type="Script" uid="uid://bv4rkrry38f3q" path="res://pin_exchange.gd" id="5_6lah5"]
+[ext_resource type="Resource" uid="uid://bx1c1jp87thyt" path="res://data/drinks/rootbeer.tres" id="5_8lh4o"]
 [ext_resource type="Texture2D" uid="uid://dy2fiebygv1dh" path="res://textures/backgrounds/ArcadeShutterAnimation.png" id="6_gmb2m"]
 [ext_resource type="AudioStream" uid="uid://dyd7ebxpqqyu8" path="res://music/CapsuleOpen.mp3" id="7_8kdgp"]
+[ext_resource type="Resource" uid="uid://cxmbtqnt3gpc8" path="res://data/drinks/martini.tres" id="7_acxsc"]
+[ext_resource type="Resource" uid="uid://ct4o4djpmkrf7" path="res://data/drinks/xxxbrew.tres" id="7_il0eq"]
 [ext_resource type="AudioStream" uid="uid://bj1psumx3ylk2" path="res://music/ShutterOpen.mp3" id="8_myf4l"]
 [ext_resource type="AudioStream" uid="uid://be5vs5hcx51wx" path="res://music/CapsuleShake.mp3" id="9_p5a0g"]
 [ext_resource type="Script" uid="uid://d0dq1yl0pufuq" path="res://scripts/soda_fountain.gd" id="10_xqmyw"]
@@ -303,7 +306,7 @@ default_font_size = 10
 
 [node name="Shop" type="Node2D"]
 script = ExtResource("1_blqjs")
-drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7"), ExtResource("4_tuxin"), ExtResource("4_jtxfs")])
+drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7"), ExtResource("4_tuxin"), ExtResource("5_8lh4o"), ExtResource("4_jtxfs"), ExtResource("7_acxsc"), ExtResource("7_il0eq")])
 
 [node name="Arcade" type="Sprite2D" parent="."]
 position = Vector2(160, 90)

@@ -1,0 +1,81 @@
+[gd_scene load_steps=10 format=3 uid="uid://60llxltl8avx"]
+
+[ext_resource type="Script" uid="uid://3pr0hixl02yn" path="res://scripts/bowling_alley/bowling.gd" id="1_wxftb"]
+[ext_resource type="Texture2D" uid="uid://bou6tlb3yq6bd" path="res://textures/backgrounds/background.png" id="2_5yoeu"]
+[ext_resource type="AudioStream" uid="uid://bcro23neh7q1h" path="res://music/bowling track.mp3" id="3_ua68m"]
+[ext_resource type="PackedScene" uid="uid://chehndxvyxrh0" path="res://scenes/Pin.tscn" id="4_e3bhr"]
+[ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="6_6s8gb"]
+[ext_resource type="Texture2D" uid="uid://032eei35svsn" path="res://textures/pins/pin_r2.png" id="7_5m2kd"]
+[ext_resource type="Texture2D" uid="uid://doernkc7wch34" path="res://textures/pins/pin_r3.png" id="8_cv3je"]
+[ext_resource type="PackedScene" uid="uid://m62c2r5hupin" path="res://scenes/Ball.tscn" id="9_ga0rv"]
+[ext_resource type="Texture2D" uid="uid://dhya4cmdkr2n8" path="res://textures/pins/pin_r4.png" id="9_vkf1l"]
+
+[node name="Lanes" type="Node2D"]
+script = ExtResource("1_wxftb")
+
+[node name="Lanes" type="Sprite2D" parent="."]
+position = Vector2(160, 90)
+texture = ExtResource("2_5yoeu")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Lanes"]
+stream = ExtResource("3_ua68m")
+volume_db = -20.0
+autoplay = true
+
+[node name="PinContainer" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Pin1" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(160, 99)
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin2" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(166, 95)
+Type = 1
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin3" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(154, 95)
+Type = 1
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin4" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(170, 90)
+Type = 2
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin5" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(160, 90)
+Type = 2
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin6" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(150, 90)
+Type = 2
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin7" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(176, 86)
+Type = 3
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin8" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(165, 86)
+Type = 3
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin9" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(155, 86)
+Type = 3
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="Pin10" parent="PinContainer" instance=ExtResource("4_e3bhr")]
+position = Vector2(144, 86)
+Type = 3
+TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
+
+[node name="BallSpawn" type="Marker2D" parent="."]
+position = Vector2(160, 165)
+
+[node name="Ball" parent="." instance=ExtResource("9_ga0rv")]
+position = Vector2(160, 169)

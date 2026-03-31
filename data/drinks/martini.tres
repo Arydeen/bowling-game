@@ -8,7 +8,7 @@
 script = ExtResource("1_2rgue")
 id = "martini"
 display_name = "Martini"
-cost_tokens = 2
+cost_tokens = 3
 sprite_sheet = ExtResource("3_sbq8u")
 sheet_cols = 5
 sheet_rows = 5

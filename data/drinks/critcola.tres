@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="DrinkData" load_steps=3 format=3 uid="uid://bls8rd382u0wg"]
+
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="1_ev6tl"]
+[ext_resource type="Texture2D" uid="uid://blswvwn5w2dfd" path="res://textures/drinks/CritCola.png" id="2_6sgrg"]
+
+[resource]
+script = ExtResource("1_ev6tl")
+id = "critcola"
+display_name = "Crit Cola"
+sprite_sheet = ExtResource("2_6sgrg")
+sheet_cols = 6
+sheet_rows = 7
+frame_count = 40
+anim_fps = 40.0
+use_pour_sfx = true
+sip = true
+metadata/_custom_type_script = "uid://qvp8cumxjs05"

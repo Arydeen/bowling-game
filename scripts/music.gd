@@ -2,6 +2,8 @@ extends Node
 
 @onready var player: AudioStreamPlayer = AudioStreamPlayer.new()
 
+var playing = false;
+
 var bowling_stream: AudioStream = preload("res://music/bowling track.mp3")
 
 func _ready() -> void:
@@ -14,9 +16,11 @@ func _ready() -> void:
 func play_bowling() -> void:
 	if player.stream != bowling_stream:
 		player.stream = bowling_stream
-	if not player.playing:
+	if not player.playing and not playing:
 		player.play()
+		playing = true
 
 func stop_music() -> void:
 	if player.playing:
 		player.stop()
+		playing = false;

@@ -3,8 +3,63 @@ using System;
 
 public partial class Ball : CharacterBody2D
 {
-	[Export] public float Speed = 30.0f;
-	private Vector2 _velocity = Vector2.Zero;
+
+	public enum BallState {Aiming, Powering, Rolling, Finished}
+	private BallState _currState = BallState.Aiming;
+
+	[Export] public float AimSpeed = 150f;
+	[Export] public float RollSpeed = 60.0f;
+	[Export] public PowerMeter Meter;
+
+	private bool _aimingLeft = false;
+	private float _laneWidthLimit = 90.0f;
+	private float _startX; // The center of the lane
+	private float _currentOffset = 0f; // How far moved from center
+	private float _powerVal = 0;
+
+	public override void _Ready()
+	{
+		_startX = Position.X;
+		_currState = BallState.Aiming;
+	}
+
+	private void HandleAiming(double delta)
+{
+	if (_currentOffset >= _laneWidthLimit) _aimingLeft = true;
+	else if (_currentOffset <= -_laneWidthLimit) _aimingLeft = false;
+
+	float dir = _aimingLeft ? -1 : 1;
+	_currentOffset += dir * AimSpeed * (float)delta;
+
+	Position = new Vector2(_startX + _currentOffset, Position.Y);
+
+	if (Input.IsActionJustPressed("ball_aim_stop"))
+	{
+		_currState = BallState.Powering;
+		Meter.ShowMeter(); 
+
+		GetViewport().SetInputAsHandled();
+	}
+}
+	public void FinalizePower(float speed, float rawX)
+	{
+		GD.Print($"Zone Speed: {speed}, Raw X: {rawX}");
+		RollSpeed = speed;
+		_powerVal = rawX;
+		_currState = BallState.Rolling;
+	}
+
+	private void UpdateScale()
+	{
+		float startY = 169; // Bottom of lane
+		float endY = 81;   // Top of lane (the pins)
+		float minScale = 0.5f;
+		float maxScale = 1.0f;
+
+		// Remap the current Y position to a scale value
+		float t = Mathf.Remap(GlobalPosition.Y, endY, startY, minScale, maxScale);
+		Scale = new Vector2(t, t);
+	}
 
 	public void CheckForHits()
 	{
@@ -16,60 +71,66 @@ public partial class Ball : CharacterBody2D
 		{
 			if (area is Pin pin)
 			{
-				pin.TakeDamage(10);
+				if (!pin.GetHitThisRound())
+				{
+					pin.TakeDamage(10000);
+					pin.SetHitThisRound(true);
+				} 
+				
 			}
 		}
 	}
 
 	public void FadeOutAndRemove()
 	{
-		// 1. Create a Tween object
 		Tween tween = CreateTween();
 
-		// 2. Tell the tween to change the "modulate" property
-		// Change alpha over a duration of 0.5 seconds
-		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.5f);
+		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.25f);
 
-		// 3. Automatically delete the ball once the fade is finished
-		tween.Finished += () => QueueFree();
+		tween.Finished += () =>
+		{
+			QueueFree();
+			_currState = BallState.Aiming;
+		};
 	}
 	public override void _PhysicsProcess(double delta)
 	{
+		if (_currState != BallState.Rolling) return;
 
 		CheckForHits();
 
-		float targetY = 81.0f;
+		// Hook Strength: Adjusting val, but 0.8 feels good for now.
+		float hookStrength = 0.8f;
+		float horizontalDrift = _powerVal / 2 * hookStrength;
 
-		if (GlobalPosition.Y <= targetY)
+		// Apply drift to X, and speed to Y
+		Velocity = new Vector2(horizontalDrift, -RollSpeed);
+
+		MoveAndSlide();
+
+		// Check if we reached the end of the lane
+		if (GlobalPosition.Y <= 81.0f)
 		{
-			
-			// 2. Stop movement
 			Velocity = Vector2.Zero;
 			SetPhysicsProcess(false); 
-
-			// 3. Start the fade!
 			FadeOutAndRemove();
-
 		}
-		// Example: Move the ball upward (toward pins)
-		Velocity = new Vector2(0, -Speed);
-		
-		// This handles the actual movement and pixel-snapping
-		MoveAndSlide();
 	}
-
 	public override void _Process(double delta)
 	{
-		// Example: The higher the ball is on screen, the smaller it gets.
-		// You'll need to tune these numbers to your specific lane size.
-		float startY = 169; // Bottom of lane
-		float endY = 81;   // Top of lane (the pins)
-		float minScale = 0.5f;
-		float maxScale = 1.0f;
 
-		// Remap the current Y position to a scale value
-		float t = Mathf.Remap(GlobalPosition.Y, endY, startY, minScale, maxScale);
-		Scale = new Vector2(t, t);
+		switch (_currState)
+		{
+			case BallState.Aiming:
+				HandleAiming(delta);
+				break;
+			case BallState.Powering:
+				// Do nothing here we are waiting for the Meter to finish
+				break;
+			case BallState.Rolling:
+				UpdateScale(); // Only scale while rolling
+				break;
+		}
 	}
 
 }

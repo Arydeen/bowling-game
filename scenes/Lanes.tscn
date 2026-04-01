@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://60llxltl8avx"]
+[gd_scene load_steps=11 format=3 uid="uid://60llxltl8avx"]
 
 [ext_resource type="Script" uid="uid://3pr0hixl02yn" path="res://scripts/bowling_alley/bowling.gd" id="1_wxftb"]
 [ext_resource type="Texture2D" uid="uid://bou6tlb3yq6bd" path="res://textures/backgrounds/background.png" id="2_5yoeu"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://doernkc7wch34" path="res://textures/pins/pin_r3.png" id="8_cv3je"]
 [ext_resource type="PackedScene" uid="uid://m62c2r5hupin" path="res://scenes/Ball.tscn" id="9_ga0rv"]
 [ext_resource type="Texture2D" uid="uid://dhya4cmdkr2n8" path="res://textures/pins/pin_r4.png" id="9_vkf1l"]
+[ext_resource type="PackedScene" uid="uid://djrdboc37pwdo" path="res://scenes/PowerMeter.tscn" id="10_6s8gb"]
 
 [node name="Lanes" type="Node2D"]
 script = ExtResource("1_wxftb")
@@ -77,5 +78,13 @@ TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"
 [node name="BallSpawn" type="Marker2D" parent="."]
 position = Vector2(160, 165)
 
-[node name="Ball" parent="." instance=ExtResource("9_ga0rv")]
+[node name="Ball" parent="." node_paths=PackedStringArray("Meter") instance=ExtResource("9_ga0rv")]
 position = Vector2(160, 169)
+Meter = NodePath("../PowerMeter")
+
+[node name="PowerMeter" parent="." node_paths=PackedStringArray("Ball") instance=ExtResource("10_6s8gb")]
+offset_left = 160.0
+offset_top = 38.0
+offset_right = 160.0
+offset_bottom = 38.0
+Ball = NodePath("../Ball")

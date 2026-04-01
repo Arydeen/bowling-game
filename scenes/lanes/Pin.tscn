@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://chehndxvyxrh0"]
+[gd_scene load_steps=5 format=3 uid="uid://chehndxvyxrh0"]
 
 [ext_resource type="Script" uid="uid://dyt3qjgq50jem" path="res://scripts/bowling_alley/Pin.cs" id="1_ay5r2"]
 [ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="2_8bins"]
+[ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="3_1fp4a"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1fp4a"]
 radius = 3.0
@@ -22,3 +23,6 @@ texture = ExtResource("2_8bins")
 visible = false
 offset_right = 4.0
 offset_bottom = 27.0
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_1fp4a")

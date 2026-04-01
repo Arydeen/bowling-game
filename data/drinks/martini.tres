@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="DrinkData" load_steps=4 format=3 uid="uid://cxmbtqnt3gpc8"]
+
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="1_2rgue"]
+[ext_resource type="AudioStream" uid="uid://bxkx4aa1sbhne" path="res://music/OlivePlop.mp3" id="1_akpme"]
+[ext_resource type="Texture2D" uid="uid://bfww65ecmn47c" path="res://textures/drinks/Martini.png" id="3_sbq8u"]
+
+[resource]
+script = ExtResource("1_2rgue")
+id = "martini"
+display_name = "Martini"
+cost_tokens = 3
+sprite_sheet = ExtResource("3_sbq8u")
+sheet_cols = 5
+sheet_rows = 5
+frame_count = 25
+anim_fps = 20.0
+open_sfx = ExtResource("1_akpme")
+sip = true
+metadata/_custom_type_script = "uid://qvp8cumxjs05"

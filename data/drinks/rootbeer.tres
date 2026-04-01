@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DrinkData" load_steps=4 format=3 uid="uid://bx1c1jp87thyt"]
+
+[ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="1_2udof"]
+[ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/BeerBottleOpen.mp3" id="1_l274o"]
+[ext_resource type="Texture2D" uid="uid://dqwvah86rkaqv" path="res://textures/drinks/RootBeer.png" id="3_rwlq2"]
+
+[resource]
+script = ExtResource("1_2udof")
+id = "rootbeer"
+display_name = "Root Beer"
+sprite_sheet = ExtResource("3_rwlq2")
+sheet_cols = 4
+sheet_rows = 4
+frame_count = 16
+anim_fps = 14.0
+open_sfx = ExtResource("1_l274o")
+sip = true
+metadata/_custom_type_script = "uid://qvp8cumxjs05"

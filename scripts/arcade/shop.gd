@@ -12,6 +12,7 @@ extends Node2D
 @onready var soda_fountain: Area2D = $SodaFountain
 @onready var soda_menu: PopupMenu = $SodaFountainMenu
 @onready var pour_noise = $PourNoise
+@onready var bee_sound: AudioStreamPlayer2D = $BeeSound
 @onready var sip_drink: AudioStreamPlayer2D = $DrinkSip
 
 #FLICKERING SHOP 
@@ -22,6 +23,8 @@ const CAPSULE_RARE_TEX: Texture2D = preload("res://textures/capsules/CapsuleRare
 const CAPSULE_EPIC_TEX: Texture2D = preload("res://textures/capsules/CapsuleEpic.png")
 const CAPSULE_LEGENDARY_TEX: Texture2D = preload("res://textures/capsules/CapsuleLegendary.png")
 const MILK_SHEET = preload("res://textures/drinks/CupMilk.png")
+
+const HONEYBEER_ID := "honeybeer"
 
 @export var drinks: Array[DrinkData] = []
 
@@ -49,6 +52,8 @@ const BG_ON: Texture2D = preload("res://textures/backgrounds/ArcadeClosedBackgro
 const BG_OFF: Texture2D = preload("res://textures/backgrounds/ArcadeClosedOffBackground.png")
 
 @export var background_swap_time: float = .75
+
+var _pin_shutter_opening: bool = false
 
 var _background_timer: Timer
 var _background_is_on: bool = true
@@ -95,6 +100,8 @@ var _rock_mult: float = 1.0
 var _rock_target_angle: float = 0.0
 
 func _ready() -> void:
+	print("SHOP LOADED FROM:", get_tree().current_scene.scene_file_path)
+	Music.play_arcade()
 	randomize()
 	_setup_open_light()
 	capsule_machine.clicked.connect(_on_capsule_machine_clicked)
@@ -173,11 +180,14 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_pin_exchange_clicked() -> void:
 	# First click: open shutter ONLY
 	if not coin_exchange_machine.is_open:
-		if shutter_open_sfx != null:
-			if shutter_open_sfx.playing:
-				shutter_open_sfx.stop()
+		if _pin_shutter_opening:
+			return
+
+		_pin_shutter_opening = true
+
+		if shutter_open_sfx != null and not shutter_open_sfx.playing:
 			shutter_open_sfx.play()
-		
+
 		coin_exchange_machine.open_shutter()
 		return
 
@@ -600,6 +610,11 @@ func _start_milk_open() -> void:
 		_pour_sfx_start()
 
 	_play_drink_open_sfx(_active_drink)
+
+	if _active_drink.id == "honeybeer" and bee_sound != null:
+		if bee_sound.playing:
+			bee_sound.stop()
+		bee_sound.play()
 
 	_milk_sprite.animation_finished.connect(_on_drink_open_finished, Object.CONNECT_ONE_SHOT)
 

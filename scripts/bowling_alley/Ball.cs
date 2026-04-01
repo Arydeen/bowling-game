@@ -23,6 +23,14 @@ public partial class Ball : CharacterBody2D
 		_currState = BallState.Aiming;
 	}
 
+	public void Initialize(Vector2 startPos)
+	{
+		GlobalPosition = startPos;
+		_startX = startPos.X;
+		_currentOffset = 0f;
+		_currState = BallState.Aiming;
+	}
+
 	private void HandleAiming(double delta)
 {
 	if (_currentOffset >= _laneWidthLimit) _aimingLeft = true;

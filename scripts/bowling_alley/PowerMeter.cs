@@ -169,11 +169,6 @@ public partial class PowerMeter : Control
 		// Only process slider logic if meter is active
 		MoveSlider();
 
-		if (Input.IsActionJustPressed("power_meter_debug"))
-		{
-			ShowMeter();
-		}
-
 		if (_meterActive && _canStop && Input.IsActionJustPressed("power_meter_stop"))
 		{
 			PowerVal = StopSlider();

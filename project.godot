@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Bowling Game"
-run/main_scene="res://scenes/Lanes.tscn"
+run/main_scene="res://scenes/lanes/Lanes.tscn"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 CurrencyManager="*res://scripts/currency_manager.gd"
 Music="*res://scripts/music.gd"
+GlobalData="*res://scripts/GlobalData.cs"
 
 [display]
 

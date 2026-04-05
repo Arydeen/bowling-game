@@ -1,4 +1,4 @@
-[gd_scene load_steps=66 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=73 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -24,6 +24,13 @@
 [ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/BeerBottleOpen.mp3" id="16_763b7"]
 [ext_resource type="AudioStream" uid="uid://nclnko47hcke" path="res://music/DrinkSip.mp3" id="18_tuxin"]
 [ext_resource type="AudioStream" uid="uid://d100skbbcwkm8" path="res://music/BeeSound.mp3" id="24_6nbx6"]
+[ext_resource type="Script" uid="uid://cprtpf0au1j7u" path="res://scripts/arcade/capsule_prize.gd" id="25_mt8ix"]
+[ext_resource type="Texture2D" uid="uid://crw6hhsklkqmn" path="res://textures/prizes/common/OneBumper.png" id="26_mt8ix"]
+[ext_resource type="Texture2D" uid="uid://dl4n422xyxnmm" path="res://textures/prizes/rare/ThreeBumper.png" id="27_a6g3j"]
+[ext_resource type="Texture2D" uid="uid://cdbxctukvuori" path="res://textures/prizes/epic/Split.png" id="28_posyw"]
+[ext_resource type="Texture2D" uid="uid://choso2p4wd0dr" path="res://textures/prizes/epic/AfterImage.png" id="29_xogfe"]
+[ext_resource type="Texture2D" uid="uid://b4du7na7fgauu" path="res://textures/prizes/legendary/SouvenirCup.png" id="30_11hi1"]
+[ext_resource type="Texture2D" uid="uid://80hjy77ctc8r" path="res://textures/prizes/legendary/GoldenRotation.png" id="31_k40kd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -392,3 +399,11 @@ volume_db = 20.0
 [node name="BeeSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("24_6nbx6")
 volume_db = 20.0
+
+[node name="CapsulePrize" type="Node2D" parent="."]
+script = ExtResource("25_mt8ix")
+common_items = Array[Texture2D]([ExtResource("26_mt8ix")])
+rare_items = Array[Texture2D]([ExtResource("27_a6g3j")])
+epic_items = Array[Texture2D]([ExtResource("28_posyw"), ExtResource("29_xogfe")])
+legendary_items = Array[Texture2D]([ExtResource("30_11hi1"), ExtResource("31_k40kd")])
+pop_offset = Vector2(0, 0)

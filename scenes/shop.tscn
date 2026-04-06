@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=80 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -27,10 +27,17 @@
 [ext_resource type="Script" uid="uid://cprtpf0au1j7u" path="res://scripts/arcade/capsule_prize.gd" id="25_mt8ix"]
 [ext_resource type="Texture2D" uid="uid://crw6hhsklkqmn" path="res://textures/prizes/common/OneBumper.png" id="26_mt8ix"]
 [ext_resource type="Texture2D" uid="uid://dl4n422xyxnmm" path="res://textures/prizes/rare/ThreeBumper.png" id="27_a6g3j"]
+[ext_resource type="Texture2D" uid="uid://dcnaraspfaibl" path="res://textures/prizes/common/OneNail.png" id="27_posyw"]
 [ext_resource type="Texture2D" uid="uid://cdbxctukvuori" path="res://textures/prizes/epic/Split.png" id="28_posyw"]
+[ext_resource type="Texture2D" uid="uid://3rb4jtkyqcll" path="res://textures/prizes/common/CreamShammy.png" id="28_xogfe"]
+[ext_resource type="Texture2D" uid="uid://dxf552cg77mcp" path="res://textures/prizes/common/WeightedBall.png" id="29_11hi1"]
 [ext_resource type="Texture2D" uid="uid://choso2p4wd0dr" path="res://textures/prizes/epic/AfterImage.png" id="29_xogfe"]
 [ext_resource type="Texture2D" uid="uid://b4du7na7fgauu" path="res://textures/prizes/legendary/SouvenirCup.png" id="30_11hi1"]
+[ext_resource type="Texture2D" uid="uid://bmastjng2ctec" path="res://textures/prizes/rare/LeadBall.png" id="31_11hi1"]
 [ext_resource type="Texture2D" uid="uid://80hjy77ctc8r" path="res://textures/prizes/legendary/GoldenRotation.png" id="31_k40kd"]
+[ext_resource type="Texture2D" uid="uid://dhag0huw16s1x" path="res://textures/prizes/rare/RedBall.png" id="32_k40kd"]
+[ext_resource type="Texture2D" uid="uid://d00mu1g0isy8s" path="res://textures/prizes/rare/RubberBall.png" id="33_ovj2c"]
+[ext_resource type="Texture2D" uid="uid://bd5ytras1brs2" path="res://textures/prizes/epic/PinSlayer.png" id="36_dfcnn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -402,8 +409,8 @@ volume_db = 20.0
 
 [node name="CapsulePrize" type="Node2D" parent="."]
 script = ExtResource("25_mt8ix")
-common_items = Array[Texture2D]([ExtResource("26_mt8ix")])
-rare_items = Array[Texture2D]([ExtResource("27_a6g3j")])
-epic_items = Array[Texture2D]([ExtResource("28_posyw"), ExtResource("29_xogfe")])
+common_items = Array[Texture2D]([ExtResource("26_mt8ix"), ExtResource("27_posyw"), ExtResource("28_xogfe"), ExtResource("29_11hi1")])
+rare_items = Array[Texture2D]([ExtResource("27_a6g3j"), ExtResource("31_11hi1"), ExtResource("32_k40kd"), ExtResource("33_ovj2c")])
+epic_items = Array[Texture2D]([ExtResource("28_posyw"), ExtResource("29_xogfe"), ExtResource("36_dfcnn")])
 legendary_items = Array[Texture2D]([ExtResource("30_11hi1"), ExtResource("31_k40kd")])
 pop_offset = Vector2(0, 0)

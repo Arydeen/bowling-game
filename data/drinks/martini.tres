@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="DrinkData" load_steps=4 format=3 uid="uid://cxmbtqnt3gpc8"]
 
 [ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="1_2rgue"]
-[ext_resource type="AudioStream" uid="uid://bxkx4aa1sbhne" path="res://music/OlivePlop.mp3" id="1_akpme"]
+[ext_resource type="AudioStream" uid="uid://bxkx4aa1sbhne" path="res://music/sfx/arcade/OlivePlop.mp3" id="1_akpme"]
 [ext_resource type="Texture2D" uid="uid://bfww65ecmn47c" path="res://textures/drinks/Martini.png" id="3_sbq8u"]
 
 [resource]

@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://b57bej5wew8qw"]
 
 [ext_resource type="Script" uid="uid://cga1ih4206hba" path="res://currency_ui.gd" id="1_pd7pt"]
-[ext_resource type="AudioStream" uid="uid://db0pcw8jesrb7" path="res://music/shopkeepertalk.mp3" id="2_1qljl"]
+[ext_resource type="AudioStream" uid="uid://db0pcw8jesrb7" path="res://music/sfx/arcade/shopkeepertalk.mp3" id="2_1qljl"]
 [ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="2_dklbp"]
-[ext_resource type="AudioStream" uid="uid://bfaxibptmml6" path="res://music/CoinAdded.mp3" id="3_b43qj"]
-[ext_resource type="AudioStream" uid="uid://d4h5xgc0ap3wy" path="res://music/CoinInsert.mp3" id="4_42l6i"]
+[ext_resource type="AudioStream" uid="uid://bfaxibptmml6" path="res://music/sfx/arcade/CoinAdded.mp3" id="3_b43qj"]
+[ext_resource type="AudioStream" uid="uid://d4h5xgc0ap3wy" path="res://music/sfx/arcade/CoinInsert.mp3" id="4_42l6i"]
 
 [node name="CurrencyUI" type="CanvasLayer"]
 script = ExtResource("1_pd7pt")

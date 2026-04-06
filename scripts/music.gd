@@ -2,6 +2,8 @@ extends Node
 
 @onready var player: AudioStreamPlayer = AudioStreamPlayer.new()
 
+var playing = false;
+
 var bowling_stream: AudioStream = preload("res://music/bowling track.mp3")
 var arcade_stream: AudioStream = preload("res://music/ArcadeMusic.mp3")
 

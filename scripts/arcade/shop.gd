@@ -166,6 +166,11 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+
+	if Input.is_action_just_pressed("go_shop"):
+		
+		get_tree().change_scene_to_file("res://scenes/lanes/Lanes.tscn")
+
 	if (_milk_waiting_for_space or _milk_waiting_to_close) and event.is_action_pressed("capsule_open"):
 		get_viewport().set_input_as_handled()
 		return

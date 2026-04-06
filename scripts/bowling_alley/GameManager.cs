@@ -17,8 +17,23 @@ public partial class GameManager : Node2D
 		SpawnNewBall();
 	}
 
+	private void ResetPinsForRound()
+	{
+		var allPins = GetTree().GetNodesInGroup("Pins");
+
+		foreach (Node node in allPins)
+		{
+			if (node is Pin pin)
+			{
+				pin.SetHitThisRound(false);
+			}
+		}
+	}
+
 	public void SpawnNewBall()
 	{
+		ResetPinsForRound();
+
 		_currentBall = BallScene.Instantiate<Ball>();
 		_currentBall.Initialize(BallSpawnPos);
 		AddChild(_currentBall);

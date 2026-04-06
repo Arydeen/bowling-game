@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://60llxltl8avx"]
+[gd_scene load_steps=14 format=3 uid="uid://60llxltl8avx"]
 
 [ext_resource type="Script" uid="uid://3pr0hixl02yn" path="res://scripts/bowling_alley/bowling.gd" id="1_wxftb"]
 [ext_resource type="Texture2D" uid="uid://bou6tlb3yq6bd" path="res://textures/backgrounds/background.png" id="2_5yoeu"]
@@ -11,6 +11,14 @@
 [ext_resource type="Texture2D" uid="uid://dhya4cmdkr2n8" path="res://textures/pins/pin_r4.png" id="9_vkf1l"]
 [ext_resource type="PackedScene" uid="uid://djrdboc37pwdo" path="res://scenes/lanes/PowerMeter.tscn" id="10_6s8gb"]
 [ext_resource type="Script" uid="uid://bdi7lcre7ymud" path="res://scripts/bowling_alley/GameManager.cs" id="11_nbmko"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_nbmko"]
+a = Vector2(12, -12)
+b = Vector2(-64, 75)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_hnf61"]
+a = Vector2(193, 80)
+b = Vector2(269, 167)
 
 [node name="Lanes" type="Node2D"]
 script = ExtResource("1_wxftb")
@@ -79,14 +87,25 @@ TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"
 [node name="BallSpawn" type="Marker2D" parent="."]
 position = Vector2(160, 165)
 
-[node name="PowerMeter" parent="." node_paths=PackedStringArray("Ball") instance=ExtResource("10_6s8gb")]
+[node name="PowerMeter" parent="." instance=ExtResource("10_6s8gb")]
 offset_left = 160.0
 offset_top = 38.0
 offset_right = 160.0
 offset_bottom = 38.0
-Ball = NodePath("")
 
 [node name="GameManager" type="Node2D" parent="." node_paths=PackedStringArray("Meter")]
 script = ExtResource("11_nbmko")
 BallScene = ExtResource("9_ga0rv")
 Meter = NodePath("../PowerMeter")
+
+[node name="GutterLeft" type="Area2D" parent="." groups=["Gutters"]]
+
+[node name="GutterLeftColShape" type="CollisionShape2D" parent="GutterLeft"]
+position = Vector2(112, 91)
+shape = SubResource("SegmentShape2D_nbmko")
+
+[node name="GutterRight" type="Area2D" parent="." groups=["Gutters"]]
+
+[node name="GutterRightColShape" type="CollisionShape2D" parent="GutterRight"]
+position = Vector2(3, -1)
+shape = SubResource("SegmentShape2D_hnf61")

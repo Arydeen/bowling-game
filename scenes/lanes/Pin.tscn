@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://chehndxvyxrh0"]
+[gd_scene load_steps=7 format=3 uid="uid://chehndxvyxrh0"]
 
 [ext_resource type="Script" uid="uid://dyt3qjgq50jem" path="res://scripts/bowling_alley/Pin.cs" id="1_ay5r2"]
 [ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="2_8bins"]
 [ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="3_1fp4a"]
+[ext_resource type="AudioStream" uid="uid://b7ojknjpbxjcn" path="res://music/sfx/lanes/pin_knock_2.mp3" id="3_lfief"]
+[ext_resource type="AudioStream" uid="uid://31xr7lokboxs" path="res://music/sfx/lanes/pin_knock_3.mp3" id="4_6hsqa"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1fp4a"]
 radius = 3.0
@@ -10,6 +12,8 @@ height = 6.0
 
 [node name="Pin" type="Area2D" groups=["Pins"]]
 script = ExtResource("1_ay5r2")
+TextureLibrary = Array[Texture2D]([])
+DeathSounds = Array[AudioStream]([ExtResource("3_1fp4a"), ExtResource("3_lfief"), ExtResource("4_6hsqa")])
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3)

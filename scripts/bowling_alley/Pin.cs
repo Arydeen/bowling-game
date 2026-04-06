@@ -11,6 +11,7 @@ public partial class Pin : Area2D
 
 	[Export] public PinType Type;
 	[Export] public Array<Texture2D> TextureLibrary;
+	[Export] public Array<AudioStream> DeathSounds;
 
 	[Export] public int MaxHealth = 100;
 
@@ -51,8 +52,19 @@ public partial class Pin : Area2D
 
 	}
 
+	private void DamageAnimation()
+	{
+		Sprite2D sprite = GetNode<Sprite2D>("Pin_Image");
+		Tween tween = CreateTween();
+		// Flash to red quickly
+		tween.TweenProperty(sprite, "modulate", new Color(1, 0.2f, 0.2f, 1), 0.1f);
+		// Return to normal after 0.4s (for a total of 0.5s)
+		tween.TweenProperty(sprite, "modulate", new Color(1, 1, 1, 1), 0.4f).SetDelay(0.1f);
+	}
+
 	public void TakeDamage(int amount)
 	{
+		DamageAnimation();
 		_currentHealth -= amount;
 		_healthBar.Value = _currentHealth;
 
@@ -66,6 +78,13 @@ public partial class Pin : Area2D
 	public void Die()
 	{
 		Visible = false;
+
+		if (DeathSounds != null && DeathSounds.Count > 0)
+        {
+            int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+            _audio.Stream = DeathSounds[randomIndex];
+        }
+
 		_audio.Play();
 		_audio.Finished += () => QueueFree();
 	}

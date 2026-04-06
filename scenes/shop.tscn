@@ -18,12 +18,26 @@
 [ext_resource type="AudioStream" uid="uid://bj1psumx3ylk2" path="res://music/sfx/arcade/ShutterOpen.mp3" id="8_myf4l"]
 [ext_resource type="AudioStream" uid="uid://be5vs5hcx51wx" path="res://music/sfx/arcade/CapsuleShake.mp3" id="9_p5a0g"]
 [ext_resource type="Resource" uid="uid://bi8hvfgagjyx6" path="res://data/drinks/coconut.tres" id="9_ru2r1"]
-[ext_resource type="Script" uid="uid://d0dq1yl0pufuq" path="res://scripts/arcade/soda_fountain.gd" id="10_xqmyw"]
+[ext_resource type="Script" path="res://scripts/arcade/soda_fountain.gd" id="10_xqmyw"]
 [ext_resource type="AudioStream" uid="uid://qu1c5ed41y06" path="res://music/sfx/arcade/pourNoise.mp3" id="13_e23gp"]
 [ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="14_763b7"]
 [ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/sfx/arcade/BeerBottleOpen.mp3" id="16_763b7"]
 [ext_resource type="AudioStream" uid="uid://nclnko47hcke" path="res://music/sfx/arcade/DrinkSip.mp3" id="18_tuxin"]
 [ext_resource type="AudioStream" uid="uid://d100skbbcwkm8" path="res://music/sfx/arcade/BeeSound.mp3" id="24_6nbx6"]
+[ext_resource type="Script" uid="uid://cprtpf0au1j7u" path="res://scripts/arcade/capsule_prize.gd" id="25_dfcnn"]
+[ext_resource type="Texture2D" uid="uid://3rb4jtkyqcll" path="res://textures/prizes/common/CreamShammy.png" id="26_3mj5r"]
+[ext_resource type="Texture2D" uid="uid://dxf552cg77mcp" path="res://textures/prizes/common/WeightedBall.png" id="27_l0cfq"]
+[ext_resource type="Texture2D" uid="uid://dcnaraspfaibl" path="res://textures/prizes/common/OneNail.png" id="28_3t6hu"]
+[ext_resource type="Texture2D" uid="uid://crw6hhsklkqmn" path="res://textures/prizes/common/OneBumper.png" id="29_jphf3"]
+[ext_resource type="Texture2D" uid="uid://dl4n422xyxnmm" path="res://textures/prizes/rare/ThreeBumper.png" id="30_lrmib"]
+[ext_resource type="Texture2D" uid="uid://bmastjng2ctec" path="res://textures/prizes/rare/LeadBall.png" id="31_ihq6a"]
+[ext_resource type="Texture2D" uid="uid://dhag0huw16s1x" path="res://textures/prizes/rare/RedBall.png" id="32_iwtn5"]
+[ext_resource type="Texture2D" uid="uid://d00mu1g0isy8s" path="res://textures/prizes/rare/RubberBall.png" id="33_8snl6"]
+[ext_resource type="Texture2D" uid="uid://cdbxctukvuori" path="res://textures/prizes/epic/Split.png" id="34_xcmh1"]
+[ext_resource type="Texture2D" uid="uid://choso2p4wd0dr" path="res://textures/prizes/epic/AfterImage.png" id="35_utc20"]
+[ext_resource type="Texture2D" uid="uid://bd5ytras1brs2" path="res://textures/prizes/epic/PinSlayer.png" id="36_l5j5x"]
+[ext_resource type="Texture2D" uid="uid://b4du7na7fgauu" path="res://textures/prizes/legendary/SouvenirCup.png" id="37_hrjy7"]
+[ext_resource type="Texture2D" uid="uid://80hjy77ctc8r" path="res://textures/prizes/legendary/GoldenRotation.png" id="38_8ssnr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -394,9 +408,9 @@ stream = ExtResource("24_6nbx6")
 volume_db = 20.0
 
 [node name="CapsulePrize" type="Node2D" parent="."]
-script = ExtResource("25_mt8ix")
-common_items = Array[Texture2D]([ExtResource("26_mt8ix"), ExtResource("27_posyw"), ExtResource("28_xogfe"), ExtResource("29_11hi1")])
-rare_items = Array[Texture2D]([ExtResource("27_a6g3j"), ExtResource("31_11hi1"), ExtResource("32_k40kd"), ExtResource("33_ovj2c")])
-epic_items = Array[Texture2D]([ExtResource("28_posyw"), ExtResource("29_xogfe"), ExtResource("36_dfcnn")])
-legendary_items = Array[Texture2D]([ExtResource("30_11hi1"), ExtResource("31_k40kd")])
+script = ExtResource("25_dfcnn")
+common_items = Array[Texture2D]([ExtResource("26_3mj5r"), ExtResource("27_l0cfq"), ExtResource("28_3t6hu"), ExtResource("29_jphf3")])
+rare_items = Array[Texture2D]([ExtResource("30_lrmib"), ExtResource("31_ihq6a"), ExtResource("32_iwtn5"), ExtResource("33_8snl6")])
+epic_items = Array[Texture2D]([ExtResource("34_xcmh1"), ExtResource("35_utc20"), ExtResource("36_l5j5x")])
+legendary_items = Array[Texture2D]([ExtResource("37_hrjy7"), ExtResource("38_8ssnr")])
 pop_offset = Vector2(0, 0)

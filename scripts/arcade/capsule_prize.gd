@@ -1,5 +1,4 @@
 extends Node2D
-class_name CapsulePrize
 
 signal prize_spawned(item_id: String, rarity: int)
 

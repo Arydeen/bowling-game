@@ -7,7 +7,7 @@ extends Node2D
 @onready var capsule_open_sfx: AudioStreamPlayer2D = $CapsuleOpen
 @onready var shutter_open_sfx: AudioStreamPlayer2D = $ShutterOpen
 @onready var capsule_shake_sfx: AudioStreamPlayer2D = $CapsuleShake
-@onready var capsule_prize: CapsulePrize = $CapsulePrize
+@onready var capsule_prize := get_node_or_null("CapsulePrize")
 
 @onready var drink_one_shot_sfx: AudioStreamPlayer2D = $BeerBottleOpen
 

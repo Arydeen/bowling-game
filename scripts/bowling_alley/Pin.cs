@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.ComponentModel.Design;
 
 public partial class Pin : Area2D
 {
@@ -13,9 +14,10 @@ public partial class Pin : Area2D
 
 	[Export] public int MaxHealth = 100;
 
+	[Export] public bool Alive = true;
+
 	private int _currentHealth;
 	private bool _hitThisRound = false;
-
 	private ProgressBar _healthBar;
 	private AudioStreamPlayer2D _audio;
 	private AudioStreamPlayer2D _shakeAudio;
@@ -178,7 +180,7 @@ public partial class Pin : Area2D
 
 	public void Die()
 	{
-		
+		Alive = false;
 
 		if (DeathSounds != null && DeathSounds.Count > 0)
 		{

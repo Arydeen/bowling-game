@@ -121,7 +121,7 @@ public partial class Ball : CharacterBody2D
 					pin.SetHitThisRound(true);
 					BallDamage = BallDamage / 2;
 
-					if (pin.Visible)
+					if (pin.Alive)
 					{
 						StartBounce();
 						break;

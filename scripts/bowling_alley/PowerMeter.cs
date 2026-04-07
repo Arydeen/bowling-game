@@ -72,14 +72,14 @@ public partial class PowerMeter : Control
 		
 		// float screenHeight = GetViewportRect().Size.Y;
 		// Vector2 hidePos = new Vector2(_targetPos.X, screenHeight + 100);
-		Vector2 hidePos = new Vector2(_targetPos.X, -200);
+		float screenHeight = GetViewportRect().Size.Y;
+		Vector2 hidePos = new Vector2(_targetPos.X, screenHeight + 100);
 
 		Tween tween = GetTree().CreateTween();
 		
-		tween.TweenInterval(0.5f); 
+		tween.TweenInterval(0.25f); 
 
 		tween.TweenProperty(this, "position", hidePos, 0.4f) 
-			.SetTrans(Tween.TransitionType.Back)
 			.SetEase(Tween.EaseType.In); 
 
 		tween.Finished += () => 

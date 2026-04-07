@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://chehndxvyxrh0"]
+[gd_scene load_steps=47 format=3 uid="uid://chehndxvyxrh0"]
 
 [ext_resource type="Script" uid="uid://dyt3qjgq50jem" path="res://scripts/bowling_alley/Pin.cs" id="1_ay5r2"]
 [ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="2_8bins"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dqrtrjmobggfd" path="res://textures/pins/pin_r3_anim.png" id="4_fgk4g"]
 [ext_resource type="Texture2D" uid="uid://cibyr02sj2i2l" path="res://textures/pins/pin_r4_anim.png" id="5_nv7ek"]
 [ext_resource type="Texture2D" uid="uid://blkxkxw1kqqp" path="res://textures/pins/pin_r1_anim.png" id="6_6hsqa"]
+[ext_resource type="AudioStream" uid="uid://h3pupt4sgpl7" path="res://music/sfx/lanes/shake.mp3" id="10_fgk4g"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_5cdrb"]
 atlas = ExtResource("6_6hsqa")
@@ -216,7 +217,7 @@ height = 6.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8tind"]
 radius = 4.0
-height = 16.0
+height = 18.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6idmh"]
 atlas = ExtResource("6_6hsqa")
@@ -283,6 +284,7 @@ offset_bottom = 27.0
 
 [node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_1fp4a")
+volume_db = -20.582
 
 [node name="Shakebox" type="Area2D" parent="."]
 visible = false
@@ -301,3 +303,6 @@ position = Vector2(0, -10)
 sprite_frames = SubResource("SpriteFrames_5cdrb")
 animation = &"pin_r1"
 speed_scale = 2.0
+
+[node name="ShakeSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("10_fgk4g")

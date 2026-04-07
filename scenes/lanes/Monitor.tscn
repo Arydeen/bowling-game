@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dirdho85p16wr"]
+
+[ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/monitor.png" id="1_7x07b"]
+
+[node name="Monitor" type="Node2D"]
+
+[node name="MonitorSprite" type="Sprite2D" parent="."]
+position = Vector2(0, -44)
+texture = ExtResource("1_7x07b")

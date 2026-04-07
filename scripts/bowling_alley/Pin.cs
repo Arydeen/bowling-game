@@ -18,6 +18,7 @@ public partial class Pin : Area2D
 
 	private ProgressBar _healthBar;
 	private AudioStreamPlayer2D _audio;
+	private AudioStreamPlayer2D _shakeAudio;
 	private AnimatedSprite2D _sprite;
 	private Node2D _spritePivot;
 
@@ -36,6 +37,7 @@ public partial class Pin : Area2D
 		_spritePivot = GetNode<Node2D>("SpritePivot");
 		// Audio Handling
 		_audio = GetNode<AudioStreamPlayer2D>("DeathSound");
+		_shakeAudio = GetNode<AudioStreamPlayer2D>("ShakeSound");
 
 		int index = (int)Type;
 
@@ -51,7 +53,7 @@ public partial class Pin : Area2D
 		_healthBar.Value = _currentHealth;
 
 	}
-
+ 
 	public void DamageAnimation()
 	{
 		Tween tween = CreateTween();
@@ -89,6 +91,10 @@ public partial class Pin : Area2D
 		float intensity = 0.4f; // Starting tilt
 		float duration = 0.1f;
 
+		tween.TweenProperty(_spritePivot, "rotation", 0f, 0.15f);
+		_shakeAudio.PitchScale = 1.25f;
+		_shakeAudio.Play();
+
 		for (int i = 0; i < 6; i++)
 		{
 			// Alternate directions: positive, negative, positive, negative
@@ -113,7 +119,9 @@ public partial class Pin : Area2D
 		float wobbleAngle = 0.2f; 
 		float duration = 0.15f;
 
-		
+		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
+		_shakeAudio.PitchScale = 1f;
+		_shakeAudio.Play();
 		tween.TweenProperty(_spritePivot, "rotation", wobbleAngle, duration);
 		tween.TweenProperty(_spritePivot, "rotation", -wobbleAngle, duration);
 		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
@@ -157,7 +165,7 @@ public partial class Pin : Area2D
 	{
 		if (sweet) {pin.PlayHeavyWobble();} else {pin.PlayWobble();}
 
-		int shakeDamage = amount;
+		int shakeDamage = amount / 2;
 
 		pin.SetHealth(pin.GetHealth() - shakeDamage);
 		pin.SetHealthBar(pin.GetHealth());

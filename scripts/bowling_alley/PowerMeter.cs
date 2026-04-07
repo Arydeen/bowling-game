@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Runtime.CompilerServices;
 
 public partial class PowerMeter : Control
 {
@@ -73,14 +72,14 @@ public partial class PowerMeter : Control
 		
 		// float screenHeight = GetViewportRect().Size.Y;
 		// Vector2 hidePos = new Vector2(_targetPos.X, screenHeight + 100);
-		Vector2 hidePos = new Vector2(_targetPos.X, -200);
+		float screenHeight = GetViewportRect().Size.Y;
+		Vector2 hidePos = new Vector2(_targetPos.X, screenHeight + 100);
 
 		Tween tween = GetTree().CreateTween();
 		
-		tween.TweenInterval(0.5f); 
+		tween.TweenInterval(0.25f); 
 
 		tween.TweenProperty(this, "position", hidePos, 0.4f) 
-			.SetTrans(Tween.TransitionType.Back)
 			.SetEase(Tween.EaseType.In); 
 
 		tween.Finished += () => 
@@ -103,8 +102,9 @@ public partial class PowerMeter : Control
 		HideMeter();
 
 		float finalSpeed = GetSpeedFromZone();
+		bool sweet = IsSweet(); 
 
-		Ball.FinalizePower(finalSpeed, _sliderPos.X);
+		Ball.FinalizePower(finalSpeed, _sliderPos.X, sweet);
 
 		return _sliderPos.X;
 	}
@@ -151,6 +151,15 @@ public partial class PowerMeter : Control
 		if (IsSliderInRect(_blueZone, sliderX)) return BlueZoneSpeed;
 		
 		return GreenZoneSpeed; // Default/Miss
+	}
+
+	public bool IsSweet()
+	{
+		float sliderX = _slider.Position.X;
+
+		if (IsSliderInRect(_redZone, sliderX)) return true;
+		
+		return false; // Default/Miss
 	}
 
 	private bool IsSliderInRect(ColorRect rect, float sliderX)

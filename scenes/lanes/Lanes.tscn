@@ -4,13 +4,19 @@
 [ext_resource type="Texture2D" uid="uid://bou6tlb3yq6bd" path="res://textures/backgrounds/background.png" id="2_5yoeu"]
 [ext_resource type="AudioStream" uid="uid://bcro23neh7q1h" path="res://music/bowling track.mp3" id="3_ua68m"]
 [ext_resource type="PackedScene" uid="uid://chehndxvyxrh0" path="res://scenes/lanes/Pin.tscn" id="4_e3bhr"]
-[ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="6_6s8gb"]
-[ext_resource type="Texture2D" uid="uid://032eei35svsn" path="res://textures/pins/pin_r2.png" id="7_5m2kd"]
-[ext_resource type="Texture2D" uid="uid://doernkc7wch34" path="res://textures/pins/pin_r3.png" id="8_cv3je"]
+[ext_resource type="AudioStream" uid="uid://cqp12l7c5bbng" path="res://music/sfx/lanes/lanes_ambience.mp3" id="8_1mb4a"]
 [ext_resource type="PackedScene" uid="uid://m62c2r5hupin" path="res://scenes/lanes/Ball.tscn" id="9_ga0rv"]
-[ext_resource type="Texture2D" uid="uid://dhya4cmdkr2n8" path="res://textures/pins/pin_r4.png" id="9_vkf1l"]
+[ext_resource type="PackedScene" uid="uid://dirdho85p16wr" path="res://scenes/lanes/Monitor.tscn" id="9_mkrau"]
 [ext_resource type="PackedScene" uid="uid://djrdboc37pwdo" path="res://scenes/lanes/PowerMeter.tscn" id="10_6s8gb"]
 [ext_resource type="Script" uid="uid://bdi7lcre7ymud" path="res://scripts/bowling_alley/GameManager.cs" id="11_nbmko"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_nbmko"]
+a = Vector2(12, -12)
+b = Vector2(-64, 75)
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_hnf61"]
+a = Vector2(193, 80)
+b = Vector2(269, 167)
 
 [node name="Lanes" type="Node2D"]
 script = ExtResource("1_wxftb")
@@ -29,64 +35,69 @@ y_sort_enabled = true
 
 [node name="Pin1" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(160, 99)
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin2" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(166, 95)
 Type = 1
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin3" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(154, 95)
 Type = 1
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin4" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(170, 90)
 Type = 2
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin5" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(160, 90)
 Type = 2
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin6" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(150, 90)
 Type = 2
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin7" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(176, 86)
 Type = 3
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin8" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(165, 86)
 Type = 3
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin9" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(155, 86)
 Type = 3
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
 
 [node name="Pin10" parent="PinContainer" instance=ExtResource("4_e3bhr")]
 position = Vector2(144, 86)
 Type = 3
-TextureLibrary = Array[Texture2D]([ExtResource("6_6s8gb"), ExtResource("7_5m2kd"), ExtResource("8_cv3je"), ExtResource("9_vkf1l")])
-
-[node name="BallSpawn" type="Marker2D" parent="."]
-position = Vector2(160, 165)
-
-[node name="PowerMeter" parent="." node_paths=PackedStringArray("Ball") instance=ExtResource("10_6s8gb")]
-offset_left = 160.0
-offset_top = 38.0
-offset_right = 160.0
-offset_bottom = 38.0
-Ball = NodePath("")
 
 [node name="GameManager" type="Node2D" parent="." node_paths=PackedStringArray("Meter")]
 script = ExtResource("11_nbmko")
 BallScene = ExtResource("9_ga0rv")
 Meter = NodePath("../PowerMeter")
+
+[node name="GutterLeft" type="Area2D" parent="." groups=["Gutters"]]
+
+[node name="GutterLeftColShape" type="CollisionShape2D" parent="GutterLeft"]
+position = Vector2(112, 91)
+shape = SubResource("SegmentShape2D_nbmko")
+
+[node name="GutterRight" type="Area2D" parent="." groups=["Gutters"]]
+
+[node name="GutterRightColShape" type="CollisionShape2D" parent="GutterRight"]
+position = Vector2(3, -1)
+shape = SubResource("SegmentShape2D_hnf61")
+
+[node name="AmbiencePlayer" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_1mb4a")
+volume_db = -15.053
+
+[node name="Monitor" parent="." instance=ExtResource("9_mkrau")]
+position = Vector2(66, 0)
+
+[node name="PowerMeter" parent="." instance=ExtResource("10_6s8gb")]
+offset_left = 160.0
+offset_top = 124.0
+offset_right = 160.0
+offset_bottom = 124.0

@@ -1,10 +1,12 @@
-[gd_scene load_steps=43 format=3 uid="uid://m62c2r5hupin"]
+[gd_scene load_steps=45 format=3 uid="uid://m62c2r5hupin"]
 
 [ext_resource type="Texture2D" uid="uid://c86dikn5wlbe4" path="res://textures/balls/ball.png" id="1_d73vv"]
 [ext_resource type="Script" uid="uid://cqwodruikjqse" path="res://scripts/bowling_alley/Ball.cs" id="1_ja1hk"]
+[ext_resource type="AudioStream" uid="uid://2q4q78csjv0g" path="res://music/sfx/lanes/ball_rolling.mp3" id="3_1vdib"]
+[ext_resource type="AudioStream" uid="uid://fh50r8w76okb" path="res://music/sfx/lanes/ball_thud.mp3" id="4_r2obg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ja1hk"]
-radius = 9.0
+radius = 6.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ul5l2"]
 atlas = ExtResource("1_d73vv")
@@ -291,11 +293,11 @@ script = ExtResource("1_ja1hk")
 [node name="Hitbox" type="Area2D" parent="."]
 
 [node name="HitboxColShape" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(0, -9)
+position = Vector2(0, -6)
 shape = SubResource("CircleShape2D_ja1hk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -9)
+position = Vector2(0, -6)
 shape = SubResource("CircleShape2D_ja1hk")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -304,3 +306,9 @@ sprite_frames = SubResource("SpriteFrames_8cjil")
 animation = &"def_ball"
 autoplay = "def_ball"
 frame_progress = 0.77299
+
+[node name="RollSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_1vdib")
+
+[node name="ThudSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_r2obg")

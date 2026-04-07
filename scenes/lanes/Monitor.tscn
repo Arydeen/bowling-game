@@ -160,14 +160,14 @@ script = ExtResource("1_220yk")
 position = Vector2(0, -44)
 texture = ExtResource("1_7x07b")
 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -28)
+sprite_frames = SubResource("SpriteFrames_2hdn5")
+autoplay = "default"
+
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
 offset_left = -48.0
 offset_top = -50.0
 offset_right = 48.0
 offset_bottom = -6.0
 stream = ExtResource("3_rq0fy")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -28)
-sprite_frames = SubResource("SpriteFrames_2hdn5")
-autoplay = "default"

@@ -4,7 +4,7 @@ using System;
 public partial class PowerMeter : Control
 {
 	[Export] public float SweetSpotSize = 0.05f;
-	[Export] public float SliderSpeed = 3.0f; // Increased for noticeable movement per frame
+	[Export] public float SliderSpeed = 500f; // Increased for noticeable movement per frame
 	[Export] public float PowerVal = 0f;
 	[Export] public Ball Ball;
 
@@ -109,7 +109,7 @@ public partial class PowerMeter : Control
 		return _sliderPos.X;
 	}
 
-	public void MoveSlider()
+	public void MoveSlider(double delta)
 	{
 		// Only move the slider if the meter is actually being played
 		if (!_meterActive || _sliderStop) return;
@@ -119,7 +119,7 @@ public partial class PowerMeter : Control
 		else if (_sliderPos.X <= -125) _movingLeft = false;
 
 		float direction = _movingLeft ? -1 : 1;
-		_sliderPos.X += direction * SliderSpeed;
+		_sliderPos.X += direction * SliderSpeed * (float)delta;
 		
 		_slider.Position = _sliderPos;
 	}
@@ -176,7 +176,7 @@ public partial class PowerMeter : Control
 	public override void _Process(double delta)
 	{
 		// Only process slider logic if meter is active
-		MoveSlider();
+		MoveSlider(delta);
 
 		if (_meterActive && _canStop && Input.IsActionJustPressed("power_meter_stop"))
 		{

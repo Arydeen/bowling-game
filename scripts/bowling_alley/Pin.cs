@@ -10,7 +10,7 @@ public partial class Pin : Area2D
 	public enum PinType { R1, R2, R3, R4 }
 
 	[Export] public PinType Type;
-	[Export] public Array<Texture2D> TextureLibrary;
+	[Export] public Array<SpriteFrames> AnimationLibrary;
 	[Export] public Array<AudioStream> DeathSounds;
 
 	[Export] public int MaxHealth = 100;
@@ -20,6 +20,7 @@ public partial class Pin : Area2D
 
 	private ProgressBar _healthBar;
 	private AudioStreamPlayer2D _audio;
+	private AnimatedSprite2D _sprite;
 
 	public void SetHitThisRound(bool val) { _hitThisRound = val;}
 
@@ -32,17 +33,16 @@ public partial class Pin : Area2D
 	{
 
 		// Texture Handling
-		Sprite2D sprite = GetNode<Sprite2D>("Pin_Image");
+		_sprite = GetNode<AnimatedSprite2D>("PinSprite");
+		// Audio Handling
+		_audio = GetNode<AudioStreamPlayer2D>("DeathSound");
 
 		int index = (int)Type;
 
-		if (TextureLibrary != null && index < TextureLibrary.Count)
+		if (AnimationLibrary != null && index < AnimationLibrary.Count)
 		{
-			sprite.Texture = TextureLibrary[index];
+			_sprite.SpriteFrames = AnimationLibrary[index];
 		}
-
-		// Audio Handling
-		_audio = GetNode<AudioStreamPlayer2D>("DeathSound");
 		
 		// Health Bar Handling
 		_currentHealth = MaxHealth;
@@ -54,12 +54,18 @@ public partial class Pin : Area2D
 
 	private void DamageAnimation()
 	{
-		Sprite2D sprite = GetNode<Sprite2D>("Pin_Image");
 		Tween tween = CreateTween();
 		// Flash to red quickly
-		tween.TweenProperty(sprite, "modulate", new Color(1, 0.2f, 0.2f, 1), 0.1f);
+		tween.TweenProperty(_sprite, "modulate", new Color(1, 0.2f, 0.2f, 1), 0.1f);
 		// Return to normal after 0.4s (for a total of 0.5s)
-		tween.TweenProperty(sprite, "modulate", new Color(1, 1, 1, 1), 0.4f).SetDelay(0.1f);
+		tween.TweenProperty(_sprite, "modulate", new Color(1, 1, 1, 1), 0.4f).SetDelay(0.1f);
+	}
+
+	public void FadeOut()
+	{
+		Tween tween = CreateTween();
+
+		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.7f);
 	}
 
 	public void TakeDamage(int amount)
@@ -77,15 +83,17 @@ public partial class Pin : Area2D
 
 	public void Die()
 	{
-		Visible = false;
+		
 
 		if (DeathSounds != null && DeathSounds.Count > 0)
-        {
-            int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-            _audio.Stream = DeathSounds[randomIndex];
-        }
+		{
+			int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+			_audio.Stream = DeathSounds[randomIndex];
+		}
 
 		_audio.Play();
+		_sprite.Play();
+		FadeOut();
 		_audio.Finished += () => QueueFree();
 	}
 

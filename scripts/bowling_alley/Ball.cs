@@ -27,6 +27,7 @@ public partial class Ball : CharacterBody2D
 	private float _currentOffset = 0f; // How far moved from center
 	private float _powerVal = 0;
 	private float _gutterDirection = 0f;
+	private bool _isSweet = false;
 
 	public override void _Ready()
 	{
@@ -82,7 +83,7 @@ public partial class Ball : CharacterBody2D
 			GetViewport().SetInputAsHandled();
 		}
 	}
-	public void FinalizePower(float speed, float rawX)
+	public void FinalizePower(float speed, float rawX, bool sweet)
 	{
 		GD.Print($"Zone Speed: {speed}, Raw X: {rawX}");
 		RollSpeed = speed;
@@ -90,6 +91,7 @@ public partial class Ball : CharacterBody2D
 		_powerVal = rawX;
 		_thudAudio.Play();
 		_currState = BallState.Rolling;
+		_isSweet = sweet;
 	}
 
 	private void UpdateScale()
@@ -115,7 +117,7 @@ public partial class Ball : CharacterBody2D
 			{
 				if (!pin.GetHitThisRound())
 				{
-					pin.TakeDamage(BallDamage);
+					pin.TakeDamage(BallDamage, _isSweet);
 					pin.SetHitThisRound(true);
 					BallDamage = BallDamage / 2;
 

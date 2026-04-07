@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Runtime.CompilerServices;
 
 public partial class PowerMeter : Control
 {
@@ -103,8 +102,9 @@ public partial class PowerMeter : Control
 		HideMeter();
 
 		float finalSpeed = GetSpeedFromZone();
+		bool sweet = IsSweet(); 
 
-		Ball.FinalizePower(finalSpeed, _sliderPos.X);
+		Ball.FinalizePower(finalSpeed, _sliderPos.X, sweet);
 
 		return _sliderPos.X;
 	}
@@ -151,6 +151,15 @@ public partial class PowerMeter : Control
 		if (IsSliderInRect(_blueZone, sliderX)) return BlueZoneSpeed;
 		
 		return GreenZoneSpeed; // Default/Miss
+	}
+
+	public bool IsSweet()
+	{
+		float sliderX = _slider.Position.X;
+
+		if (IsSliderInRect(_redZone, sliderX)) return true;
+		
+		return false; // Default/Miss
 	}
 
 	private bool IsSliderInRect(ColorRect rect, float sliderX)

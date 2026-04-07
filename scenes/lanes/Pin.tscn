@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://chehndxvyxrh0"]
+[gd_scene load_steps=46 format=3 uid="uid://chehndxvyxrh0"]
 
 [ext_resource type="Script" uid="uid://dyt3qjgq50jem" path="res://scripts/bowling_alley/Pin.cs" id="1_ay5r2"]
 [ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="2_8bins"]
@@ -214,6 +214,10 @@ animations = [{
 radius = 3.0
 height = 6.0
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8tind"]
+radius = 4.0
+height = 16.0
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_6idmh"]
 atlas = ExtResource("6_6hsqa")
 region = Rect2(0, 0, 12, 20)
@@ -258,15 +262,16 @@ animations = [{
 }]
 
 [node name="Pin" type="Area2D" groups=["Pins"]]
+collision_layer = 3
 script = ExtResource("1_ay5r2")
 AnimationLibrary = Array[SpriteFrames]([SubResource("SpriteFrames_tyqa8"), SubResource("SpriteFrames_pgfyu"), SubResource("SpriteFrames_spchi"), SubResource("SpriteFrames_p0t7h")])
 DeathSounds = Array[AudioStream]([ExtResource("3_1fp4a"), ExtResource("3_lfief"), ExtResource("4_6hsqa")])
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="PinHitbox" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3)
 shape = SubResource("CapsuleShape2D_1fp4a")
 
-[node name="Pin_Image" type="Sprite2D" parent="."]
+[node name="PinImage" type="Sprite2D" parent="."]
 visible = false
 position = Vector2(0, -9)
 texture = ExtResource("2_8bins")
@@ -279,7 +284,19 @@ offset_bottom = 27.0
 [node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_1fp4a")
 
-[node name="PinSprite" type="AnimatedSprite2D" parent="."]
+[node name="Shakebox" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 2
+
+[node name="ShakeRadius" type="CollisionShape2D" parent="Shakebox"]
+position = Vector2(0, -7)
+rotation = -1.5707964
+shape = SubResource("CapsuleShape2D_8tind")
+
+[node name="SpritePivot" type="Node2D" parent="."]
+
+[node name="PinSprite" type="AnimatedSprite2D" parent="SpritePivot"]
 position = Vector2(0, -10)
 sprite_frames = SubResource("SpriteFrames_5cdrb")
 animation = &"pin_r1"

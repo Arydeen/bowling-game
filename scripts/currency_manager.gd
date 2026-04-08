@@ -36,7 +36,7 @@ func spend_tokens(amount: int) -> bool:
 	return true
 
 func _emit_changed() -> void:
-	currencies_changed.emit(pins, tokens)
+	currencies_changed.emit(pins, tokens) 
 
 func convert_pins_to_coin(pin_cost: int = 5, coin_amount: int = 1) -> bool:
 	if pin_cost <= 0 or coin_amount <= 0:

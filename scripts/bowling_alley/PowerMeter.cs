@@ -1,11 +1,10 @@
 using Godot;
 using System;
-using System.Runtime.CompilerServices;
 
 public partial class PowerMeter : Control
 {
-	[Export] public float SweetSpotSize = 0.05f;
-	[Export] public float SliderSpeed = 3.0f; // Increased for noticeable movement per frame
+	[Export] public float SweetSpotSize = 0.03f;
+	[Export] public float SliderSpeed = 400f; // Increased for noticeable movement per frame
 	[Export] public float PowerVal = 0f;
 	[Export] public Ball Ball;
 
@@ -73,14 +72,14 @@ public partial class PowerMeter : Control
 		
 		// float screenHeight = GetViewportRect().Size.Y;
 		// Vector2 hidePos = new Vector2(_targetPos.X, screenHeight + 100);
-		Vector2 hidePos = new Vector2(_targetPos.X, -200);
+		float screenHeight = GetViewportRect().Size.Y;
+		Vector2 hidePos = new Vector2(_targetPos.X, screenHeight + 100);
 
 		Tween tween = GetTree().CreateTween();
 		
-		tween.TweenInterval(0.5f); 
+		tween.TweenInterval(0.25f); 
 
 		tween.TweenProperty(this, "position", hidePos, 0.4f) 
-			.SetTrans(Tween.TransitionType.Back)
 			.SetEase(Tween.EaseType.In); 
 
 		tween.Finished += () => 
@@ -103,23 +102,24 @@ public partial class PowerMeter : Control
 		HideMeter();
 
 		float finalSpeed = GetSpeedFromZone();
+		bool sweet = IsSweet(); 
 
-		Ball.FinalizePower(finalSpeed, _sliderPos.X);
+		Ball.FinalizePower(finalSpeed, _sliderPos.X, sweet);
 
 		return _sliderPos.X;
 	}
 
-	public void MoveSlider()
+	public void MoveSlider(double delta)
 	{
 		// Only move the slider if the meter is actually being played
 		if (!_meterActive || _sliderStop) return;
 
 		// Logic to ping-pong the slider back and forth
-		if (_sliderPos.X >= 125) _movingLeft = true;
-		else if (_sliderPos.X <= -125) _movingLeft = false;
+		if (_sliderPos.X >= 112) _movingLeft = true;
+		else if (_sliderPos.X <= -112) _movingLeft = false;
 
 		float direction = _movingLeft ? -1 : 1;
-		_sliderPos.X += direction * SliderSpeed;
+		_sliderPos.X += direction * SliderSpeed * (float)delta;
 		
 		_slider.Position = _sliderPos;
 	}
@@ -128,14 +128,14 @@ public partial class PowerMeter : Control
 	// Start Zone Functions ------------------------------------------------------ //
 	public void UpdateZoneSizes()
 	{
-		float totalWidth = 264f;
+		float totalWidth = 238f;
 		_greenZone.Size = new Vector2(totalWidth, _greenZone.Size.Y);
-		_greenZone.Position = new Vector2((totalWidth - _greenZone.Size.X) / 2, 0);
+		_greenZone.Position = new Vector2(0, 0);
 
-		_yellowZone.Size = new Vector2(totalWidth * SweetSpotSize * 8, _yellowZone.Size.Y);
+		_yellowZone.Size = new Vector2(totalWidth * SweetSpotSize * 12, _yellowZone.Size.Y);
 		_yellowZone.Position = new Vector2((totalWidth - _yellowZone.Size.X) / 2, 0);
 
-		_blueZone.Size = new Vector2(totalWidth * SweetSpotSize * 4, _blueZone.Size.Y);
+		_blueZone.Size = new Vector2(totalWidth * SweetSpotSize * 6, _blueZone.Size.Y);
 		_blueZone.Position = new Vector2((totalWidth - _blueZone.Size.X) / 2, 0);
 
 		_redZone.Size = new Vector2(totalWidth * SweetSpotSize, _redZone.Size.Y);
@@ -153,9 +153,18 @@ public partial class PowerMeter : Control
 		return GreenZoneSpeed; // Default/Miss
 	}
 
+	public bool IsSweet()
+	{
+		float sliderX = _slider.Position.X;
+
+		if (IsSliderInRect(_redZone, sliderX)) return true;
+		
+		return false; // Default/Miss
+	}
+
 	private bool IsSliderInRect(ColorRect rect, float sliderX)
 	{
-		float leftEdge = rect.Position.X  - (264 / 2f);
+		float leftEdge = rect.Position.X  - (238 / 2f);
 		float rightEdge = leftEdge + rect.Size.X;
 
 		return sliderX >= leftEdge && sliderX <= rightEdge;
@@ -167,7 +176,7 @@ public partial class PowerMeter : Control
 	public override void _Process(double delta)
 	{
 		// Only process slider logic if meter is active
-		MoveSlider();
+		MoveSlider(delta);
 
 		if (_meterActive && _canStop && Input.IsActionJustPressed("power_meter_stop"))
 		{

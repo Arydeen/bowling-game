@@ -1,9 +1,10 @@
-[gd_scene load_steps=26 format=3 uid="uid://dirdho85p16wr"]
+[gd_scene load_steps=27 format=3 uid="uid://dirdho85p16wr"]
 
 [ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/monitor.png" id="1_7x07b"]
-[ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scenes/lanes/Monitor.cs" id="1_220yk"]
+[ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scripts/bowling_alley/Monitor.cs" id="1_220yk"]
 [ext_resource type="VideoStream" uid="uid://djickcwo4vbl" path="res://textures/videos/test.ogv" id="3_rq0fy"]
 [ext_resource type="Texture2D" uid="uid://cl0knsgyuqjb" path="res://textures/screen/screen_score.png" id="4_3t2tn"]
+[ext_resource type="FontFile" uid="uid://b0yocnmps7ojr" path="res://textures/fonts/Vaticanus-G3yVG.ttf" id="5_tawgn"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tawgn"]
 atlas = ExtResource("4_3t2tn")
@@ -160,6 +161,11 @@ script = ExtResource("1_220yk")
 position = Vector2(0, -44)
 texture = ExtResource("1_7x07b")
 
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -28)
+sprite_frames = SubResource("SpriteFrames_2hdn5")
+autoplay = "default"
+
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
 offset_left = -48.0
 offset_top = -50.0
@@ -167,7 +173,13 @@ offset_right = 48.0
 offset_bottom = -6.0
 stream = ExtResource("3_rq0fy")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -28)
-sprite_frames = SubResource("SpriteFrames_2hdn5")
-autoplay = "default"
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="."]
+offset_left = -46.0
+offset_top = -27.0
+offset_right = -6.0
+offset_bottom = -4.0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "0"

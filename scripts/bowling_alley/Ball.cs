@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Formats.Tar;
 
 public partial class Ball : CharacterBody2D
 {
@@ -16,19 +17,21 @@ public partial class Ball : CharacterBody2D
 	private AudioStreamPlayer2D _rollAudio;
 	private AudioStreamPlayer2D _thudAudio;
 
-	[Export] public float AimSpeed = 150f;
-	[Export] public float RollSpeed = 60.0f;
-	[Export] public int BallDamage = 0;
+	[Export] public float AimSpeed = 150f; // Speed of ball when aiming
+	[Export] public float RollSpeed = 60.0f; // Speed of ball rolling
+	[Export] public int BallDamage = 0; // Impact damage of ball
 	[Export] public PowerMeter Meter;
 
 	private bool _aimingLeft = false;
 	private float _laneWidthLimit = 90.0f;
 	private float _startX; // The center of the lane
 	private float _currentOffset = 0f; // How far moved from center
-	private float _powerVal = 0;
+	private float _powerVal = 0; // Should be called angle
 	private float _gutterDirection = 0f;
-	private bool _isSweet = false;
+	private bool _isSweet = false; // If landed in sweet spot
 
+
+	// Startup Methods //
 	public override void _Ready()
 	{
 		_startX = Position.X;
@@ -45,7 +48,31 @@ public partial class Ball : CharacterBody2D
 		_currentOffset = 0f;
 		_currState = BallState.Aiming;
 	}
+	// End Startup Methods //
 
+	// State Handling //
+	public override void _Process(double delta)
+	{
+
+		switch (_currState)
+		{
+			case BallState.Aiming:
+				HandleAiming(delta);
+				break;
+			case BallState.Powering:
+				// Do nothing here we are waiting for the Meter to finish
+				break;
+			case BallState.Rolling:
+				UpdateScale(); // Only scale while rolling or in Gutter
+				break;
+			case BallState.Gutter:
+				UpdateScale();
+				break;
+		}
+	}
+	// End State Handling //
+
+	// Gutter Methods //
 	private void OnGutterEntered(Area2D area)
 	{
 		if (area.IsInGroup("Gutters"))
@@ -64,7 +91,9 @@ public partial class Ball : CharacterBody2D
 			}
 		}
 	}
+	// End Gutter Methods
 
+	// Aiming and Power Methods
 	private void HandleAiming(double delta)
 	{
 		if (_currentOffset >= _laneWidthLimit) _aimingLeft = true;
@@ -83,6 +112,7 @@ public partial class Ball : CharacterBody2D
 			GetViewport().SetInputAsHandled();
 		}
 	}
+
 	public void FinalizePower(float speed, float rawX, bool sweet)
 	{
 		GD.Print($"Zone Speed: {speed}, Raw X: {rawX}");
@@ -93,7 +123,9 @@ public partial class Ball : CharacterBody2D
 		_currState = BallState.Rolling;
 		_isSweet = sweet;
 	}
-
+	// End Aiming and Power Methods //
+	
+	// Movement Methods //
 	private void UpdateScale()
 	{
 		float startY = 169; // Bottom of lane
@@ -104,32 +136,6 @@ public partial class Ball : CharacterBody2D
 		// Remap the current Y position to a scale value
 		float t = Mathf.Remap(GlobalPosition.Y, endY, startY, minScale, maxScale);
 		Scale = new Vector2(t, t);
-	}
-
-	public void CheckForHits()
-	{
-		Area2D hitbox = GetNode<Area2D>("Hitbox");
-		var areas = hitbox.GetOverlappingAreas();
-
-		foreach (Area2D area in areas)
-		{
-			if (area is Pin pin)
-			{
-				if (!pin.GetHitThisRound())
-				{
-					pin.TakeDamage(BallDamage, _isSweet);
-					pin.SetHitThisRound(true);
-					BallDamage = BallDamage / 2;
-
-					if (pin.Visible)
-					{
-						StartBounce();
-						break;
-					}
-				} 
-				
-			}
-		}
 	}
 
 	private void StartBounce()
@@ -146,8 +152,9 @@ public partial class Ball : CharacterBody2D
 
 	public void FadeOutAndRemove()
 	{
-		Tween tween = CreateTween();
+		Tween tween = CreateTween().SetParallel(true);;
 
+		tween.TweenProperty(this, "scale", new Vector2(0.5f, 0.5f), 0.05);
 		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.25f);
 
 		tween.Finished += () =>
@@ -156,6 +163,35 @@ public partial class Ball : CharacterBody2D
 			_currState = BallState.Aiming;
 		};
 	}
+	// End Movement Methods //
+
+	// Physics Methods //
+	public void CheckForHits()
+	{
+		Area2D hitbox = GetNode<Area2D>("Hitbox");
+		var areas = hitbox.GetOverlappingAreas();
+
+		foreach (Area2D area in areas)
+		{
+			if (area is Pin pin)
+			{
+				if (!pin.GetHitThisRound())
+				{
+					pin.TakeDamage(BallDamage, _isSweet);
+					pin.SetHitThisRound(true);
+					BallDamage = BallDamage / 3;
+
+					if (pin.Alive)
+					{
+						StartBounce();
+						break;
+					}
+				} 
+				
+			}
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		if (_currState == BallState.Rolling) 
@@ -172,7 +208,9 @@ public partial class Ball : CharacterBody2D
 
 			// Hook Strength: Adjusting val, but 0.8 feels good for now.
 			float hookStrength = 0.8f;
-			float horizontalDrift = _powerVal / 2 * hookStrength;
+			_powerVal = _powerVal > 20 ? 20 : _powerVal;
+			_powerVal = _powerVal < -20 ? -20 : _powerVal;
+			float horizontalDrift = _powerVal * hookStrength;
 
 			// Apply drift to X, and speed to Y
 			Velocity = new Vector2(horizontalDrift, -RollSpeed);
@@ -204,24 +242,5 @@ public partial class Ball : CharacterBody2D
 			FadeOutAndRemove();
 		}
 	}
-	public override void _Process(double delta)
-	{
-
-		switch (_currState)
-		{
-			case BallState.Aiming:
-				HandleAiming(delta);
-				break;
-			case BallState.Powering:
-				// Do nothing here we are waiting for the Meter to finish
-				break;
-			case BallState.Rolling:
-				UpdateScale(); // Only scale while rolling or in Gutter
-				break;
-			case BallState.Gutter:
-				UpdateScale();
-				break;
-		}
-	}
-
+	// End Physics Methods
 }

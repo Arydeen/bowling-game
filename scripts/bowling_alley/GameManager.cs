@@ -8,13 +8,23 @@ public partial class GameManager : Node2D
 	[Export] public Vector2 BallSpawnPos = new Vector2(160, 169);
 	[Export] public PowerMeter Meter;
 
+	private Monitor _monitor;
+	
+
 	private Ball _currentBall;
 	private int _totalScore = 0;
+	private int _roundScore = 0;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		SpawnNewBall();
+		_monitor = GetNode<Monitor>("../Monitor");
+	}
+
+	public int GetScore()
+	{
+		return _totalScore;
 	}
 
 	private void ResetPinsForRound()
@@ -49,15 +59,17 @@ public partial class GameManager : Node2D
 
 	private void OnBallRemoved() // Not sure what gonna have this do eventually, but for now just spawns another ball
 	{
+		GD.Print($"Pins collected this shot: {_roundScore}");
+		GD.Print($"All-time Pins: {GlobalData.Instance.TotalPins}");
+		_monitor.SetText(GlobalData.Instance.TotalPins);
 		GetTree().CreateTimer(1.0f).Timeout += () => SpawnNewBall();
+		_roundScore = 0;
 	}
 
 	public void AddScore(int amount)
 	{
+		_roundScore += amount;
 		GlobalData.Instance.TotalPins += amount;
-
-		GD.Print($"Pins collected this shot: {amount}");
-		GD.Print($"All-time Pins: {GlobalData.Instance.TotalPins}");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

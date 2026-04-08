@@ -129,7 +129,7 @@ func show_random_exchange_toast(seconds_after_done: float = 1.0, char_delay: flo
 		"The shadows approve.",
 		"This exchange is… inevitable.",
 		"More pins, more fortune.",
-		"What I do is just. Every horrid piece of it.",
+		"What I do is just. Every horrid piece.",
 	]
 	var msg: String = lines[randi() % lines.size()]
 	_show_typed_toast(msg, seconds_after_done, char_delay)

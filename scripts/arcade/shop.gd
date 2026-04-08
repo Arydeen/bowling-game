@@ -8,6 +8,7 @@ extends Node2D
 @onready var shutter_open_sfx: AudioStreamPlayer2D = $ShutterOpen
 @onready var capsule_shake_sfx: AudioStreamPlayer2D = $CapsuleShake
 @onready var capsule_prize := get_node_or_null("CapsulePrize")
+@onready var prize_description := get_node_or_null("PrizeDescription")
 
 @onready var drink_one_shot_sfx: AudioStreamPlayer2D = $BeerBottleOpen
 
@@ -118,6 +119,9 @@ func _ready() -> void:
 	soda_menu.close_requested.connect(soda_menu.hide)
 
 	_setup_background_blink()
+
+	if capsule_prize != null and prize_description != null:
+		capsule_prize.prize_spawned.connect(prize_description.show_prize)
 
 
 func _handle_space_press() -> void:
@@ -320,6 +324,9 @@ func _on_space_pressed() -> void:
 			_step = Step.WAIT_REMOVE
 
 		Step.WAIT_REMOVE:
+			if prize_description != null:
+				prize_description.hide_toast()
+				
 			_stop_open_light()
 
 			if capsule_prize != null:

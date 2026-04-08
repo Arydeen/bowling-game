@@ -23,6 +23,7 @@ public partial class Pin : Area2D
 	private AudioStreamPlayer2D _shakeAudio;
 	private AnimatedSprite2D _sprite;
 	private Node2D _spritePivot;
+	private GameManager _gameManager;
 
 	public void SetHitThisRound(bool val) { _hitThisRound = val;}
 
@@ -33,6 +34,9 @@ public partial class Pin : Area2D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+
+		// Fetch Game Manager
+		_gameManager = GetNode<GameManager>("../../GameManager");
 
 		// Texture Handling
 		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/PinSprite");
@@ -56,13 +60,9 @@ public partial class Pin : Area2D
 
 	}
  
-	public void DamageAnimation()
+	public void DamageAnimation(bool sweet)
 	{
-		Tween tween = CreateTween();
-		// Flash to red quickly
-		tween.TweenProperty(_sprite, "modulate", new Color(1, 0.2f, 0.2f, 1), 0.1f);
-		// Return to normal after 0.4s (for a total of 0.5s)
-		tween.TweenProperty(_sprite, "modulate", new Color(1, 1, 1, 1), 0.4f).SetDelay(0.1f);
+		if (sweet) {PlayHeavyWobble();} else {PlayWobble();}
 	}
 
 	public void FadeOut()
@@ -74,15 +74,19 @@ public partial class Pin : Area2D
 
 	public void TakeDamage(int amount, bool sweet)
 	{
-		CalculateShake(amount, sweet);
-		DamageAnimation();
 		_currentHealth -= amount;
 		_healthBar.Value = _currentHealth;
 
 		if (_currentHealth <= 0)
 		{
 			Die();
+		} else
+		{
+			DamageAnimation(sweet);
 		}
+
+		GetTree().CreateTimer(0.15f).Timeout += () => CalculateShake(amount, sweet);
+
 
 	}
 
@@ -165,8 +169,6 @@ public partial class Pin : Area2D
 
 	private void ShakeDamage(Pin pin, int amount, bool sweet) 
 	{
-		if (sweet) {pin.PlayHeavyWobble();} else {pin.PlayWobble();}
-
 		int shakeDamage = amount / 2;
 
 		pin.SetHealth(pin.GetHealth() - shakeDamage);
@@ -175,11 +177,18 @@ public partial class Pin : Area2D
 		if (pin.GetHealth() <= 0)
 		{
 			pin.Die();
+		} else
+		{
+			if (sweet) {pin.PlayHeavyWobble();} else {pin.PlayWobble();}
 		}
 	}
 
 	public void Die()
 	{
+
+		_gameManager.AddScore(1);
+		GD.Print(_gameManager.GetScore());
+		
 		Alive = false;
 
 		if (DeathSounds != null && DeathSounds.Count > 0)

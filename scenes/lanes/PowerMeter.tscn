@@ -11,9 +11,9 @@ script = ExtResource("1_0f5la")
 
 [node name="ZonesContainer" type="Control" parent="."]
 anchors_preset = 0
-offset_left = -132.0
+offset_left = -119.0
 offset_top = -5.0
-offset_right = 132.0
+offset_right = 119.0
 offset_bottom = 5.0
 
 [node name="ColorRectGreen" type="ColorRect" parent="ZonesContainer"]

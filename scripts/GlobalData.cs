@@ -8,6 +8,8 @@ public partial class GlobalData : Node
 	public int TotalPins = 0;
 	public float PowerUpSpeedBoost = 0f; // Example, I'm not sure how we will actually implement powerups
 
+	public int Frame = 0;
+
 	public override void _Ready()
 	{
 		Instance = this;

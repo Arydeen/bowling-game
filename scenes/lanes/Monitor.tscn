@@ -2,8 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/monitor.png" id="1_7x07b"]
 [ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scripts/bowling_alley/Monitor.cs" id="1_220yk"]
-[ext_resource type="VideoStream" uid="uid://djickcwo4vbl" path="res://textures/videos/test.ogv" id="3_rq0fy"]
 [ext_resource type="Texture2D" uid="uid://cl0knsgyuqjb" path="res://textures/screen/screen_score.png" id="4_3t2tn"]
+[ext_resource type="VideoStream" uid="uid://co2n831djggx7" path="res://textures/videos/hdytyaia.ogv" id="4_tawgn"]
 [ext_resource type="FontFile" uid="uid://b0yocnmps7ojr" path="res://textures/fonts/Vaticanus-G3yVG.ttf" id="5_tawgn"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tawgn"]
@@ -171,7 +171,7 @@ offset_left = -48.0
 offset_top = -50.0
 offset_right = 48.0
 offset_bottom = -6.0
-stream = ExtResource("3_rq0fy")
+stream = ExtResource("4_tawgn")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

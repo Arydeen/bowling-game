@@ -1,7 +1,7 @@
-[gd_scene load_steps=81 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=83 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
-[ext_resource type="Texture2D" uid="uid://fiv2m8o473ix" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
+[ext_resource type="Texture2D" uid="uid://c6cb5uwcneisu" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
 [ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="2_gldgk"]
 [ext_resource type="Resource" uid="uid://wcowshp7maxq" path="res://data/drinks/milk.tres" id="3_763b7"]
 [ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://scripts/arcade/capsule_machine.gd" id="3_fgaav"]
@@ -11,7 +11,7 @@
 [ext_resource type="Script" uid="uid://bv4rkrry38f3q" path="res://pin_exchange.gd" id="5_6lah5"]
 [ext_resource type="Resource" uid="uid://bx1c1jp87thyt" path="res://data/drinks/rootbeer.tres" id="5_8lh4o"]
 [ext_resource type="Resource" uid="uid://bls8rd382u0wg" path="res://data/drinks/critcola.tres" id="5_lxs01"]
-[ext_resource type="Texture2D" uid="uid://dy2fiebygv1dh" path="res://textures/backgrounds/ArcadeShutterAnimation.png" id="6_gmb2m"]
+[ext_resource type="Texture2D" uid="uid://cr6oqerq77wx2" path="res://textures/backgrounds/ArcadeShutterAnimation.png" id="6_gmb2m"]
 [ext_resource type="AudioStream" uid="uid://dyd7ebxpqqyu8" path="res://music/sfx/arcade/CapsuleOpen.mp3" id="7_8kdgp"]
 [ext_resource type="Resource" uid="uid://cxmbtqnt3gpc8" path="res://data/drinks/martini.tres" id="7_acxsc"]
 [ext_resource type="Resource" uid="uid://ct4o4djpmkrf7" path="res://data/drinks/xxxbrew.tres" id="7_il0eq"]
@@ -23,6 +23,7 @@
 [ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="14_763b7"]
 [ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/sfx/arcade/BeerBottleOpen.mp3" id="16_763b7"]
 [ext_resource type="AudioStream" uid="uid://nclnko47hcke" path="res://music/sfx/arcade/DrinkSip.mp3" id="18_tuxin"]
+[ext_resource type="Script" uid="uid://cnh0mf32drmcd" path="res://scripts/arcade/soda_fountain_menu.gd" id="21_l0cfq"]
 [ext_resource type="AudioStream" uid="uid://d100skbbcwkm8" path="res://music/sfx/arcade/BeeSound.mp3" id="24_6nbx6"]
 [ext_resource type="Script" uid="uid://cprtpf0au1j7u" path="res://scripts/arcade/capsule_prize.gd" id="25_dfcnn"]
 [ext_resource type="Texture2D" uid="uid://3rb4jtkyqcll" path="res://textures/prizes/common/CreamShammy.png" id="26_3mj5r"]
@@ -323,6 +324,10 @@ default_font = ExtResource("14_763b7")
 default_font_size = 10
 Label/fonts/font = ExtResource("14_763b7")
 
+[sub_resource type="Theme" id="Theme_l0cfq"]
+TooltipLabel/font_sizes/font_size = 8
+TooltipLabel/fonts/font = ExtResource("14_763b7")
+
 [node name="Shop" type="Node2D"]
 script = ExtResource("1_blqjs")
 drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7"), ExtResource("4_tuxin"), ExtResource("5_lxs01"), ExtResource("5_8lh4o"), ExtResource("4_jtxfs"), ExtResource("7_acxsc"), ExtResource("7_il0eq"), ExtResource("9_ru2r1")])
@@ -373,23 +378,20 @@ script = ExtResource("10_xqmyw")
 position = Vector2(46, 124.5)
 shape = SubResource("RectangleShape2D_p5a0g")
 
-[node name="SodaFountainMenu" type="PopupMenu" parent="."]
+[node name="SodaFountainMenu" type="PopupPanel" parent="."]
 oversampling_override = 1.0
 title = "Drinks | Tokens"
 position = Vector2i(90, 50)
 size = Vector2i(140, 80)
 borderless = false
 theme = SubResource("Theme_msgp6")
-theme_override_colors/font_color = Color(0.92, 0.92, 0.92, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("14_763b7")
-theme_override_fonts/font_separator = ExtResource("14_763b7")
-allow_search = false
-item_count = 2
-item_0/text = "Drink | Tokens"
-item_0/id = 0
-item_1/text = "Milk 1"
-item_1/id = 1
+script = ExtResource("21_l0cfq")
+
+[node name="List" type="ItemList" parent="SodaFountainMenu"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme = SubResource("Theme_l0cfq")
+theme_override_font_sizes/font_size = 10
 
 [node name="PourNoise" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("13_e23gp")

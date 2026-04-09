@@ -13,7 +13,7 @@ extends Node2D
 @onready var drink_one_shot_sfx: AudioStreamPlayer2D = $BeerBottleOpen
 
 @onready var soda_fountain: Area2D = $SodaFountain
-@onready var soda_menu: PopupMenu = $SodaFountainMenu
+@onready var soda_menu: SodaFountainMenu = $SodaFountainMenu
 @onready var pour_noise = $PourNoise
 @onready var bee_sound: AudioStreamPlayer2D = $BeeSound
 @onready var sip_drink: AudioStreamPlayer2D = $DrinkSip
@@ -114,7 +114,7 @@ func _ready() -> void:
 	coin_exchange_machine.shutter_opened.connect(_on_pin_exchange_shutter_opened)
 
 	soda_fountain.clicked.connect(_on_soda_fountain_clicked)
-	soda_menu.id_pressed.connect(_on_soda_menu_id_pressed)
+	soda_menu.drink_chosen.connect(_on_soda_drink_chosen)
 
 	soda_menu.close_requested.connect(soda_menu.hide)
 
@@ -475,34 +475,15 @@ func _play_capsule_shake_sfx() -> void:
 	capsule_shake_sfx.play()
 
 func _on_soda_fountain_clicked() -> void:
-	soda_menu.clear()
-	_drink_by_id.clear()
-
-	var popup_size = Vector2i(200, 100) # width/height of the popup
-	soda_menu.max_size = Vector2i(0, popup_size.y) # scrollbar 
-
-	#ITEMS
-	for i in range(drinks.size()):
-		var d = drinks[i]
-		var label = "%s - %d" % [d.display_name, d.cost_tokens]
-		soda_menu.add_item(label, i)
-		_drink_by_id[i] = d
-
-	#CENTER
+	var popup_size = Vector2i(200, 100)
 	var x = 60
 	var vp_rect = get_viewport().get_visible_rect()
 	var y = int((vp_rect.size.y - popup_size.y) * 0.5)
 
-	# FORCE SIZE (before + after showing)
-	soda_menu.min_size = popup_size
-	soda_menu.size = popup_size
-
-	soda_menu.popup(Rect2i(Vector2i(x, y), popup_size))
-	soda_menu.call_deferred("set_size", popup_size)
+	soda_menu.open_menu(drinks, Rect2i(Vector2i(x, y), popup_size))
 
 
-func _on_soda_menu_id_pressed(id: int) -> void:
-	var d = _drink_by_id.get(id)
+func _on_soda_drink_chosen(d: DrinkData) -> void:
 	if d == null:
 		return
 
@@ -511,8 +492,6 @@ func _on_soda_menu_id_pressed(id: int) -> void:
 		return
 
 	print("You bought %s for %d token%s!" % [d.display_name, d.cost_tokens, "" if d.cost_tokens == 1 else "s"])
-
-	soda_menu.hide()
 	_spawn_and_drop_drink(d)
 
 

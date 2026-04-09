@@ -173,9 +173,8 @@ offset_right = 48.0
 offset_bottom = -6.0
 stream = ExtResource("4_tawgn")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
 [node name="Label" type="Label" parent="."]
+visible = false
 offset_left = -46.0
 offset_top = -27.0
 offset_right = -6.0
@@ -183,3 +182,182 @@ offset_bottom = -4.0
 theme_override_fonts/font = ExtResource("5_tawgn")
 theme_override_font_sizes/font_size = 8
 text = "0"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 999
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -48.0
+offset_top = -50.0
+offset_right = 48.0
+offset_bottom = -6.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 14.0
+offset_right = 84.0
+offset_bottom = 61.0
+theme_override_constants/separation = 2
+
+[node name="Frame1" type="VBoxContainer" parent="Control/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Shots" type="HBoxContainer" parent="Control/HBoxContainer/Frame1"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Shot1" type="Label" parent="Control/HBoxContainer/Frame1/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "0"
+
+[node name="Shot2" type="Label" parent="Control/HBoxContainer/Frame1/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "1"
+
+[node name="Shot3" type="Label" parent="Control/HBoxContainer/Frame1/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "9"
+
+[node name="FrameTotal" type="Label" parent="Control/HBoxContainer/Frame1"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "10"
+
+[node name="Frame2" type="VBoxContainer" parent="Control/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Shots" type="HBoxContainer" parent="Control/HBoxContainer/Frame2"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Shot1" type="Label" parent="Control/HBoxContainer/Frame2/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "0"
+
+[node name="Shot2" type="Label" parent="Control/HBoxContainer/Frame2/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "1"
+
+[node name="Shot3" type="Label" parent="Control/HBoxContainer/Frame2/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "9"
+
+[node name="FrameTotal" type="Label" parent="Control/HBoxContainer/Frame2"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "20"
+
+[node name="Frame3" type="VBoxContainer" parent="Control/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Shots" type="HBoxContainer" parent="Control/HBoxContainer/Frame3"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Shot1" type="Label" parent="Control/HBoxContainer/Frame3/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "0"
+
+[node name="Shot2" type="Label" parent="Control/HBoxContainer/Frame3/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "1"
+
+[node name="Shot3" type="Label" parent="Control/HBoxContainer/Frame3/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "9"
+
+[node name="FrameTotal" type="Label" parent="Control/HBoxContainer/Frame3"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "30"
+
+[node name="Frame4" type="VBoxContainer" parent="Control/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Shots" type="HBoxContainer" parent="Control/HBoxContainer/Frame4"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Shot1" type="Label" parent="Control/HBoxContainer/Frame4/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "0"
+
+[node name="Shot2" type="Label" parent="Control/HBoxContainer/Frame4/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "1"
+
+[node name="Shot3" type="Label" parent="Control/HBoxContainer/Frame4/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "9"
+
+[node name="FrameTotal" type="Label" parent="Control/HBoxContainer/Frame4"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "40"

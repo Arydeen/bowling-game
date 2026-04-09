@@ -11,7 +11,7 @@ public partial class Monitor : Node2D
 	public override void _Ready()
 	{
 
-		_testLabel = GetNode<Label>("Label");
+		// _testLabel = GetNode<Label>("ScoreBoard/Label");
 
 		_hiddenPos = Position;
 		ShowMonitor();

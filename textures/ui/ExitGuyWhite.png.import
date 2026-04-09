@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1plickvvj6cx"
-path="res://.godot/imported/ArcadeClosedOffBackground.png-e6b85ca15454d6d4bd07fe47101e554f.ctex"
+uid="uid://jrvud4v7mhpr"
+path="res://.godot/imported/ExitGuyWhite.png-39dbfb21864359a53ab905c0337df9f4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/backgrounds/ArcadeClosedOffBackground.png"
-dest_files=["res://.godot/imported/ArcadeClosedOffBackground.png-e6b85ca15454d6d4bd07fe47101e554f.ctex"]
+source_file="res://textures/ui/ExitGuyWhite.png"
+dest_files=["res://.godot/imported/ExitGuyWhite.png-39dbfb21864359a53ab905c0337df9f4.ctex"]
 
 [params]
 

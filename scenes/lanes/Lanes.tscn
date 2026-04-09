@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://chehndxvyxrh0" path="res://scenes/lanes/Pin.tscn" id="4_e3bhr"]
 [ext_resource type="AudioStream" uid="uid://cqp12l7c5bbng" path="res://music/sfx/lanes/lanes_ambience.mp3" id="8_1mb4a"]
 [ext_resource type="PackedScene" uid="uid://m62c2r5hupin" path="res://scenes/lanes/Ball.tscn" id="9_ga0rv"]
-[ext_resource type="PackedScene" uid="uid://dirdho85p16wr" path="res://scenes/lanes/Monitor.tscn" id="9_mkrau"]
+[ext_resource type="PackedScene" path="res://scenes/lanes/Monitor.tscn" id="9_mkrau"]
 [ext_resource type="PackedScene" uid="uid://djrdboc37pwdo" path="res://scenes/lanes/PowerMeter.tscn" id="10_6s8gb"]
 [ext_resource type="Script" uid="uid://bdi7lcre7ymud" path="res://scripts/bowling_alley/GameManager.cs" id="11_nbmko"]
 

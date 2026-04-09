@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbw8fmk7aoy20"]
+
+[ext_resource type="Script" uid="uid://btnbxffl6bore" path="res://scripts/arcade/prize_description.gd" id="1_emge3"]
+[ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="2_khr7y"]
+
+[node name="PrizeDescription" type="CanvasLayer"]
+script = ExtResource("1_emge3")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 70.0
+offset_top = 120.0
+offset_right = 250.0
+offset_bottom = 170.0
+theme_override_fonts/font = ExtResource("2_khr7y")
+horizontal_alignment = 1
+autowrap_mode = 3

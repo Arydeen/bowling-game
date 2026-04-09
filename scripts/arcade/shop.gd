@@ -7,6 +7,9 @@ extends Node2D
 @onready var capsule_open_sfx: AudioStreamPlayer2D = $CapsuleOpen
 @onready var shutter_open_sfx: AudioStreamPlayer2D = $ShutterOpen
 @onready var capsule_shake_sfx: AudioStreamPlayer2D = $CapsuleShake
+@onready var capsule_prize := get_node_or_null("CapsulePrize")
+@onready var prize_description := get_node_or_null("PrizeDescription")
+
 @onready var drink_one_shot_sfx: AudioStreamPlayer2D = $BeerBottleOpen
 
 @onready var soda_fountain: Area2D = $SodaFountain
@@ -67,8 +70,8 @@ var _background_is_on: bool = true
 @export var open_flash_peak_energy: float = 2 #Intensity (Start)
 @export var open_flash_peak_scale: float = 2
 
-@export var open_light_sustain_energy: float = 5   # stays ON after open (End)
-@export var open_light_sustain_scale: float = 5
+@export var open_light_sustain_energy: float = 3   # stays ON after open (End)
+@export var open_light_sustain_scale: float = 3
 
 @export var open_light_spike_count: int = 8         # number of rays
 @export var open_light_spike_sharpness: float = 4.0  # higher = thinner spikes
@@ -116,6 +119,9 @@ func _ready() -> void:
 	soda_menu.close_requested.connect(soda_menu.hide)
 
 	_setup_background_blink()
+
+	if capsule_prize != null and prize_description != null:
+		capsule_prize.prize_spawned.connect(prize_description.show_prize)
 
 
 func _handle_space_press() -> void:
@@ -226,6 +232,10 @@ func _on_capsule_machine_clicked() -> void:
 	_busy = true
 	_step = Step.NONE
 	_stop_open_light()
+
+	if capsule_prize != null:
+		capsule_prize.clear_prize()
+
 	_spawn_and_drop_capsule()
 
 func _pick_capsule_texture() -> Texture2D:
@@ -300,6 +310,9 @@ func _on_space_pressed() -> void:
 			# OPEN CAPSULE
 			_capsule.region_rect = Rect2(0.0, _tex_size.y * 0.5, _tex_size.x, _tex_size.y * 0.5)
 
+			if capsule_prize != null:
+				capsule_prize.pop_prize(_current_rarity, _capsule.global_position)
+
 			if capsule_open_sfx != null:
 				if capsule_open_sfx.playing:
 					capsule_open_sfx.stop()
@@ -311,7 +324,13 @@ func _on_space_pressed() -> void:
 			_step = Step.WAIT_REMOVE
 
 		Step.WAIT_REMOVE:
+			if prize_description != null:
+				prize_description.hide_toast()
+				
 			_stop_open_light()
+
+			if capsule_prize != null:
+				capsule_prize.clear_prize()
 			
 			_capsule.queue_free()
 			_capsule = null

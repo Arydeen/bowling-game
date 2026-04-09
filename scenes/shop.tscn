@@ -1,7 +1,7 @@
-[gd_scene load_steps=83 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=84 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
-[ext_resource type="Texture2D" uid="uid://c6cb5uwcneisu" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
+[ext_resource type="Texture2D" uid="uid://dyoiha542l5sq" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
 [ext_resource type="Script" uid="uid://qvp8cumxjs05" path="res://data/drinks/DrinkData.gd" id="2_gldgk"]
 [ext_resource type="Resource" uid="uid://wcowshp7maxq" path="res://data/drinks/milk.tres" id="3_763b7"]
 [ext_resource type="Script" uid="uid://d4ic6w67pof6a" path="res://scripts/arcade/capsule_machine.gd" id="3_fgaav"]
@@ -328,6 +328,14 @@ Label/fonts/font = ExtResource("14_763b7")
 TooltipLabel/font_sizes/font_size = 8
 TooltipLabel/fonts/font = ExtResource("14_763b7")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l0cfq"]
+bg_color = Color(0.07, 0.07, 0.07, 0.7647059)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.07058824, 0.07058824, 0.07058824, 0.7647059)
+
 [node name="Shop" type="Node2D"]
 script = ExtResource("1_blqjs")
 drinks = Array[ExtResource("2_gldgk")]([ExtResource("3_763b7"), ExtResource("4_tuxin"), ExtResource("5_lxs01"), ExtResource("5_8lh4o"), ExtResource("4_jtxfs"), ExtResource("7_acxsc"), ExtResource("7_il0eq"), ExtResource("9_ru2r1")])
@@ -421,13 +429,14 @@ pop_offset = Vector2(0, 0)
 script = ExtResource("39_3mj5r")
 
 [node name="Label" type="Label" parent="PrizeDescription"]
-offset_left = 70.0
-offset_top = 15.0
-offset_right = 250.0
-offset_bottom = 65.0
+offset_left = 80.0
+offset_top = 140.0
+offset_right = 240.0
+offset_bottom = 165.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
 theme_override_fonts/font = ExtResource("14_763b7")
 theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_l0cfq")
 horizontal_alignment = 1
 autowrap_mode = 3

@@ -1,4 +1,4 @@
-[gd_scene load_steps=84 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=86 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://dyoiha542l5sq" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -24,6 +24,7 @@
 [ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/sfx/arcade/BeerBottleOpen.mp3" id="16_763b7"]
 [ext_resource type="AudioStream" uid="uid://nclnko47hcke" path="res://music/sfx/arcade/DrinkSip.mp3" id="18_tuxin"]
 [ext_resource type="Script" uid="uid://cnh0mf32drmcd" path="res://scripts/arcade/soda_fountain_menu.gd" id="21_l0cfq"]
+[ext_resource type="Texture2D" uid="uid://coekptpeaq60x" path="res://textures/ui/ExitGuy.png" id="22_3t6hu"]
 [ext_resource type="AudioStream" uid="uid://d100skbbcwkm8" path="res://music/sfx/arcade/BeeSound.mp3" id="24_6nbx6"]
 [ext_resource type="Script" uid="uid://cprtpf0au1j7u" path="res://scripts/arcade/capsule_prize.gd" id="25_dfcnn"]
 [ext_resource type="Texture2D" uid="uid://3rb4jtkyqcll" path="res://textures/prizes/common/CreamShammy.png" id="26_3mj5r"]
@@ -322,7 +323,17 @@ size = Vector2(60, 99)
 [sub_resource type="Theme" id="Theme_msgp6"]
 default_font = ExtResource("14_763b7")
 default_font_size = 10
+Label/colors/font_outline_color = Color(0, 0, 0, 1)
+Label/constants/outline_size = 1
 Label/fonts/font = ExtResource("14_763b7")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3t6hu"]
+bg_color = Color(0.2051175, 0.20511743, 0.20511743, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.64677334, 0.49580002, 0.67, 0.77254903)
 
 [sub_resource type="Theme" id="Theme_l0cfq"]
 TooltipLabel/font_sizes/font_size = 8
@@ -330,10 +341,10 @@ TooltipLabel/fonts/font = ExtResource("14_763b7")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l0cfq"]
 bg_color = Color(0.07, 0.07, 0.07, 0.7647059)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
 border_color = Color(0.07058824, 0.07058824, 0.07058824, 0.7647059)
 
 [node name="Shop" type="Node2D"]
@@ -388,18 +399,68 @@ shape = SubResource("RectangleShape2D_p5a0g")
 
 [node name="SodaFountainMenu" type="PopupPanel" parent="."]
 oversampling_override = 1.0
-title = "Drinks | Tokens"
-position = Vector2i(90, 50)
-size = Vector2i(140, 80)
-borderless = false
+position = Vector2i(90, 34)
+size = Vector2i(150, 109)
 theme = SubResource("Theme_msgp6")
+theme_override_styles/panel = SubResource("StyleBoxFlat_3t6hu")
 script = ExtResource("21_l0cfq")
 
-[node name="List" type="ItemList" parent="SodaFountainMenu"]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Root" type="Control" parent="SodaFountainMenu"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = -1.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="SodaFountainMenu/Root"]
+layout_direction = 4
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 4.0
+offset_right = -17.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 8
+text = "Drinks | Tokens
+"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="List" type="ItemList" parent="SodaFountainMenu/Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 16.0
+grow_horizontal = 2
+grow_vertical = 2
 theme = SubResource("Theme_l0cfq")
 theme_override_font_sizes/font_size = 10
+
+[node name="CloseButton" type="TextureButton" parent="SodaFountainMenu/Root"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_top = 1.0
+offset_right = -3.0
+offset_bottom = 16.0
+grow_horizontal = 0
+texture_normal = ExtResource("22_3t6hu")
+texture_pressed = ExtResource("22_3t6hu")
+texture_hover = ExtResource("22_3t6hu")
+ignore_texture_size = true
 
 [node name="PourNoise" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("13_e23gp")
@@ -436,7 +497,9 @@ offset_bottom = 165.0
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
 theme_override_fonts/font = ExtResource("14_763b7")
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 7
 theme_override_styles/normal = SubResource("StyleBoxFlat_l0cfq")
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[connection signal="pressed" from="SodaFountainMenu/Root/CloseButton" to="SodaFountainMenu" method="_on_close_button_pressed"]

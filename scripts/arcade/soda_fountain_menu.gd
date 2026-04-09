@@ -3,7 +3,7 @@ class_name SodaFountainMenu
 
 signal drink_chosen(drink: DrinkData)
 
-@onready var list: ItemList = $List
+@onready var list: ItemList = $Root/List
 
 func _ready() -> void:
 	list.item_clicked.connect(_on_item_clicked)
@@ -35,3 +35,7 @@ func _on_item_clicked(index: int, _pos: Vector2, button: int) -> void:
 	var d: DrinkData = list.get_item_metadata(index)
 	hide()
 	drink_chosen.emit(d)
+
+
+func _on_close_button_pressed() -> void:
+	hide()

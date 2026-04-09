@@ -5,7 +5,7 @@ public partial class GameManager : Node2D
 {
 
 	[Export] public PackedScene BallScene;
-	[Export] public Vector2 BallSpawnPos = new Vector2(160, 169);
+	[Export] public Vector2 BallSpawnPos = new Vector2(160, 175);
 	[Export] public PowerMeter Meter;
 
 	private Monitor _monitor;
@@ -61,7 +61,7 @@ public partial class GameManager : Node2D
 	{
 		GD.Print($"Pins collected this shot: {_roundScore}");
 		GD.Print($"All-time Pins: {GlobalData.Instance.TotalPins}");
-		_monitor.SetText(GlobalData.Instance.TotalPins);
+		//_monitor.SetText(GlobalData.Instance.TotalPins);
 		GetTree().CreateTimer(1.0f).Timeout += () => SpawnNewBall();
 		_roundScore = 0;
 	}

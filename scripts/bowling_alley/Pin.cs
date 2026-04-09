@@ -186,21 +186,24 @@ public partial class Pin : Area2D
 	public void Die()
 	{
 
-		_gameManager.AddScore(1);
-		GD.Print(_gameManager.GetScore());
-		
-		Alive = false;
-
-		if (DeathSounds != null && DeathSounds.Count > 0)
+		if (Alive)
 		{
-			int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-			_audio.Stream = DeathSounds[randomIndex];
-		}
+			Alive = false;
 
-		_audio.Play();
-		_sprite.Play();
-		FadeOut();
-		_audio.Finished += () => QueueFree();
+			_gameManager.AddScore(1);
+			GD.Print(_gameManager.GetScore());
+
+			if (DeathSounds != null && DeathSounds.Count > 0)
+			{
+				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+				_audio.Stream = DeathSounds[randomIndex];
+			}
+
+			_audio.Play();
+			_sprite.Play();
+			FadeOut();
+			_audio.Finished += () => QueueFree();
+		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

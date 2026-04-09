@@ -29,6 +29,8 @@ public partial class Ball : CharacterBody2D
 	private float _powerVal = 0; // Should be called angle
 	private float _gutterDirection = 0f;
 	private bool _isSweet = false; // If landed in sweet spot
+	// private SpriteFrames _ballAnimation;
+	private AnimatedSprite2D _ballSprite;
 
 
 	// Startup Methods //
@@ -36,6 +38,11 @@ public partial class Ball : CharacterBody2D
 	{
 		_startX = Position.X;
 		_currState = BallState.Aiming;
+
+		// Texture Handling
+		// _ballAnimation = GetNode<SpriteFrames>("");
+		_ballSprite = GetNode<AnimatedSprite2D>("BallSprite");
+
 		GetNode<Area2D>("Hitbox").AreaEntered += OnGutterEntered;
 		_rollAudio = GetNode<AudioStreamPlayer2D>("RollSound");
 		_thudAudio = GetNode<AudioStreamPlayer2D>("ThudSound");
@@ -58,15 +65,18 @@ public partial class Ball : CharacterBody2D
 		{
 			case BallState.Aiming:
 				HandleAiming(delta);
+				if (_ballSprite.IsPlaying()) {_ballSprite.Stop();}
 				break;
 			case BallState.Powering:
-				// Do nothing here we are waiting for the Meter to finish
+				if (_ballSprite.IsPlaying()) {_ballSprite.Stop();}
 				break;
 			case BallState.Rolling:
 				UpdateScale(); // Only scale while rolling or in Gutter
+				if (!_ballSprite.IsPlaying()) {_ballSprite.Play();}
 				break;
 			case BallState.Gutter:
 				UpdateScale();
+				if (!_ballSprite.IsPlaying()) {_ballSprite.Play();}
 				break;
 		}
 	}
@@ -128,7 +138,7 @@ public partial class Ball : CharacterBody2D
 	// Movement Methods //
 	private void UpdateScale()
 	{
-		float startY = 169; // Bottom of lane
+		float startY = 175; // Bottom of lane
 		float endY = 81;   // Top of lane (the pins)
 		float minScale = 0.5f;
 		float maxScale = 1.0f;

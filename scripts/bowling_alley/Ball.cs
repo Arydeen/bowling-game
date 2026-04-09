@@ -217,7 +217,7 @@ public partial class Ball : CharacterBody2D
 			if (_currState != BallState.Rolling) return;
 
 			// Hook Strength: Adjusting val, but 0.8 feels good for now.
-			float hookStrength = 1f;
+			float hookStrength = 0.8f;
 			_powerVal = _powerVal > 20 ? 20 : _powerVal;
 			_powerVal = _powerVal < -20 ? -20 : _powerVal;
 			float horizontalDrift = _powerVal * hookStrength;

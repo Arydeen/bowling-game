@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://dirdho85p16wr"]
+[gd_scene load_steps=27 format=3 uid="uid://dglgqyt23vg6c"]
 
 [ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/monitor.png" id="1_7x07b"]
 [ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scripts/bowling_alley/Monitor.cs" id="1_220yk"]

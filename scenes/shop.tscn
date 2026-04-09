@@ -1,4 +1,4 @@
-[gd_scene load_steps=86 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=87 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://dyoiha542l5sq" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -25,6 +25,7 @@
 [ext_resource type="AudioStream" uid="uid://nclnko47hcke" path="res://music/sfx/arcade/DrinkSip.mp3" id="18_tuxin"]
 [ext_resource type="Script" uid="uid://cnh0mf32drmcd" path="res://scripts/arcade/soda_fountain_menu.gd" id="21_l0cfq"]
 [ext_resource type="Texture2D" uid="uid://coekptpeaq60x" path="res://textures/ui/ExitGuy.png" id="22_3t6hu"]
+[ext_resource type="Texture2D" uid="uid://jrvud4v7mhpr" path="res://textures/ui/ExitGuyWhite.png" id="23_jphf3"]
 [ext_resource type="AudioStream" uid="uid://d100skbbcwkm8" path="res://music/sfx/arcade/BeeSound.mp3" id="24_6nbx6"]
 [ext_resource type="Script" uid="uid://cprtpf0au1j7u" path="res://scripts/arcade/capsule_prize.gd" id="25_dfcnn"]
 [ext_resource type="Texture2D" uid="uid://3rb4jtkyqcll" path="res://textures/prizes/common/CreamShammy.png" id="26_3mj5r"]
@@ -459,7 +460,7 @@ offset_bottom = 16.0
 grow_horizontal = 0
 texture_normal = ExtResource("22_3t6hu")
 texture_pressed = ExtResource("22_3t6hu")
-texture_hover = ExtResource("22_3t6hu")
+texture_hover = ExtResource("23_jphf3")
 ignore_texture_size = true
 
 [node name="PourNoise" type="AudioStreamPlayer2D" parent="."]

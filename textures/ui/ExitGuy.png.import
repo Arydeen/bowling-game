@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b1plickvvj6cx"
-path="res://.godot/imported/ArcadeClosedOffBackground.png-e6b85ca15454d6d4bd07fe47101e554f.ctex"
+uid="uid://coekptpeaq60x"
+path="res://.godot/imported/ExitGuy.png-397a2fd7579c892ed27e91bc6a1cf661.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/backgrounds/ArcadeClosedOffBackground.png"
-dest_files=["res://.godot/imported/ArcadeClosedOffBackground.png-e6b85ca15454d6d4bd07fe47101e554f.ctex"]
+source_file="res://textures/ui/ExitGuy.png"
+dest_files=["res://.godot/imported/ExitGuy.png-397a2fd7579c892ed27e91bc6a1cf661.ctex"]
 
 [params]
 
@@ -25,7 +25,7 @@ compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=0
+roughness/mode=1
 roughness/src_normal=""
 process/channel_remap/red=0
 process/channel_remap/green=1

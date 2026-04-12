@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://60llxltl8avx"]
+[gd_scene load_steps=13 format=3 uid="uid://60llxltl8avx"]
 
 [ext_resource type="Script" uid="uid://3pr0hixl02yn" path="res://scripts/bowling_alley/bowling.gd" id="1_wxftb"]
 [ext_resource type="Texture2D" uid="uid://bou6tlb3yq6bd" path="res://textures/backgrounds/background.png" id="2_5yoeu"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://m62c2r5hupin" path="res://scenes/lanes/Ball.tscn" id="9_ga0rv"]
 [ext_resource type="PackedScene" uid="uid://dirdho85p16wr" path="res://scenes/lanes/Monitor.tscn" id="9_mkrau"]
 [ext_resource type="PackedScene" uid="uid://djrdboc37pwdo" path="res://scenes/lanes/PowerMeter.tscn" id="10_6s8gb"]
+[ext_resource type="Texture2D" uid="uid://bscch0ew71ahv" path="res://textures/screen/pete.png" id="10_tua5c"]
 [ext_resource type="Script" uid="uid://bdi7lcre7ymud" path="res://scripts/bowling_alley/GameManager.cs" id="11_nbmko"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_nbmko"]
@@ -101,3 +102,7 @@ offset_left = 160.0
 offset_top = 124.0
 offset_right = 160.0
 offset_bottom = 124.0
+
+[node name="Pete" type="Sprite2D" parent="."]
+position = Vector2(389, 113)
+texture = ExtResource("10_tua5c")

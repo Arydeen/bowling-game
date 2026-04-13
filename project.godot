@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 CurrencyManager="*res://scripts/currency_manager.gd"
 Music="*res://scripts/music.gd"
 GlobalData="*res://scripts/GlobalData.cs"
+Player="*res://scenes/player/player.tscn"
 
 [display]
 

@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("2_mmgx6")
-id = "honeybeer"
+id = "Honeybeer"
 display_name = "Honey Beer"
 cost_tokens = 2
 sprite_sheet = ExtResource("3_cqcdd")

@@ -18,7 +18,7 @@
 [ext_resource type="AudioStream" uid="uid://bj1psumx3ylk2" path="res://music/sfx/arcade/ShutterOpen.mp3" id="8_myf4l"]
 [ext_resource type="AudioStream" uid="uid://be5vs5hcx51wx" path="res://music/sfx/arcade/CapsuleShake.mp3" id="9_p5a0g"]
 [ext_resource type="Resource" uid="uid://bi8hvfgagjyx6" path="res://data/drinks/coconut.tres" id="9_ru2r1"]
-[ext_resource type="Script" path="res://scripts/arcade/soda_fountain.gd" id="10_xqmyw"]
+[ext_resource type="Script" uid="uid://d0dq1yl0pufuq" path="res://scripts/arcade/soda_fountain.gd" id="10_xqmyw"]
 [ext_resource type="AudioStream" uid="uid://qu1c5ed41y06" path="res://music/sfx/arcade/pourNoise.mp3" id="13_e23gp"]
 [ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="14_763b7"]
 [ext_resource type="AudioStream" uid="uid://bbxpa15jltje8" path="res://music/sfx/arcade/BeerBottleOpen.mp3" id="16_763b7"]
@@ -413,8 +413,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 1.0
 offset_top = 1.0
-offset_right = -1.0
-offset_bottom = -1.0
+offset_right = 149.0
+offset_bottom = 108.0
 grow_horizontal = 2
 grow_vertical = 2
 

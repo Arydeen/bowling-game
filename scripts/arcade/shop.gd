@@ -123,6 +123,9 @@ func _ready() -> void:
 	if capsule_prize != null and prize_description != null:
 		capsule_prize.prize_spawned.connect(prize_description.show_prize)
 
+	if capsule_prize != null:
+		capsule_prize.prize_spawned.connect(Player.add_prize)
+
 
 func _handle_space_press() -> void:
 	# Second press closes
@@ -496,6 +499,7 @@ func _on_soda_drink_chosen(d: DrinkData) -> void:
 
 	print("You bought %s for %d token%s!" % [d.display_name, d.cost_tokens, "" if d.cost_tokens == 1 else "s"])
 	_spawn_and_drop_drink(d)
+	Player.add_drink(d, 1)
 
 
 func _make_atlas_frame(sheet: Texture2D, idx: int, cols: int, cell_w: int, cell_h: int) -> AtlasTexture:

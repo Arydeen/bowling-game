@@ -7,6 +7,30 @@ signal prize_count_changed(prize_id: StringName, new_count: int)
 var drinks: Dictionary = {}
 var prizes: Dictionary = {}
 
+var pins: int = 0
+var tokens: int = 0
+
+func _ready() -> void:
+	_hook_currency_manager()
+
+func _hook_currency_manager() -> void:
+	var cm := get_node_or_null("/root/CurrencyManager")
+	if cm == null:
+		return
+
+	# connect once
+	if cm.has_signal("currencies_changed") and not cm.currencies_changed.is_connected(_on_currencies_changed):
+		cm.currencies_changed.connect(_on_currencies_changed)
+
+	# pull initial values 
+	if cm.has_method("get"): # just a safe guard; cm is a Node anyway
+		pins = int(cm.pins)
+		tokens = int(cm.tokens)
+
+func _on_currencies_changed(new_pins: int, new_tokens: int) -> void:
+	pins = new_pins
+	tokens = new_tokens
+
 func add_drink(d: Resource, amount: int = 1) -> void:
 	if d == null or amount <= 0:
 		return
@@ -60,6 +84,7 @@ func _try_get_prop(obj: Object, prop: StringName) -> Variant:
 
 func _print_inventory() -> void:
 	print("=== INVENTORY ===")
+	print("Pins: ", pins, " | Tokens: ", tokens)
 	print("Drinks: ", drinks)
 	print("Prizes: ", prizes)
 	print("=================")

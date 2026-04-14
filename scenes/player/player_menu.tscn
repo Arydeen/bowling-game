@@ -1,0 +1,92 @@
+[gd_scene load_steps=4 format=3 uid="uid://chbq178cvg158"]
+
+[ext_resource type="FontFile" uid="uid://c5d6xapxl6s0p" path="res://textures/fonts/PressStart2P-Regular.ttf" id="1_4uo60"]
+[ext_resource type="Script" uid="uid://c410phfe3tbiq" path="res://scripts/player/player_menu.gd" id="1_xwxel"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xwxel"]
+bg_color = Color(0.13, 0.13, 0.13, 0.67058825)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.64705884, 0.49411765, 0.67058825, 0.77254903)
+
+[node name="PlayerMenu" type="CanvasLayer"]
+script = ExtResource("1_xwxel")
+prize_icon_dir = null
+drink_icon_dir = null
+icon_size_max = null
+icon_size_min = null
+shrink_start = null
+shrink_full = null
+icon_spacing = null
+count_font = ExtResource("1_4uo60")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Menu" type="Control" parent="Root"]
+anchors_preset = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 315.0
+offset_bottom = 175.0
+
+[node name="Background" type="Panel" parent="Root/Menu"]
+layout_mode = 0
+offset_right = 310.0
+offset_bottom = 170.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xwxel")
+
+[node name="PrizesLabel" type="Label" parent="Root/Menu"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 3.0
+offset_right = 240.0
+offset_bottom = 25.0
+theme_override_fonts/font = ExtResource("1_4uo60")
+theme_override_font_sizes/font_size = 12
+text = "Prizes"
+
+[node name="DrinksLabel" type="Label" parent="Root/Menu"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 88.0
+offset_right = 240.0
+offset_bottom = 110.0
+theme_override_fonts/font = ExtResource("1_4uo60")
+theme_override_font_sizes/font_size = 12
+text = "Drinks"
+
+[node name="PrizeScrollContainer" type="ScrollContainer" parent="Root/Menu"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 27.0
+offset_right = 240.0
+offset_bottom = 87.0
+
+[node name="PrizeFlow" type="HFlowContainer" parent="Root/Menu/PrizeScrollContainer"]
+layout_mode = 2
+
+[node name="DrinkScrollContainer" type="ScrollContainer" parent="Root/Menu"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 110.0
+offset_right = 240.0
+offset_bottom = 170.0
+
+[node name="DrinkFlow" type="HFlowContainer" parent="Root/Menu/DrinkScrollContainer"]
+layout_mode = 2
+
+[node name="StatsGrid" type="GridContainer" parent="Root/Menu"]
+layout_mode = 0
+offset_left = 240.0
+offset_top = 10.0
+offset_right = 310.0
+offset_bottom = 160.0
+columns = 2

@@ -1,4 +1,4 @@
-[gd_scene load_steps=87 format=3 uid="uid://bhp7hx2mf8bde"]
+[gd_scene load_steps=88 format=3 uid="uid://bhp7hx2mf8bde"]
 
 [ext_resource type="Script" uid="uid://bkb744ykskyrj" path="res://scripts/arcade/shop.gd" id="1_blqjs"]
 [ext_resource type="Texture2D" uid="uid://dyoiha542l5sq" path="res://textures/backgrounds/ArcadeClosedBackground.png" id="1_viryw"]
@@ -42,6 +42,7 @@
 [ext_resource type="Texture2D" uid="uid://b4du7na7fgauu" path="res://textures/prizes/legendary/SouvenirCup.png" id="37_hrjy7"]
 [ext_resource type="Texture2D" uid="uid://80hjy77ctc8r" path="res://textures/prizes/legendary/GoldenRotation.png" id="38_8ssnr"]
 [ext_resource type="Script" uid="uid://btnbxffl6bore" path="res://scripts/arcade/prize_description.gd" id="39_3mj5r"]
+[ext_resource type="Texture2D" uid="uid://bgmaa10wxnquc" path="res://textures/prizes/legendary/KineticImpact.png" id="42_lrmib"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6lah5"]
 size = Vector2(31, 73)
@@ -484,7 +485,7 @@ script = ExtResource("25_dfcnn")
 common_items = Array[Texture2D]([ExtResource("26_3mj5r"), ExtResource("27_l0cfq"), ExtResource("28_3t6hu"), ExtResource("29_jphf3")])
 rare_items = Array[Texture2D]([ExtResource("30_lrmib"), ExtResource("31_ihq6a"), ExtResource("32_iwtn5"), ExtResource("33_8snl6")])
 epic_items = Array[Texture2D]([ExtResource("34_xcmh1"), ExtResource("35_utc20"), ExtResource("36_l5j5x")])
-legendary_items = Array[Texture2D]([ExtResource("37_hrjy7"), ExtResource("38_8ssnr")])
+legendary_items = Array[Texture2D]([ExtResource("37_hrjy7"), ExtResource("38_8ssnr"), ExtResource("42_lrmib")])
 pop_offset = Vector2(0, 0)
 
 [node name="PrizeDescription" type="CanvasLayer" parent="."]

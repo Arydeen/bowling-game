@@ -3,6 +3,9 @@ extends CanvasLayer
 @onready var prize_flow: HFlowContainer = $Root/Menu/PrizeScrollContainer/PrizeFlow
 @onready var drink_flow: HFlowContainer = $Root/Menu/DrinkScrollContainer/DrinkFlow
 
+@onready var pins_label: Label = $PinsLabel
+@onready var tokens_label: Label = $TokensLabel
+
 @export var prize_icon_dir: String = "res://textures/prizes/"          # recursive (common/rare/epic/legendary)
 @export var drink_icon_dir: String = "res://textures/drink_icons/"     # flat folder: rootbeer.png, honeybeer.png, etc.
 
@@ -28,6 +31,9 @@ var _drink_slots: Dictionary[StringName, Control] = {}
 var _drink_tex_cache: Dictionary[StringName, Texture2D] = {}
 var _drink_counts: Dictionary[StringName, int] = {}
 
+# ------- CURRENCY -------
+var _currency_manager: Node = null
+
 
 func _ready() -> void:
 	_setup_flow(prize_flow)
@@ -41,15 +47,20 @@ func _ready() -> void:
 	if not Player.drink_count_changed.is_connected(_on_drink_changed):
 		Player.drink_count_changed.connect(_on_drink_changed)
 
+	_hook_currency_manager()
+
 	call_deferred("_rebuild_all")
 
 
 func _setup_flow(flow: HFlowContainer) -> void:
 	flow.add_theme_constant_override("h_separation", icon_spacing)
 	flow.add_theme_constant_override("v_separation", icon_spacing)
-	flow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# flow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
 	flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	flow.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	flow.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+
+	# flow.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 
 func _rebuild_all() -> void:
@@ -71,6 +82,47 @@ func _rebuild_from_dict(flow: HFlowContainer, dict: Dictionary, slots: Dictionar
 			id = StringName(String(id).to_lower())
 			_drink_counts[id] = count
 		_create_or_update_slot(flow, slots, id, count, is_prize)
+
+
+# --- Currency hookup ---
+func _hook_currency_manager() -> void:
+	_currency_manager = get_node_or_null("/root/CurrencyManager")
+
+	# Connect once 
+	if _currency_manager != null and _currency_manager.has_signal("currencies_changed"):
+		if not _currency_manager.currencies_changed.is_connected(_on_currencies_changed):
+			_currency_manager.currencies_changed.connect(_on_currencies_changed)
+
+	var pins := Player.pins
+	var tokens := Player.tokens
+
+	if _currency_manager != null:
+		var p = _try_get_prop(_currency_manager, &"pins")
+		var t = _try_get_prop(_currency_manager, &"tokens")
+		if p != null:
+			pins = int(p)
+		if t != null:
+			tokens = int(t)
+
+	_set_currency_labels(pins, tokens)
+
+
+func _on_currencies_changed(new_pins: int, new_tokens: int) -> void:
+	_set_currency_labels(new_pins, new_tokens)
+
+
+func _set_currency_labels(pins: int, tokens: int) -> void:
+	if is_instance_valid(pins_label):
+		pins_label.text = str(pins)
+	if is_instance_valid(tokens_label):
+		tokens_label.text = str(tokens)
+
+
+func _try_get_prop(obj: Object, prop: StringName) -> Variant:
+	for p in obj.get_property_list():
+		if p.name == prop:
+			return obj.get(prop)
+	return null
 
 
 # --- Signals ---
@@ -215,7 +267,7 @@ func _update_all_sizes() -> void:
 
 
 # -----------------------
-# Prize icon indexing (recursive)
+# Prize icon indexing
 # -----------------------
 func _build_prize_icon_index(root_dir: String, out_map: Dictionary[StringName, String], tex_cache: Dictionary[StringName, Texture2D]) -> void:
 	out_map.clear()

@@ -246,7 +246,16 @@ animations = [{
 "texture": SubResource("AtlasTexture_6idmh")
 }, {
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_6idmh")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_oshcf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oshcf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8tind")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_8tind")
@@ -255,6 +264,12 @@ animations = [{
 "texture": SubResource("AtlasTexture_fgk4g")
 }, {
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_fgk4g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nv7ek")
+}, {
+"duration": 0.25,
 "texture": SubResource("AtlasTexture_nv7ek")
 }],
 "loop": false,
@@ -306,3 +321,4 @@ speed_scale = 2.0
 
 [node name="ShakeSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("10_fgk4g")
+volume_db = -10.146

@@ -190,7 +190,7 @@ public partial class Pin : Area2D
 		{
 			Alive = false;
 
-			_gameManager.AddScore(1);
+			_gameManager.AddScore(1, shot:true);
 			GD.Print(_gameManager.GetScore());
 
 			if (DeathSounds != null && DeathSounds.Count > 0)

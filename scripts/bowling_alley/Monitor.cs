@@ -6,12 +6,53 @@ public partial class Monitor : Node2D
 	
 	private Vector2 _hiddenPos;
 	private Vector2 _visiblePos = new Vector2(66, 64);
-	private Label _testLabel;
+
+	// Frame 1 Nodes
+	public Label f1s1 { get; set; }
+	public Label f1s2 { get; set; }
+	public Label f1s3 { get; set; }
+	public Label f1t { get; set; }
+
+	// Frame 2 Nodes
+	public Label f2s1 { get; set; }
+	public Label f2s2 { get; set; }
+	public Label f2s3 { get; set; }
+	public Label f2t { get; set; }
+
+	// Frame 3 Nodes
+	public Label f3s1 { get; set; }
+	public Label f3s2 { get; set; }
+	public Label f3s3 { get; set; }
+	public Label f3t { get; set; }
+
+	// Frame 4 Nodes
+	public Label f4s1 { get; set; }
+	public Label f4s2 { get; set; }
+	public Label f4s3 { get; set; }
+	public Label f4t { get; set; }
 
 	public override void _Ready()
 	{
 
-		// _testLabel = GetNode<Label>("ScoreBoard/Label");
+		f1s1 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot1");
+		f1s2 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot2");
+		f1s3 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot3");
+		f1t = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame1/FrameTotal");
+
+		f2s1 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame2/Shots/Shot1");
+		f2s2 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame2/Shots/Shot2");
+		f2s3 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame2/Shots/Shot3");
+		f2t = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame2/FrameTotal");
+
+		f3s1 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame3/Shots/Shot1");
+		f3s2 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame3/Shots/Shot2");
+		f3s3 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame3/Shots/Shot3");
+		f3t = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame3/FrameTotal");
+
+		f4s1 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot1");
+		f4s2 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot2");
+		f4s3 = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot3");
+		f4t = GetNode<Label>("ScoreboardControl/ScoreboardHBox/Frame4/FrameTotal");
 
 		_hiddenPos = Position;
 		ShowMonitor();
@@ -25,7 +66,7 @@ public partial class Monitor : Node2D
 
 	public void SetText(int value)
 	{
-		_testLabel.Text = value.ToString();
+		f1s1.Text = value.ToString();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

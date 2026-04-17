@@ -10,16 +10,16 @@ public partial class PowerMeter : Control
 
 	private Sprite2D _slider;
 	private ColorRect _greenZone;
-	[Export] public float GreenZoneSpeed = 20f;
-
-	private ColorRect _blueZone;
-	[Export] public float BlueZoneSpeed = 30f;
+	[Export] public float GreenZoneSpeed = 30f;
 
 	private ColorRect _yellowZone;
 	[Export] public float YellowZoneSpeed = 60f;
 
+	private ColorRect _blueZone;
+	[Export] public float BlueZoneSpeed = 80f;
+
 	private ColorRect _redZone;
-	[Export] public float RedZoneSpeed = 80f;
+	[Export] public float RedZoneSpeed = 100f;
 	
 	private Vector2 _sliderPos = new Vector2(0, 0);
 	private Vector2 _targetPos; // The "Home" position on screen
@@ -147,8 +147,8 @@ public partial class PowerMeter : Control
 		float sliderX = _slider.Position.X;
 
 		if (IsSliderInRect(_redZone, sliderX)) return RedZoneSpeed;
-		if (IsSliderInRect(_yellowZone, sliderX)) return YellowZoneSpeed;
 		if (IsSliderInRect(_blueZone, sliderX)) return BlueZoneSpeed;
+		if (IsSliderInRect(_yellowZone, sliderX)) return YellowZoneSpeed;
 		
 		return GreenZoneSpeed; // Default/Miss
 	}

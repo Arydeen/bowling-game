@@ -72,6 +72,14 @@ public partial class Pin : Area2D
 		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.7f);
 	}
 
+	public void FadeIn()
+	{
+		Tween tween = CreateTween().SetParallel(false);
+
+		_sprite.PlayBackwards();
+		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 1), 0.7f);
+	}
+
 	public void TakeDamage(int amount, bool sweet)
 	{
 		_currentHealth -= amount;
@@ -169,6 +177,9 @@ public partial class Pin : Area2D
 
 	private void ShakeDamage(Pin pin, int amount, bool sweet) 
 	{
+
+		if (!pin.Alive) return;
+
 		int shakeDamage = amount / 2;
 
 		pin.SetHealth(pin.GetHealth() - shakeDamage);
@@ -190,8 +201,7 @@ public partial class Pin : Area2D
 		{
 			Alive = false;
 
-			_gameManager.AddScore(1);
-			GD.Print(_gameManager.GetScore());
+			_gameManager.AddScore(1, shot:true);
 
 			if (DeathSounds != null && DeathSounds.Count > 0)
 			{
@@ -202,7 +212,24 @@ public partial class Pin : Area2D
 			_audio.Play();
 			_sprite.Play();
 			FadeOut();
-			_audio.Finished += () => QueueFree();
+		}
+	}
+
+	public void DieNoScore()
+	{
+		if (Alive)
+		{
+			Alive = false;
+
+			if (DeathSounds != null && DeathSounds.Count > 0)
+			{
+				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+				_audio.Stream = DeathSounds[randomIndex];
+			}
+
+			_audio.Play();
+			_sprite.Play();
+			FadeOut();
 		}
 	}
 

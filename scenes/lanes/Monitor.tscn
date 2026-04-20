@@ -5,8 +5,8 @@
 [ext_resource type="Shader" uid="uid://wteb273aj4qf" path="res://scripts/bowling_alley/shaders/crossfade.gdshader" id="3_1ktiv"]
 [ext_resource type="Texture2D" uid="uid://cc52876ybuxqq" path="res://textures/screen/screen_score_final.png" id="4_2bgoo"]
 [ext_resource type="Texture2D" uid="uid://cl0knsgyuqjb" path="res://textures/screen/screen_score.png" id="4_3t2tn"]
-[ext_resource type="VideoStream" uid="uid://co2n831djggx7" path="res://textures/videos/hdytyaia.ogv" id="4_tawgn"]
 [ext_resource type="FontFile" uid="uid://b0yocnmps7ojr" path="res://textures/fonts/Vaticanus-G3yVG.ttf" id="5_tawgn"]
+[ext_resource type="VideoStream" uid="uid://dcvty0ehu27cy" path="res://textures/videos/cat_loss.ogv" id="6_1ktiv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i7d2r"]
 shader = ExtResource("3_1ktiv")
@@ -324,7 +324,7 @@ offset_left = -48.0
 offset_top = -50.0
 offset_right = 48.0
 offset_bottom = -6.0
-stream = ExtResource("4_tawgn")
+stream = ExtResource("6_1ktiv")
 
 [node name="ScoreboardControl" type="Control" parent="."]
 layout_mode = 3

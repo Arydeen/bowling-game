@@ -1,10 +1,16 @@
-[gd_scene load_steps=27 format=3 uid="uid://dirdho85p16wr"]
+[gd_scene load_steps=50 format=3 uid="uid://dirdho85p16wr"]
 
 [ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/monitor.png" id="1_7x07b"]
 [ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scripts/bowling_alley/Monitor.cs" id="1_220yk"]
+[ext_resource type="Shader" uid="uid://wteb273aj4qf" path="res://scripts/bowling_alley/shaders/crossfade.gdshader" id="3_1ktiv"]
+[ext_resource type="Texture2D" uid="uid://cc52876ybuxqq" path="res://textures/screen/screen_score_final.png" id="4_2bgoo"]
 [ext_resource type="Texture2D" uid="uid://cl0knsgyuqjb" path="res://textures/screen/screen_score.png" id="4_3t2tn"]
 [ext_resource type="VideoStream" uid="uid://co2n831djggx7" path="res://textures/videos/hdytyaia.ogv" id="4_tawgn"]
 [ext_resource type="FontFile" uid="uid://b0yocnmps7ojr" path="res://textures/fonts/Vaticanus-G3yVG.ttf" id="5_tawgn"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i7d2r"]
+shader = ExtResource("3_1ktiv")
+shader_parameter/mix_weight = 0.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tawgn"]
 atlas = ExtResource("4_3t2tn")
@@ -86,6 +92,86 @@ region = Rect2(1728, 0, 96, 44)
 atlas = ExtResource("4_3t2tn")
 region = Rect2(1824, 0, 96, 44)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hdn5"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(0, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fvuyl"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(96, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7do5w"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(192, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vqktb"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(288, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nyi80"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(384, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hxxgp"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(480, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jlg10"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(576, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tukfm"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(672, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nc31p"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(768, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sqec1"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(864, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mjkcb"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(960, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0e7md"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1056, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eh0v7"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1152, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5gdle"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1248, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ftg8"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1344, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_68gpc"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1440, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qpj07"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1536, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h0i6t"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1632, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48su4"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1728, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1xo5u"]
+atlas = ExtResource("4_2bgoo")
+region = Rect2(1824, 0, 96, 44)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_2hdn5"]
 animations = [{
 "frames": [{
@@ -150,7 +236,72 @@ animations = [{
 "texture": SubResource("AtlasTexture_0piog")
 }],
 "loop": true,
-"name": &"default",
+"name": &"day_scoreboard",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2hdn5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fvuyl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7do5w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vqktb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nyi80")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hxxgp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jlg10")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tukfm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nc31p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sqec1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mjkcb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0e7md")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eh0v7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5gdle")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ftg8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_68gpc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qpj07")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h0i6t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48su4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1xo5u")
+}],
+"loop": true,
+"name": &"night_scoreboard",
 "speed": 5.0
 }]
 
@@ -162,9 +313,11 @@ position = Vector2(0, -44)
 texture = ExtResource("1_7x07b")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_i7d2r")
 position = Vector2(0, -28)
 sprite_frames = SubResource("SpriteFrames_2hdn5")
-autoplay = "default"
+animation = &"day_scoreboard"
+autoplay = "day_scoreboard"
 
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
 offset_left = -48.0
@@ -332,3 +485,71 @@ layout_mode = 2
 theme_override_constants/line_spacing = 0
 theme_override_fonts/font = ExtResource("5_tawgn")
 theme_override_font_sizes/font_size = 8
+
+[node name="NightScoreboardControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -48.0
+offset_top = -50.0
+offset_right = 48.0
+offset_bottom = -6.0
+
+[node name="ScoreboardHBox" type="HBoxContainer" parent="NightScoreboardControl"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 14.0
+offset_right = 51.0
+offset_bottom = 61.0
+theme_override_constants/separation = 2
+
+[node name="Frame1" type="VBoxContainer" parent="NightScoreboardControl/ScoreboardHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Shots" type="HBoxContainer" parent="NightScoreboardControl/ScoreboardHBox/Frame1"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Shot1" type="Label" parent="NightScoreboardControl/ScoreboardHBox/Frame1/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 16
+
+[node name="Shot2" type="Label" parent="NightScoreboardControl/ScoreboardHBox/Frame1/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 16
+
+[node name="Shot3" type="Label" parent="NightScoreboardControl/ScoreboardHBox/Frame1/Shots"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 16
+
+[node name="ScoreboardVBox" type="VBoxContainer" parent="NightScoreboardControl"]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 15.0
+offset_right = 95.0
+offset_bottom = 39.0
+theme_override_constants/separation = 0
+
+[node name="Need" type="Label" parent="NightScoreboardControl/ScoreboardVBox"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+
+[node name="Have" type="Label" parent="NightScoreboardControl/ScoreboardVBox"]
+layout_mode = 2
+theme_override_constants/line_spacing = 0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_font_sizes/font_size = 8
+text = "
+"

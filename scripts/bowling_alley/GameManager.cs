@@ -147,10 +147,13 @@ public partial class GameManager : Node2D
 
 	public void FadeToNight(float duration = 2.0f)
 	{
+		ResetScoreboard();
+
 		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
 
 		Color nightColor = new Color(0.3f, 0.3f, 0.6f);
 
+		_monitor.TransitionToNight();
 		Tween tween = CreateTween();
 
 		tween.TweenProperty(lights, "color", nightColor, duration)
@@ -166,6 +169,7 @@ public partial class GameManager : Node2D
 
 		Color DayColor = new Color(1f, 1f, 1f);
 
+		_monitor.TransitionToDay();
 		Tween tween = CreateTween();
 
 		DeactivateSpotlight();

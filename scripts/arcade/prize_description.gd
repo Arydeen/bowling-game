@@ -17,7 +17,8 @@ class_name PrizeDescription
 	"LeadBall": "Lead Ball: Strength increase.",
 	"RedBall": "Red Ball: Speed increase.",
 	"RubberBall": "Rubber Ball: Better Bumper bounces and +2 Bumpers.",
-	"ThreeBumper": "Stack of Bumpers: +3 Bumpers."
+	"ThreeBumper": "Stack of Bumpers: +3 Bumpers.",
+	"KineticImpact": "Kinetic Impact: First ball marks next ball explodes."
 }
 
 var label: Label

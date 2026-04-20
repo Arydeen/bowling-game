@@ -187,7 +187,7 @@ public partial class Ball : CharacterBody2D
 			{
 				if (!pin.GetHitThisRound())
 				{
-					pin.TakeDamage(BallDamage, _isSweet);
+					pin.TakeDamage(BallDamage, _isSweet, 1);
 					pin.SetHitThisRound(true);
 					BallDamage = BallDamage / 3;
 

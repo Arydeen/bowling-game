@@ -25,13 +25,18 @@ public partial class Pin : Area2D
 	private Node2D _spritePivot;
 	private GameManager _gameManager;
 
+	private Tween _kineticTween;
+	private GpuParticles2D _kineticExplosion;
+
+	public bool _kineticFlag { get; set; } = false; 
+
 	public void SetHitThisRound(bool val) { _hitThisRound = val;}
 
 	public bool GetHitThisRound() {return _hitThisRound;}
 	
 
 
-	// Called when the node enters the scene tree for the first time.
+	// Initialization Methods --------------------------------------------------------------------------------------------------- //
 	public override void _Ready()
 	{
 
@@ -58,11 +63,108 @@ public partial class Pin : Area2D
 		_healthBar.MaxValue = MaxHealth;
 		_healthBar.Value = _currentHealth;
 
+		// Kinetic Ball Handling
+		_kineticTween = CreateTween();
+		_kineticExplosion = GetNode<GpuParticles2D>("KineticExplosionParticles");
+
 	}
- 
-	public void DamageAnimation(bool sweet)
+
+	public override void _Process(double delta)
+	{
+		if (_kineticFlag && !_kineticTween.IsRunning()) 
+		{
+			StartKineticEffect();
+		} else if (!_kineticFlag && _kineticTween.IsRunning())
+		{
+			StopKineticEffect();
+		}
+	}
+	// End Initializaion Methods --------------------------------------------------------------------------------------------------- //
+
+	// Damage Methods --------------------------------------------------------------------------------------------------- //
+	public void TakeDamage(int amount, bool sweet, int type)
+	{
+
+		if (type == 1 && _kineticFlag) { amount *= 2;}
+
+		_currentHealth -= amount;
+		_healthBar.Value = _currentHealth;
+
+		if (_currentHealth <= 0)
+		{
+			Die();
+		} else
+		{
+			DamageAnimation(sweet, false);
+		}
+
+		GetTree().CreateTimer(0.15f).Timeout += () => CalculateShake(amount, sweet);
+	}
+
+	private void ShakeDamage(Pin pin, int amount, bool sweet) 
+	{
+
+		if (!pin.Alive) return;
+
+		int shakeDamage = amount / 2;
+
+		pin.SetHealth(pin.GetHealth() - shakeDamage);
+		pin.SetHealthBar(pin.GetHealth());
+
+		if (pin.GetHealth() <= 0)
+		{
+			pin.Die();
+		} else
+		{
+			pin.DamageAnimation(sweet, true);
+			HandleKinetic(pin);
+		}
+	}
+
+	private void CalculateShake(int damage, bool sweet)
+	{
+		Area2D shakebox = GetNode<Area2D>("Shakebox");
+		var areas = shakebox.GetOverlappingAreas();
+
+		foreach(Area2D area in areas)
+		{
+			if (area is Pin pin && pin != this)
+			{
+				ShakeDamage(pin, damage, sweet);
+			}
+		}
+	}
+
+	public void Die()
+	{
+
+		if (Alive)
+		{
+			Alive = false;
+
+			_gameManager.AddScore(1, shot:true);
+
+			if (DeathSounds != null && DeathSounds.Count > 0)
+			{
+				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+				_audio.Stream = DeathSounds[randomIndex];
+			}
+
+			if (_kineticFlag) {PlayKineticParticles();}
+			_audio.Play();
+			_sprite.Play();
+			FadeOut();
+		}
+	}
+
+	// End Damage Methods --------------------------------------------------------------------------------------------------- //
+
+	// Base Animation Methods ------------------------------------------------------------------------------------------------------- //
+	
+	public void DamageAnimation(bool sweet, bool shake)
 	{
 		if (sweet) {PlayHeavyWobble();} else {PlayWobble();}
+		if (_kineticFlag && !shake) {PlayKineticParticles();}
 	}
 
 	public void FadeOut()
@@ -80,25 +182,7 @@ public partial class Pin : Area2D
 		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 1), 0.7f);
 	}
 
-	public void TakeDamage(int amount, bool sweet)
-	{
-		_currentHealth -= amount;
-		_healthBar.Value = _currentHealth;
-
-		if (_currentHealth <= 0)
-		{
-			Die();
-		} else
-		{
-			DamageAnimation(sweet);
-		}
-
-		GetTree().CreateTimer(0.15f).Timeout += () => CalculateShake(amount, sweet);
-
-
-	}
-
-	// Heavy Wobble for sweet spot shake
+		// Heavy Wobble for sweet spot shake
 	public void PlayHeavyWobble()
 	{
 		Tween tween = CreateTween().SetParallel(false);
@@ -141,19 +225,55 @@ public partial class Pin : Area2D
 		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
 	}
 
-	private void CalculateShake(int damage, bool sweet)
-	{
-		Area2D shakebox = GetNode<Area2D>("Shakebox");
-		var areas = shakebox.GetOverlappingAreas();
+	// End Base Animation Methods --------------------------------------------------------------------------------------------------- //
 
-		foreach(Area2D area in areas)
+	// Kinetic Power Up Methods --------------------------------------------------------------------------------------------------- //
+	private static void HandleKinetic(Pin pin)
+	{
+		if (GlobalData.Instance.KineticBall)
 		{
-			if (area is Pin pin && pin != this)
-			{
-				ShakeDamage(pin, damage, sweet);
-			}
+			pin._kineticFlag = true;
 		}
 	}
+
+ 	private void PlayKineticParticles()
+	{
+		_kineticExplosion.Emitting = true;
+		_kineticExplosion.Restart();
+	}
+
+	public void StartKineticEffect()
+	{
+		Color kineticColor = new Color(0.9f, 0.5f, 0.9f);
+		Color baseColor = new Color(1f, 1f, 1f);
+
+		_kineticTween = CreateTween().SetLoops();
+
+		_kineticTween.TweenProperty(_sprite, "modulate", kineticColor, 0.75f)
+			.SetTrans(Tween.TransitionType.Sine)
+			.SetEase(Tween.EaseType.Out);
+
+		_kineticTween.TweenProperty(_sprite, "modulate", baseColor, 0.75f)
+			.SetTrans(Tween.TransitionType.Sine)
+			.SetEase(Tween.EaseType.In);
+	}
+
+	public void StopKineticEffect()
+	{
+		Color baseColor = new Color(1f, 1f, 1f);
+
+		if (_kineticTween != null && _kineticTween.IsRunning())
+		{
+			_kineticTween.Kill();
+		}
+
+		Tween resetTween = CreateTween();
+		resetTween.TweenProperty(_sprite, "modulate", baseColor, 0.5f)
+			.SetTrans(Tween.TransitionType.Sine)
+			.SetEase(Tween.EaseType.Out);
+	}
+	
+	// End Kinetic Power Up Methods ---------------------------------------------------------------------------------------------------//
 
 	public void SetHealth(int amount)
 	{
@@ -175,67 +295,4 @@ public partial class Pin : Area2D
 		return _healthBar.Value;
 	}
 
-	private void ShakeDamage(Pin pin, int amount, bool sweet) 
-	{
-
-		if (!pin.Alive) return;
-
-		int shakeDamage = amount / 2;
-
-		pin.SetHealth(pin.GetHealth() - shakeDamage);
-		pin.SetHealthBar(pin.GetHealth());
-
-		if (pin.GetHealth() <= 0)
-		{
-			pin.Die();
-		} else
-		{
-			if (sweet) {pin.PlayHeavyWobble();} else {pin.PlayWobble();}
-		}
-	}
-
-	public void Die()
-	{
-
-		if (Alive)
-		{
-			Alive = false;
-
-			_gameManager.AddScore(1, shot:true);
-
-			if (DeathSounds != null && DeathSounds.Count > 0)
-			{
-				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-				_audio.Stream = DeathSounds[randomIndex];
-			}
-
-			_audio.Play();
-			_sprite.Play();
-			FadeOut();
-		}
-	}
-
-	public void DieNoScore()
-	{
-		if (Alive)
-		{
-			Alive = false;
-
-			if (DeathSounds != null && DeathSounds.Count > 0)
-			{
-				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-				_audio.Stream = DeathSounds[randomIndex];
-			}
-
-			_audio.Play();
-			_sprite.Play();
-			FadeOut();
-		}
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		
-	}
 }

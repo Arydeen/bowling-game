@@ -28,6 +28,20 @@ public partial class GameManager : Node2D
 
 	// End Game Tracking Variables --------------------------------------------- //
 
+	public override void _Ready()
+	{
+		_monitor = GetNode<Monitor>("../Monitor");
+
+		_spotlight = GetNode<PointLight2D>("../Spotlight");
+		_spotlight.Enabled = false;
+		_switchNoise = GetNode<AudioStreamPlayer2D>("../Spotlight/SpotlightNoise");
+
+		StartRound();
+		SpawnNewBall();
+	}
+
+
+	// Reset Methods //
 	private void ResetPins()
 	{
 		var allPins = GetTree().GetNodesInGroup("Pins");
@@ -41,55 +55,11 @@ public partial class GameManager : Node2D
 				pin.SetHitThisRound(false);
 				pin.SetHealth(PinHealth);
 				pin.SetHealthBar(PinHealth);
+
+				pin._kineticFlag = false;
 			}
 		}
-	}
-
-	public void ActivateSpotlight()
-	{
-		_spotlight.Enabled = true;
-		_switchNoise.Play();
-		Tween tween = CreateTween();
-		tween.TweenProperty(_spotlight, "energy", 0.8f, 0.2f).From(0f);
-	}
-
-	public void DeactivateSpotlight()
-	{
-		_switchNoise.Play();
-		Tween tween = CreateTween();
-		tween.TweenProperty(_spotlight, "energy", 0f, 0.2f).From(0.8f);
-		tween.Finished += () => _spotlight.Enabled = false;
-	}
-
-
-	public void FadeToNight(float duration = 2.0f)
-	{
-		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
-
-		Color nightColor = new Color(0.3f, 0.3f, 0.6f);
-
-		Tween tween = CreateTween();
-
-		tween.TweenProperty(lights, "color", nightColor, duration)
-		 .SetTrans(Tween.TransitionType.Sine)
-		 .SetEase(Tween.EaseType.Out);
-
-		 tween.Finished += () => ActivateSpotlight();
-	}
-
-	public void FadeToDay(float duration = 2.0f)
-	{
-		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
-
-		Color DayColor = new Color(1f, 1f, 1f);
-
-		Tween tween = CreateTween();
-
-		DeactivateSpotlight();
-
-		tween.TweenProperty(lights, "color", DayColor, duration)
-		 .SetTrans(Tween.TransitionType.Sine)
-		 .SetEase(Tween.EaseType.Out);
+		ResetPinsForRound();
 	}
 
 	public void ResetScoreboard()
@@ -142,37 +112,108 @@ public partial class GameManager : Node2D
 		_shotNum += 1;
 	}
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		_monitor = GetNode<Monitor>("../Monitor");
-
-		_spotlight = GetNode<PointLight2D>("../Spotlight");
-		_spotlight.Enabled = false;
-		_switchNoise = GetNode<AudioStreamPlayer2D>("../Spotlight/SpotlightNoise");
-
-		StartRound();
-		SpawnNewBall();
-	}
-
-	public int GetScore()
-	{
-		return _totalScore;
-	}
-
+	// This method resets the "Hit this round" status for all pins
 	private void ResetPinsForRound()
 	{
 		var allPins = GetTree().GetNodesInGroup("Pins");
 
 		foreach (Node node in allPins)
 		{
-			if (node is Pin pin)
+			if (node is Pin pin && pin.Alive)
 			{
 				pin.SetHitThisRound(false);
 			}
 		}
 	}
+	// End Reset Methods //
 
+	// Animation / Effect Methods //
+	public void ActivateSpotlight()
+	{
+		_spotlight.Enabled = true;
+		_switchNoise.Play();
+		Tween tween = CreateTween();
+		tween.TweenProperty(_spotlight, "energy", 0.8f, 0.2f).From(0f);
+	}
+
+	public void DeactivateSpotlight()
+	{
+		_switchNoise.Play();
+		Tween tween = CreateTween();
+		tween.TweenProperty(_spotlight, "energy", 0f, 0.2f).From(0.8f);
+		tween.Finished += () => _spotlight.Enabled = false;
+	}
+
+
+	public void FadeToNight(float duration = 2.0f)
+	{
+		ResetScoreboard();
+
+		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
+
+		Color nightColor = new Color(0.3f, 0.3f, 0.6f);
+
+		_monitor.TransitionToNight();
+		Tween tween = CreateTween();
+
+		tween.TweenProperty(lights, "color", nightColor, duration)
+		 .SetTrans(Tween.TransitionType.Sine)
+		 .SetEase(Tween.EaseType.Out);
+
+		 tween.Finished += () => ActivateSpotlight();
+	}
+
+	public void FadeToDay(float duration = 2.0f)
+	{
+		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
+
+		Color DayColor = new Color(1f, 1f, 1f);
+
+		_monitor.TransitionToDay();
+		Tween tween = CreateTween();
+
+		DeactivateSpotlight();
+
+		tween.TweenProperty(lights, "color", DayColor, duration)
+		 .SetTrans(Tween.TransitionType.Sine)
+		 .SetEase(Tween.EaseType.Out);
+	}
+	// End Animation / Effect Methods //
+
+	// Scoreboard Methods //
+	private void UpdateFrameText()
+	{
+		string newText = _roundScore.ToString();
+		switch(_frameNum)
+		{
+			case (1):
+				_monitor.f1t.Text = newText;
+				break;
+			case (2):
+				_monitor.f2t.Text = newText;
+				break;
+			case (3):
+				_monitor.f3t.Text = newText;
+				break;
+			case (4):
+				_monitor.f4t.Text = newText;
+				break;
+		}
+	}
+
+	private void UpdateShotText()
+	{
+		string path = $"ScoreboardControl/ScoreboardHBox/Frame{_frameNum}/Shots/Shot{_shotNum}";
+		Label shotLabel = _monitor.GetNode<Label>(path);
+		
+		if (shotLabel != null)
+		{
+			shotLabel.Text = _shotScore.ToString();
+		}
+	}
+	// End Scoreboard Methods //
+
+	// Ball Methods //
 	public void SpawnNewBall()
 	{
 		ResetPinsForRound();
@@ -212,36 +253,12 @@ public partial class GameManager : Node2D
 			
 		GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall();
 	}
+	// End Ball Methods //
 
-	private void UpdateFrameText()
+	// Score Methods //
+	public int GetScore()
 	{
-		string newText = _roundScore.ToString();
-		switch(_frameNum)
-		{
-			case (1):
-				_monitor.f1t.Text = newText;
-				break;
-			case (2):
-				_monitor.f2t.Text = newText;
-				break;
-			case (3):
-				_monitor.f3t.Text = newText;
-				break;
-			case (4):
-				_monitor.f4t.Text = newText;
-				break;
-		}
-	}
-
-	private void UpdateShotText()
-	{
-		string path = $"ScoreboardControl/ScoreboardHBox/Frame{_frameNum}/Shots/Shot{_shotNum}";
-		Label shotLabel = _monitor.GetNode<Label>(path);
-		
-		if (shotLabel != null)
-		{
-			shotLabel.Text = _shotScore.ToString();
-		}
+		return _totalScore;
 	}
 
 	public void AddScore(int amount, bool total = false, bool round = false, bool frame = false, bool shot = false)
@@ -251,9 +268,13 @@ public partial class GameManager : Node2D
 		if (frame) {_frameScore += amount;}
 		if (shot) {_shotScore += amount;}
 	}
+	// End Score Methods
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		if (Input.IsActionJustPressed("GiveKineticBall"))
+		{
+			GlobalData.Instance.KineticBall = true;
+		}
 	}
 }

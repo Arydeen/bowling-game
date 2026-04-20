@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://chehndxvyxrh0"]
+[gd_scene load_steps=48 format=3 uid="uid://chehndxvyxrh0"]
 
 [ext_resource type="Script" uid="uid://dyt3qjgq50jem" path="res://scripts/bowling_alley/Pin.cs" id="1_ay5r2"]
 [ext_resource type="Texture2D" uid="uid://yehbmevy5ipr" path="res://textures/pins/pin_r1.png" id="2_8bins"]
@@ -277,6 +277,19 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fgk4g"]
+lifetime_randomness = 0.52
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 5.0
+direction = Vector3(0, -1, 0)
+spread = 61.519
+flatness = 1.0
+initial_velocity_min = 54.219997
+initial_velocity_max = 103.399994
+gravity = Vector3(0, 0, 0)
+color = Color(0.8845813, 0.00064321933, 0.8875311, 1)
+
 [node name="Pin" type="Area2D" groups=["Pins"]]
 collision_layer = 3
 script = ExtResource("1_ay5r2")
@@ -322,3 +335,12 @@ speed_scale = 2.0
 [node name="ShakeSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("10_fgk4g")
 volume_db = -10.146
+
+[node name="KineticExplosionParticles" type="GPUParticles2D" parent="."]
+position = Vector2(0, -7)
+emitting = false
+amount = 20
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_fgk4g")

@@ -7,6 +7,7 @@ public partial class GlobalData : Node
 
 	public int TotalPins = 0;
 	public float PowerUpSpeedBoost = 0f; // Example, I'm not sure how we will actually implement powerups
+	public bool KineticBall {get; set;} = false;
 
 	public int Frame = 0;
 

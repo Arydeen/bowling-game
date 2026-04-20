@@ -81,6 +81,84 @@ public partial class Pin : Area2D
 	}
 	// End Initializaion Methods --------------------------------------------------------------------------------------------------- //
 
+	// Damage Methods --------------------------------------------------------------------------------------------------- //
+	public void TakeDamage(int amount, bool sweet, int type)
+	{
+
+		if (type == 1 && _kineticFlag) { amount *= 2;}
+
+		_currentHealth -= amount;
+		_healthBar.Value = _currentHealth;
+
+		if (_currentHealth <= 0)
+		{
+			Die();
+		} else
+		{
+			DamageAnimation(sweet, false);
+		}
+
+		GetTree().CreateTimer(0.15f).Timeout += () => CalculateShake(amount, sweet);
+	}
+
+	private void ShakeDamage(Pin pin, int amount, bool sweet) 
+	{
+
+		if (!pin.Alive) return;
+
+		int shakeDamage = amount / 2;
+
+		pin.SetHealth(pin.GetHealth() - shakeDamage);
+		pin.SetHealthBar(pin.GetHealth());
+
+		if (pin.GetHealth() <= 0)
+		{
+			pin.Die();
+		} else
+		{
+			pin.DamageAnimation(sweet, true);
+			HandleKinetic(pin);
+		}
+	}
+
+	private void CalculateShake(int damage, bool sweet)
+	{
+		Area2D shakebox = GetNode<Area2D>("Shakebox");
+		var areas = shakebox.GetOverlappingAreas();
+
+		foreach(Area2D area in areas)
+		{
+			if (area is Pin pin && pin != this)
+			{
+				ShakeDamage(pin, damage, sweet);
+			}
+		}
+	}
+
+	public void Die()
+	{
+
+		if (Alive)
+		{
+			Alive = false;
+
+			_gameManager.AddScore(1, shot:true);
+
+			if (DeathSounds != null && DeathSounds.Count > 0)
+			{
+				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+				_audio.Stream = DeathSounds[randomIndex];
+			}
+
+			if (_kineticFlag) {PlayKineticParticles();}
+			_audio.Play();
+			_sprite.Play();
+			FadeOut();
+		}
+	}
+
+	// End Damage Methods --------------------------------------------------------------------------------------------------- //
+
 	// Base Animation Methods ------------------------------------------------------------------------------------------------------- //
 	
 	public void DamageAnimation(bool sweet, bool shake)
@@ -150,6 +228,14 @@ public partial class Pin : Area2D
 	// End Base Animation Methods --------------------------------------------------------------------------------------------------- //
 
 	// Kinetic Power Up Methods --------------------------------------------------------------------------------------------------- //
+	private static void HandleKinetic(Pin pin)
+	{
+		if (GlobalData.Instance.KineticBall)
+		{
+			pin._kineticFlag = true;
+		}
+	}
+
  	private void PlayKineticParticles()
 	{
 		_kineticExplosion.Emitting = true;
@@ -188,84 +274,6 @@ public partial class Pin : Area2D
 	}
 	
 	// End Kinetic Power Up Methods ---------------------------------------------------------------------------------------------------//
-
-	// Damage Methods --------------------------------------------------------------------------------------------------- //
-	public void TakeDamage(int amount, bool sweet, int type)
-	{
-
-		if (type == 1 && _kineticFlag) { amount *= 2;}
-
-		_currentHealth -= amount;
-		_healthBar.Value = _currentHealth;
-
-		if (_currentHealth <= 0)
-		{
-			Die();
-		} else
-		{
-			DamageAnimation(sweet, false);
-		}
-
-		GetTree().CreateTimer(0.15f).Timeout += () => CalculateShake(amount, sweet);
-	}
-
-	private void ShakeDamage(Pin pin, int amount, bool sweet) 
-	{
-
-		if (!pin.Alive) return;
-
-		int shakeDamage = amount / 2;
-
-		pin.SetHealth(pin.GetHealth() - shakeDamage);
-		pin.SetHealthBar(pin.GetHealth());
-
-		if (pin.GetHealth() <= 0)
-		{
-			pin.Die();
-		} else
-		{
-			pin.DamageAnimation(sweet, true);
-			pin._kineticFlag = true;
-		}
-	}
-
-	private void CalculateShake(int damage, bool sweet)
-	{
-		Area2D shakebox = GetNode<Area2D>("Shakebox");
-		var areas = shakebox.GetOverlappingAreas();
-
-		foreach(Area2D area in areas)
-		{
-			if (area is Pin pin && pin != this)
-			{
-				ShakeDamage(pin, damage, sweet);
-			}
-		}
-	}
-
-	public void Die()
-	{
-
-		if (Alive)
-		{
-			Alive = false;
-
-			_gameManager.AddScore(1, shot:true);
-
-			if (DeathSounds != null && DeathSounds.Count > 0)
-			{
-				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-				_audio.Stream = DeathSounds[randomIndex];
-			}
-
-			if (_kineticFlag) {PlayKineticParticles();}
-			_audio.Play();
-			_sprite.Play();
-			FadeOut();
-		}
-	}
-
-	// End Damage Methods --------------------------------------------------------------------------------------------------- //
 
 	public void SetHealth(int amount)
 	{

@@ -268,5 +268,9 @@ public partial class GameManager : Node2D
 
 	public override void _Process(double delta)
 	{
+		if (Input.IsActionJustPressed("GiveKineticBall"))
+		{
+			GlobalData.Instance.KineticBall = true;
+		}
 	}
 }

@@ -9,6 +9,7 @@ public partial class GameManager : Node2D
 	[Export] public Vector2 BallSpawnPos = new Vector2(160, 175);
 	[Export] public PowerMeter Meter;
 	[Export] public int PinHealth = 100;
+	[Export] public bool isNight = false;
 
 	private Monitor _monitor;
 	private PointLight2D _spotlight;
@@ -24,6 +25,7 @@ public partial class GameManager : Node2D
 	private int _roundNum = 0; // Current round
 	private int _frameNum = 0; // Current frame in round
 	private int _shotNum = 0; // Current shot in frame
+	private int _nightReq = 4; // Number of pins needed to pass the night
 	private bool _firstFrame = true; // Is this the first Frame
 
 	// End Game Tracking Variables --------------------------------------------- //
@@ -62,7 +64,7 @@ public partial class GameManager : Node2D
 		ResetPinsForRound();
 	}
 
-	public void ResetScoreboard()
+	public void ResetDayScoreboard()
 	{
 		for (int frame = 1; frame < 5; frame++)
 		{
@@ -72,6 +74,17 @@ public partial class GameManager : Node2D
 			}
 			_monitor.GetNode<Label>($"ScoreboardControl/ScoreboardHBox/Frame{frame}/FrameTotal").Text = "";
 		}
+	}
+
+	public void ResetNightScoreboard()
+	{
+		for (int shot = 1; shot < 4; shot++)
+		{
+			_monitor.GetNode<Label>($"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot{shot}").Text = "";
+		}
+		_monitor.GetNode<Label>($"NightScoreboardControl/ScoreboardVBox/Need").Text = "";
+		_monitor.GetNode<Label>($"NightScoreboardControl/ScoreboardVBox/Have").Text = "";
+
 	}
 
 	private void StartRound()
@@ -84,26 +97,58 @@ public partial class GameManager : Node2D
 
 		_frameNum = 0;
 		_shotNum = 0;
-		ResetScoreboard();
 		StartFrame();
 	}
 
 	private void StartFrame()
 	{
-		if (_frameNum + 1 > 4) {StartRound(); return;}
+		if (_frameNum + 1 == 5) {
+			GetTree().CreateTimer(1.25f).Timeout += StartNightFrame; 
+			return;
+		} else if (_frameNum + 1 > 5)
+		{
+			GetTree().CreateTimer(1.25f).Timeout += EndNightFrame;
+			return;
+		} 
+		_frameScore = 0;
+		_frameNum += 1;
+
+		_shotNum = 0;
+		_shotScore = 0;
+			
+		if (!_firstFrame) { GetTree().CreateTimer(1.25f).Timeout += ResetPins; }
+		_firstFrame = false;
+
+		StartShot();
+
+		
+	}
+
+	private void StartNightFrame()
+	{
+		isNight = true;
+		_nightReq = _roundScore + 9999;
+		ResetDayScoreboard();
+		FadeToNight();
+		ResetPins();
 
 		_frameScore = 0;
 		_frameNum += 1;
 
 		_shotNum = 0;
 		_shotScore = 0;
-		
-		if (!_firstFrame) { GetTree().CreateTimer(1.25f).Timeout += () => ResetPins(); }
-		if (_frameNum == 4) {FadeToNight();}
-		else if (_frameNum == 1 && !_firstFrame) {FadeToDay();}
-		_firstFrame = false;
 
 		StartShot();
+	}
+
+	private void EndNightFrame()
+	{
+		isNight = false;
+		ResetNightScoreboard();
+		FadeToDay();
+		ResetPins();
+
+		StartRound();
 	}
 
 	private void StartShot()
@@ -147,7 +192,7 @@ public partial class GameManager : Node2D
 
 	public void FadeToNight(float duration = 2.0f)
 	{
-		ResetScoreboard();
+		ResetDayScoreboard();
 
 		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
 
@@ -160,11 +205,23 @@ public partial class GameManager : Node2D
 		 .SetTrans(Tween.TransitionType.Sine)
 		 .SetEase(Tween.EaseType.Out);
 
-		 tween.Finished += () => ActivateSpotlight();
+		 tween.Finished += ActivateSpotlight;
+		 tween.Finished += UpdateNightReqText;
+		 tween.Finished += UpdateFrameText;
 	}
 
 	public void FadeToDay(float duration = 2.0f)
 	{
+		if (_roundScore < _nightReq)
+		{
+			DeactivateSpotlight();
+			_monitor._video.Play();
+			_monitor._video.Finished += () => GetTree().Paused = true;
+			return;
+		}
+
+		ResetNightScoreboard();
+
 		CanvasModulate lights = GetNode<CanvasModulate>("../Lights");
 
 		Color DayColor = new Color(1f, 1f, 1f);
@@ -198,18 +255,26 @@ public partial class GameManager : Node2D
 			case (4):
 				_monitor.f4t.Text = newText;
 				break;
+			case (5):
+				_monitor.fnt.Text = newText;
+				break;
 		}
 	}
 
 	private void UpdateShotText()
 	{
-		string path = $"ScoreboardControl/ScoreboardHBox/Frame{_frameNum}/Shots/Shot{_shotNum}";
+		string path = isNight ? $"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot{_shotNum}" : $"ScoreboardControl/ScoreboardHBox/Frame{_frameNum}/Shots/Shot{_shotNum}";
 		Label shotLabel = _monitor.GetNode<Label>(path);
 		
 		if (shotLabel != null)
 		{
 			shotLabel.Text = _shotScore.ToString();
 		}
+	}
+
+	private void UpdateNightReqText()
+	{
+		_monitor.fnn.Text = _nightReq.ToString();
 	}
 	// End Scoreboard Methods //
 

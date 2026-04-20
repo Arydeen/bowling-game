@@ -7,6 +7,7 @@ public partial class Monitor : Node2D
 	private Vector2 _hiddenPos;
 	private Vector2 _visiblePos = new Vector2(66, 64);
 
+	public VideoStreamPlayer _video { get; set; }
 	private AnimatedSprite2D _animSprite;
 	private ShaderMaterial _shaderMat;
 
@@ -48,6 +49,7 @@ public partial class Monitor : Node2D
 
 	public override void _Ready()
 	{
+		_video = GetNode<VideoStreamPlayer>("VideoStreamPlayer");
 
 		_animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_shaderMat = _animSprite.Material as ShaderMaterial;
@@ -97,6 +99,7 @@ public partial class Monitor : Node2D
 	{
 		f1s1.Text = value.ToString();
 	}
+	
 
 	public void TransitionToNight(float duration = 1.0f)
 	{

@@ -10,6 +10,7 @@ public partial class Monitor : Node2D
 	public VideoStreamPlayer _video { get; set; }
 	private AnimatedSprite2D _animSprite;
 	private ShaderMaterial _shaderMat;
+	private PointLight2D _monitorlight;
 
 	// Day Scorboard //
 	// Frame 1 Nodes
@@ -50,6 +51,7 @@ public partial class Monitor : Node2D
 	public override void _Ready()
 	{
 		_video = GetNode<VideoStreamPlayer>("VideoStreamPlayer");
+		_monitorlight = GetNode<PointLight2D>("Spotlight");
 
 		_animSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_shaderMat = _animSprite.Material as ShaderMaterial;
@@ -98,6 +100,22 @@ public partial class Monitor : Node2D
 	public void SetText(int value)
 	{
 		f1s1.Text = value.ToString();
+	}
+
+	public void ActivateSpotlight()
+	{
+		_monitorlight.Enabled = true;
+		// _switchNoise.Play();
+		Tween tween = CreateTween();
+		tween.TweenProperty(_monitorlight, "energy", 0.8f, 0.2f).From(0f);
+	}
+
+	public void DeactivateSpotlight()
+	{
+		// _switchNoise.Play();
+		Tween tween = CreateTween();
+		tween.TweenProperty(_monitorlight, "energy", 0f, 0.2f).From(0.8f);
+		tween.Finished += () => _monitorlight.Enabled = false;
 	}
 	
 

@@ -54,12 +54,11 @@ vertical_alignment = 1
 
 [node name="ShopkeeperTalk" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("2_1qljl")
-volume_db = 18.0
 
 [node name="CoinAdded" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("3_b43qj")
-volume_db = -2.0
+volume_db = -40.0
 
 [node name="CoinInserted" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_42l6i")
-volume_db = 24.0
+volume_db = 10.0

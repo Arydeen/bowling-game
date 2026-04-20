@@ -23,42 +23,42 @@ func ensure_default_hover_toasts() -> void:
 		return
 
 	match id:
-		"milk":
+		"Milk":
 			hover_toasts = PackedStringArray([
 				"Mmm fountain milk: +Strength."
 			])
 
-		"coffee":
+		"Coffee":
 			hover_toasts = PackedStringArray([
 				"Fountain coffee?: +Speed."
 			])
 
-		"rootbeer":
+		"Rootbeer":
 			hover_toasts = PackedStringArray([
 				"Fizzy boost: +Impact."
 			])
 
-		"critcola", "crit_cola", "crit-cola":
+		"Critcola", "crit_cola", "crit-cola":
 			hover_toasts = PackedStringArray([
 				"Luck in a cup: +Crit Chance."
 			])
 
-		"honeybeer":
+		"Honeybeer":
 			hover_toasts = PackedStringArray([
 				"Sweet slowdown: Slower power meter."
 			])
 
-		"martini":
+		"Martini":
 			hover_toasts = PackedStringArray([
 				"Shaken for speed: 1.5× Speed."
 			])
 
-		"xxxbrew":
+		"Xxxbrew":
 			hover_toasts = PackedStringArray([
 				"Mystery pirate fuel: 2× Impact."
 			])
 
-		"coconut":
+		"Coconut":
 			hover_toasts = PackedStringArray([
 				"2× Strength + 1-frame Coconut Ball."
 			])

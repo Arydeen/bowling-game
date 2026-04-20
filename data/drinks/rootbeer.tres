@@ -6,7 +6,7 @@
 
 [resource]
 script = ExtResource("1_2udof")
-id = "rootbeer"
+id = "Rootbeer"
 display_name = "Root Beer"
 sprite_sheet = ExtResource("3_rwlq2")
 sheet_cols = 4

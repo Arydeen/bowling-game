@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1_th3ie")
-id = "milk"
+id = "Milk"
 display_name = "Milk"
 sprite_sheet = ExtResource("2_egaoi")
 sheet_cols = 6

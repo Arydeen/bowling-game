@@ -6,8 +6,8 @@
 
 [resource]
 script = ExtResource("1_jjtkf")
-id = "coconut"
-display_name = "Coconut"
+id = "Coconut"
+display_name = "Coconut Milk"
 cost_tokens = 4
 sprite_sheet = ExtResource("3_6slyj")
 sheet_cols = 5

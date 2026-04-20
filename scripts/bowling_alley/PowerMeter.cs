@@ -20,6 +20,8 @@ public partial class PowerMeter : Control
 
 	private ColorRect _redZone;
 	[Export] public float RedZoneSpeed = 100f;
+
+	private PointLight2D _meterlight;
 	
 	private Vector2 _sliderPos = new Vector2(0, 0);
 	private Vector2 _targetPos; // The "Home" position on screen
@@ -30,6 +32,7 @@ public partial class PowerMeter : Control
 
 	public override void _Ready()
 	{
+		_meterlight = GetNode<PointLight2D>("Spotlight");
 		_slider = GetNode<Sprite2D>("Slider");
 		_greenZone = GetNode<ColorRect>("ZonesContainer/ColorRectGreen");
 		_yellowZone = GetNode<ColorRect>("ZonesContainer/ColorRectYellow");
@@ -93,6 +96,21 @@ public partial class PowerMeter : Control
 		};
 	}
 
+	public void ActivateSpotlight()
+	{
+		_meterlight.Enabled = true;
+		// _switchNoise.Play();
+		Tween tween = CreateTween();
+		tween.TweenProperty(_meterlight, "energy", 0.8f, 0.2f).From(0f);
+	}
+
+	public void DeactivateSpotlight()
+	{
+		// _switchNoise.Play();
+		Tween tween = CreateTween();
+		tween.TweenProperty(_meterlight, "energy", 0f, 0.2f).From(0.8f);
+		tween.Finished += () => _meterlight.Enabled = false;
+	}
 	// End Meter Show-Hide Functions --------------------------------------------- //
 
 	// Start Slider Functions ---------------------------------------------------- //

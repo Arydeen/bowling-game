@@ -127,7 +127,7 @@ public partial class GameManager : Node2D
 	private void StartNightFrame()
 	{
 		isNight = true;
-		_nightReq = _roundScore + 9999;
+		_nightReq = _roundScore + 4;
 		ResetDayScoreboard();
 		FadeToNight();
 		ResetPins();
@@ -206,6 +206,8 @@ public partial class GameManager : Node2D
 		 .SetEase(Tween.EaseType.Out);
 
 		 tween.Finished += ActivateSpotlight;
+		 tween.Finished += () => GetTree().CreateTimer(0.10f).Timeout += _monitor.ActivateSpotlight;
+		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += Meter.ActivateSpotlight;
 		 tween.Finished += UpdateNightReqText;
 		 tween.Finished += UpdateFrameText;
 	}
@@ -215,6 +217,8 @@ public partial class GameManager : Node2D
 		if (_roundScore < _nightReq)
 		{
 			DeactivateSpotlight();
+			_monitor.DeactivateSpotlight();
+			Meter.DeactivateSpotlight();
 			_monitor._video.Play();
 			_monitor._video.Finished += () => GetTree().Paused = true;
 			return;
@@ -230,6 +234,8 @@ public partial class GameManager : Node2D
 		Tween tween = CreateTween();
 
 		DeactivateSpotlight();
+		GetTree().CreateTimer(0.10f).Timeout += _monitor.DeactivateSpotlight;
+		GetTree().CreateTimer(0.20f).Timeout += Meter.DeactivateSpotlight;
 
 		tween.TweenProperty(lights, "color", DayColor, duration)
 		 .SetTrans(Tween.TransitionType.Sine)

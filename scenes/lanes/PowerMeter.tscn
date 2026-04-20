@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://djrdboc37pwdo"]
+[gd_scene load_steps=6 format=3 uid="uid://djrdboc37pwdo"]
 
 [ext_resource type="Script" uid="uid://cx2nu0pchj2fg" path="res://scripts/bowling_alley/PowerMeter.cs" id="1_0f5la"]
 [ext_resource type="Texture2D" uid="uid://c3q15grwp7l5f" path="res://textures/power_bar/power_meter_bar.png" id="2_e08ba"]
 [ext_resource type="Texture2D" uid="uid://lfkpwa3i5dus" path="res://textures/power_bar/power_mark.png" id="3_0iokb"]
+[ext_resource type="Texture2D" uid="uid://dw3imle5hcont" path="res://textures/power_bar/power_meter_light.png" id="4_t38iw"]
+[ext_resource type="AudioStream" uid="uid://bhymx4bbsea04" path="res://music/sfx/lanes/spotlight_switch.mp3" id="5_uoakk"]
 
 [node name="PowerMeter" type="Control"]
 layout_mode = 3
@@ -45,3 +47,13 @@ texture = ExtResource("2_e08ba")
 
 [node name="Slider" type="Sprite2D" parent="."]
 texture = ExtResource("3_0iokb")
+
+[node name="Spotlight" type="PointLight2D" parent="."]
+position = Vector2(-9.094947e-13, 5.9604645e-08)
+scale = Vector2(0.9104477, 1)
+enabled = false
+energy = 0.8
+texture = ExtResource("4_t38iw")
+
+[node name="SpotlightNoise" type="AudioStreamPlayer2D" parent="Spotlight"]
+stream = ExtResource("5_uoakk")

@@ -10,8 +10,10 @@ public partial class GameManager : Node2D
 	[Export] public PowerMeter Meter;
 	[Export] public int PinHealth = 100;
 	[Export] public bool isNight = false;
+	[Export] public double PinHealthScale = 1;
 
 	private Monitor _monitor;
+	private PlayerMonitor _coach;
 	private PointLight2D _spotlight;
 	private AudioStreamPlayer2D _switchNoise;
 
@@ -33,6 +35,7 @@ public partial class GameManager : Node2D
 	public override void _Ready()
 	{
 		_monitor = GetNode<Monitor>("../Monitor");
+		_coach = GetNode<PlayerMonitor>("../PlayerMonitor");
 
 		_spotlight = GetNode<PointLight2D>("../Spotlight");
 		_spotlight.Enabled = false;
@@ -55,7 +58,8 @@ public partial class GameManager : Node2D
 				if (!pin.Alive) { pin.FadeIn(); }
 				pin.Alive = true;
 				pin.SetHitThisRound(false);
-				pin.SetHealth(PinHealth);
+				pin.SetHealth(PinHealth * PinHealthScale);
+				GD.Print(pin.GetHealth());
 				pin.SetHealthBar(PinHealth);
 
 				pin._kineticFlag = false;
@@ -89,6 +93,7 @@ public partial class GameManager : Node2D
 
 	private void StartRound()
 	{
+		if (!_firstFrame) {PinHealthScale += 0.2;}
 		_roundNum += 1;
 
 		_roundScore = 0;
@@ -153,6 +158,7 @@ public partial class GameManager : Node2D
 
 	private void StartShot()
 	{
+		ResetPinsForRound();
 		_shotScore = 0;
 		_shotNum += 1;
 	}
@@ -208,6 +214,7 @@ public partial class GameManager : Node2D
 		 tween.Finished += ActivateSpotlight;
 		 tween.Finished += () => GetTree().CreateTimer(0.10f).Timeout += _monitor.ActivateSpotlight;
 		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += Meter.ActivateSpotlight;
+		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += _coach.ActivateSpotlight;
 		 tween.Finished += UpdateNightReqText;
 		 tween.Finished += UpdateFrameText;
 	}
@@ -219,6 +226,7 @@ public partial class GameManager : Node2D
 			DeactivateSpotlight();
 			_monitor.DeactivateSpotlight();
 			Meter.DeactivateSpotlight();
+			_coach.DeactivateSpotlight();
 			_monitor._video.Play();
 			_monitor._video.Finished += () => GetTree().Paused = true;
 			return;
@@ -236,6 +244,7 @@ public partial class GameManager : Node2D
 		DeactivateSpotlight();
 		GetTree().CreateTimer(0.10f).Timeout += _monitor.DeactivateSpotlight;
 		GetTree().CreateTimer(0.20f).Timeout += Meter.DeactivateSpotlight;
+		GetTree().CreateTimer(0.20f).Timeout += _coach.DeactivateSpotlight;
 
 		tween.TweenProperty(lights, "color", DayColor, duration)
 		 .SetTrans(Tween.TransitionType.Sine)
@@ -287,8 +296,6 @@ public partial class GameManager : Node2D
 	// Ball Methods //
 	public void SpawnNewBall()
 	{
-		ResetPinsForRound();
-
 		_currentBall = BallScene.Instantiate<Ball>();
 		_currentBall.Initialize(BallSpawnPos);
 		AddChild(_currentBall);
@@ -341,11 +348,22 @@ public partial class GameManager : Node2D
 	}
 	// End Score Methods
 
+	void SkipToNight()
+	{
+		_frameNum = 4;
+		StartNightFrame();
+	}
+
 	public override void _Process(double delta)
 	{
 		if (Input.IsActionJustPressed("GiveKineticBall"))
 		{
 			GlobalData.Instance.KineticBall = true;
+		}
+
+		if (Input.IsActionJustPressed("SkipToNight"))
+		{
+			SkipToNight();
 		}
 	}
 }

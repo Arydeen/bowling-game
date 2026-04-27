@@ -12,11 +12,11 @@ public partial class Pin : Area2D
 	[Export] public Array<SpriteFrames> AnimationLibrary;
 	[Export] public Array<AudioStream> DeathSounds;
 
-	[Export] public int MaxHealth = 100;
+	[Export] public double MaxHealth = 100;
 
 	[Export] public bool Alive = true;
 
-	private int _currentHealth;
+	private double _currentHealth;
 	private bool _hitThisRound = false;
 	private ProgressBar _healthBar;
 	private AudioStreamPlayer2D _audio;
@@ -275,17 +275,17 @@ public partial class Pin : Area2D
 	
 	// End Kinetic Power Up Methods ---------------------------------------------------------------------------------------------------//
 
-	public void SetHealth(int amount)
+	public void SetHealth(double amount)
 	{
 		_currentHealth = amount;
 	}
 
-	public int GetHealth()
+	public double GetHealth()
 	{
 		return _currentHealth;
 	}
 
-	public void SetHealthBar(int amount)
+	public void SetHealthBar(double amount)
 	{
 		_healthBar.Value = amount;
 	}

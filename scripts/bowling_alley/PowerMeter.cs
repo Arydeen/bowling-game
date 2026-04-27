@@ -7,6 +7,13 @@ public partial class PowerMeter : Control
 	[Export] public float SliderSpeed = 400f; // Increased for noticeable movement per frame
 	[Export] public float PowerVal = 0f;
 	[Export] public Ball Ball;
+	
+	// Sound Effects
+	[ExportGroup("Sounds")]
+	[Export] public AudioStream SoundGood;
+	[Export] public AudioStream SoundPerfect;
+	[Export] public AudioStream SliderAppear;
+
 
 	private Sprite2D _slider;
 	private ColorRect _greenZone;
@@ -22,6 +29,7 @@ public partial class PowerMeter : Control
 	[Export] public float RedZoneSpeed = 100f;
 
 	private PointLight2D _meterlight;
+	private AudioStreamPlayer2D _meterSounds;
 	
 	private Vector2 _sliderPos = new Vector2(0, 0);
 	private Vector2 _targetPos; // The "Home" position on screen
@@ -33,6 +41,8 @@ public partial class PowerMeter : Control
 	public override void _Ready()
 	{
 		_meterlight = GetNode<PointLight2D>("Spotlight");
+		_meterSounds = GetNode<AudioStreamPlayer2D>("MeterSounds");
+
 		_slider = GetNode<Sprite2D>("Slider");
 		_greenZone = GetNode<ColorRect>("ZonesContainer/ColorRectGreen");
 		_yellowZone = GetNode<ColorRect>("ZonesContainer/ColorRectYellow");
@@ -53,6 +63,8 @@ public partial class PowerMeter : Control
 	public void ShowMeter()
 	{
 		if (_meterActive) return;
+
+		PlaySound(SliderAppear);
 
 		_meterActive = true;
 		_canStop = false;
@@ -116,6 +128,12 @@ public partial class PowerMeter : Control
 	// Start Slider Functions ---------------------------------------------------- //
 	public float StopSlider()
 	{
+
+		if (IsSweet())
+		{
+			PlaySound(SoundPerfect);
+		}
+
 		_sliderStop = true;
 		HideMeter();
 
@@ -130,7 +148,7 @@ public partial class PowerMeter : Control
 	public void MoveSlider(double delta)
 	{
 		// Only move the slider if the meter is actually being played
-		if (!_meterActive || _sliderStop) return;
+		if (!_meterActive || _sliderStop)  return;
 
 		// Logic to ping-pong the slider back and forth
 		if (_sliderPos.X >= 112) _movingLeft = true;
@@ -190,6 +208,14 @@ public partial class PowerMeter : Control
 
 	// End Zone Functions -------------------------------------------------------- //
 
+	// Helper Functions ---------------------------------------------------------- //
+	private void PlaySound(AudioStream stream)
+	{
+		if (stream == null) return;
+		_meterSounds.Stream = stream;
+		_meterSounds.Play();
+	}
+	// End Helper Funcitons ------------------------------------------------------ //
 
 	public override void _Process(double delta)
 	{

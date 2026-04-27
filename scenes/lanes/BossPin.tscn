@@ -1,0 +1,66 @@
+[gd_scene load_steps=8 format=3 uid="uid://b5hy6vu52box2"]
+
+[ext_resource type="Script" uid="uid://cg32d7h48702l" path="res://scripts/bowling_alley/BossPin.cs" id="1_2fje5"]
+[ext_resource type="Texture2D" uid="uid://c4r7mh7y68i3l" path="res://textures/pins/boss/boss_pin.png" id="1_5d53g"]
+[ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="1_6gfix"]
+[ext_resource type="AudioStream" uid="uid://h3pupt4sgpl7" path="res://music/sfx/lanes/shake.mp3" id="3_2fje5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_j8lrl"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_5d53g")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ovkvq"]
+radius = 12.0
+height = 26.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vyy2x"]
+lifetime_randomness = 0.52
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 5.0
+direction = Vector3(0, -1, 0)
+spread = 61.519
+flatness = 1.0
+initial_velocity_min = 54.219997
+initial_velocity_max = 103.399994
+gravity = Vector3(0, 0, 0)
+color = Color(0.8845813, 0.00064321933, 0.8875311, 1)
+
+[node name="BossPin" type="Area2D"]
+script = ExtResource("1_2fje5")
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(0, -15)
+stream = ExtResource("1_6gfix")
+volume_db = -20.582
+
+[node name="SpritePivot" type="Node2D" parent="."]
+
+[node name="BossSprite" type="AnimatedSprite2D" parent="SpritePivot"]
+position = Vector2(0, -31)
+sprite_frames = SubResource("SpriteFrames_j8lrl")
+
+[node name="PinHitbox" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(0, -15)
+shape = SubResource("CapsuleShape2D_ovkvq")
+
+[node name="ShakeSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_2fje5")
+volume_db = -10.146
+
+[node name="KineticExplosionParticles" type="GPUParticles2D" parent="."]
+position = Vector2(0, -7)
+emitting = false
+amount = 20
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_vyy2x")

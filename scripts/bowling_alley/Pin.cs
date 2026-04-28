@@ -16,8 +16,10 @@ public partial class Pin : Area2D
 
 	[Export] public bool Alive = true;
 
+	public bool _hitThisShot {get; set;} = false;
+
 	private double _currentHealth;
-	private bool _hitThisRound = false;
+	
 	private ProgressBar _healthBar;
 	private AudioStreamPlayer2D _audio;
 	private AudioStreamPlayer2D _shakeAudio;
@@ -29,11 +31,6 @@ public partial class Pin : Area2D
 	private GpuParticles2D _kineticExplosion;
 
 	public bool _kineticFlag { get; set; } = false; 
-
-	public void SetHitThisRound(bool val) { _hitThisRound = val;}
-
-	public bool GetHitThisRound() {return _hitThisRound;}
-	
 
 
 	// Initialization Methods --------------------------------------------------------------------------------------------------- //
@@ -137,7 +134,6 @@ public partial class Pin : Area2D
 
 	public void Die()
 	{
-
 		if (Alive)
 		{
 			Alive = false;
@@ -151,6 +147,24 @@ public partial class Pin : Area2D
 			}
 
 			if (_kineticFlag) {PlayKineticParticles();}
+			_audio.Play();
+			_sprite.Play();
+			FadeOut();
+		}
+	}
+
+	public void DieNoScore()
+	{
+		if (Alive)
+		{
+			Alive = false;
+
+			if (DeathSounds != null && DeathSounds.Count > 0)
+			{
+				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
+				_audio.Stream = DeathSounds[randomIndex];
+			}
+
 			_audio.Play();
 			_sprite.Play();
 			FadeOut();

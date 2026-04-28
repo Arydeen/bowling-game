@@ -14,8 +14,10 @@ public partial class Ball : CharacterBody2D
 							}
 	private BallState _currState = BallState.Aiming;
 
+	private AnimatedSprite2D _ballSprite;
 	private AudioStreamPlayer2D _rollAudio;
 	private AudioStreamPlayer2D _thudAudio;
+	private GameManager _gameManager;
 
 	[Export] public float AimSpeed = 150f; // Speed of ball when aiming
 	[Export] public float RollSpeed = 60.0f; // Speed of ball rolling
@@ -30,7 +32,6 @@ public partial class Ball : CharacterBody2D
 	private float _gutterDirection = 0f;
 	private bool _isSweet = false; // If landed in sweet spot
 	// private SpriteFrames _ballAnimation;
-	private AnimatedSprite2D _ballSprite;
 
 
 	// Startup Methods //
@@ -44,6 +45,7 @@ public partial class Ball : CharacterBody2D
 		_ballSprite = GetNode<AnimatedSprite2D>("BallSprite");
 
 		GetNode<Area2D>("Hitbox").AreaEntered += OnGutterEntered;
+		GetNode<Area2D>("Hitbox").AreaEntered += HitBumper;
 		_rollAudio = GetNode<AudioStreamPlayer2D>("RollSound");
 		_thudAudio = GetNode<AudioStreamPlayer2D>("ThudSound");
 	}
@@ -176,6 +178,26 @@ public partial class Ball : CharacterBody2D
 	// End Movement Methods //
 
 	// Physics Methods //
+	public void HitBumper(Area2D area)
+	{
+		if (area.IsInGroup("Bumpers"))
+		{
+			_thudAudio.Play();
+			string bumperName = area.Name.ToString();
+
+			if (bumperName.Contains("Left"))
+			{
+				_powerVal = _isSweet ? 300 : 200f;
+				BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
+			}
+			else if (bumperName.Contains("Right"))
+			{
+				_powerVal = _isSweet ? -300 : -200f;
+				BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
+			}
+		}
+	}
+
 	public void CheckForHits()
 	{
 		Area2D hitbox = GetNode<Area2D>("Hitbox");
@@ -185,10 +207,10 @@ public partial class Ball : CharacterBody2D
 		{
 			if (area is Pin pin)
 			{
-				if (!pin.GetHitThisRound())
+				if (!pin._hitThisShot)
 				{
 					pin.TakeDamage(BallDamage, _isSweet, 1);
-					pin.SetHitThisRound(true);
+					pin._hitThisShot = true;
 					BallDamage = BallDamage / 3;
 
 					if (pin.Alive)
@@ -198,6 +220,23 @@ public partial class Ball : CharacterBody2D
 					}
 				} 
 				
+			} else if (area is BossPin boss)
+			{
+				if (boss.Alive)
+				{
+					GD.Print("Boss Hit");
+					if (!boss._hitThisShot)
+					{
+						boss.TakeDamage(BallDamage, _isSweet, 1);
+						boss._hitThisShot = true;
+
+						if (boss.Alive)
+						{
+							StartBounce();
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -218,8 +257,7 @@ public partial class Ball : CharacterBody2D
 
 			// Hook Strength: Adjusting val, but 0.8 feels good for now.
 			float hookStrength = 0.8f;
-			_powerVal = _powerVal > 20 ? 20 : _powerVal;
-			_powerVal = _powerVal < -20 ? -20 : _powerVal;
+			_powerVal = Mathf.MoveToward(_powerVal, Mathf.Clamp(_powerVal, -20, 20), (float)delta * 10f);
 			float horizontalDrift = _powerVal * hookStrength;
 
 			// Apply drift to X, and speed to Y

@@ -1,18 +1,62 @@
-[gd_scene load_steps=8 format=3 uid="uid://b5hy6vu52box2"]
+[gd_scene load_steps=15 format=3 uid="uid://b5hy6vu52box2"]
 
 [ext_resource type="Script" uid="uid://cg32d7h48702l" path="res://scripts/bowling_alley/BossPin.cs" id="1_2fje5"]
 [ext_resource type="Texture2D" uid="uid://c4r7mh7y68i3l" path="res://textures/pins/boss/boss_pin.png" id="1_5d53g"]
 [ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="1_6gfix"]
 [ext_resource type="AudioStream" uid="uid://h3pupt4sgpl7" path="res://music/sfx/lanes/shake.mp3" id="3_2fje5"]
+[ext_resource type="Texture2D" uid="uid://c0gjp01hg76jl" path="res://textures/pins/boss/bp_laugh.png" id="3_r4h1h"]
+[ext_resource type="Texture2D" uid="uid://bfx1xrjy75n57" path="res://textures/pins/boss/bp_scared.png" id="5_5rtoa"]
+[ext_resource type="Texture2D" uid="uid://bibfh3ygu4q2e" path="res://textures/pins/boss/bp_crack.png" id="6_nygkk"]
+[ext_resource type="Texture2D" uid="uid://cf431ei8c2jq5" path="res://textures/pins/boss/bp_shield.png" id="7_sih3p"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_td6q0"]
+atlas = ExtResource("3_r4h1h")
+region = Rect2(0, 0, 30, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6wqoi"]
+atlas = ExtResource("3_r4h1h")
+region = Rect2(30, 0, 30, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_llno5"]
+atlas = ExtResource("3_r4h1h")
+region = Rect2(60, 0, 30, 62)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_j8lrl"]
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}],
+"loop": true,
+"name": &"laugh",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("1_5d53g")
 }],
 "loop": true,
-"name": &"default",
+"name": &"old",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_5rtoa")
+}],
+"loop": true,
+"name": &"scared",
 "speed": 5.0
 }]
 
@@ -36,7 +80,7 @@ color = Color(0.8845813, 0.00064321933, 0.8875311, 1)
 [node name="BossPin" type="Area2D"]
 script = ExtResource("1_2fje5")
 
-[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+[node name="SoundEffects" type="AudioStreamPlayer2D" parent="."]
 position = Vector2(0, -15)
 stream = ExtResource("1_6gfix")
 volume_db = -20.582
@@ -44,8 +88,19 @@ volume_db = -20.582
 [node name="SpritePivot" type="Node2D" parent="."]
 
 [node name="BossSprite" type="AnimatedSprite2D" parent="SpritePivot"]
-position = Vector2(0, -31)
+position = Vector2(0, -28)
 sprite_frames = SubResource("SpriteFrames_j8lrl")
+animation = &"laugh"
+
+[node name="Crack" type="Sprite2D" parent="SpritePivot"]
+visible = false
+position = Vector2(0, -28)
+texture = ExtResource("6_nygkk")
+
+[node name="Shield" type="Sprite2D" parent="SpritePivot"]
+visible = false
+position = Vector2(0, -28)
+texture = ExtResource("7_sih3p")
 
 [node name="PinHitbox" type="CollisionShape2D" parent="."]
 visible = false
@@ -64,3 +119,8 @@ lifetime = 0.5
 one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_vyy2x")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+visible = false
+offset_right = 4.0
+offset_bottom = 27.0

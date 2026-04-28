@@ -1,0 +1,119 @@
+[gd_scene load_steps=17 format=3 uid="uid://c02awwxwnakt8"]
+
+[ext_resource type="Script" uid="uid://c8uvwxsa5afsl" path="res://scripts/bowling_alley/Bumpers.cs" id="1_ig4vm"]
+[ext_resource type="Texture2D" uid="uid://dlcob0i4ljhqa" path="res://textures/bumpers/bumpers.png" id="1_iycsq"]
+[ext_resource type="AudioStream" uid="uid://6p0hgbe2cpr7" path="res://music/sfx/lanes/bumper_bounce.wav" id="2_e5crk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ig4vm"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(0, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e5crk"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(210, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jrknl"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(420, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_32sk5"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(630, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oqmeo"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(840, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hsa4x"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(1050, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hgqcr"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(1260, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jwloo"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(1470, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n0na6"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(1680, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_klhj4"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(1890, 0, 210, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b326h"]
+atlas = ExtResource("1_iycsq")
+region = Rect2(2100, 0, 210, 94)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1htrb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ig4vm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e5crk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jrknl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_32sk5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oqmeo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hsa4x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hgqcr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jwloo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n0na6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_klhj4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b326h")
+}],
+"loop": false,
+"name": &"appear",
+"speed": 10.0
+}]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_e5crk"]
+a = Vector2(8.965626, -11.028038)
+b = Vector2(-62, 76)
+
+[node name="Bumpers" type="Node2D"]
+visible = false
+script = ExtResource("1_ig4vm")
+Sounds = Array[AudioStream]([ExtResource("2_e5crk")])
+
+[node name="BumperSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_1htrb")
+animation = &"appear"
+speed_scale = 3.0
+
+[node name="BumperLeft" type="Area2D" parent="." groups=["Bumpers"]]
+
+[node name="BumperLeftColShape" type="CollisionShape2D" parent="BumperLeft"]
+position = Vector2(-37, -33)
+shape = SubResource("SegmentShape2D_e5crk")
+
+[node name="BumperRight" type="Area2D" parent="." groups=["Bumpers"]]
+
+[node name="BumperRightColShape" type="CollisionShape2D" parent="BumperRight"]
+position = Vector2(37, -32.999996)
+rotation = -1.3683381
+shape = SubResource("SegmentShape2D_e5crk")
+
+[node name="Sounds" type="AudioStreamPlayer2D" parent="."]

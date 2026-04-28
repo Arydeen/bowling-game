@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cc52876ybuxqq"
-path="res://.godot/imported/screen_score_final.png-1c76c92d1f1c3387ba6f146b99638c7f.ctex"
+uid="uid://r1m5jpxh5llg"
+path="res://.godot/imported/player_monitor_light.png-689cdad9830169a17479c4d5a9b8cb7c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/screen/screen_score_final.png"
-dest_files=["res://.godot/imported/screen_score_final.png-1c76c92d1f1c3387ba6f146b99638c7f.ctex"]
+source_file="res://textures/screen/player_monitor/player_monitor_light.png"
+dest_files=["res://.godot/imported/player_monitor_light.png-689cdad9830169a17479c4d5a9b8cb7c.ctex"]
 
 [params]
 

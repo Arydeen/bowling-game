@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://60llxltl8avx"]
+[gd_scene load_steps=19 format=3 uid="uid://60llxltl8avx"]
 
 [ext_resource type="Script" uid="uid://3pr0hixl02yn" path="res://scripts/bowling_alley/bowling.gd" id="1_wxftb"]
 [ext_resource type="Texture2D" uid="uid://bou6tlb3yq6bd" path="res://textures/backgrounds/background.png" id="2_5yoeu"]
@@ -12,6 +12,10 @@
 [ext_resource type="Texture2D" uid="uid://uq6i3wn4a04t" path="res://textures/backgrounds/lane_spotlight2.png" id="11_hnf61"]
 [ext_resource type="Script" uid="uid://bdi7lcre7ymud" path="res://scripts/bowling_alley/GameManager.cs" id="11_nbmko"]
 [ext_resource type="AudioStream" uid="uid://bhymx4bbsea04" path="res://music/sfx/lanes/spotlight_switch.mp3" id="12_hnf61"]
+[ext_resource type="PackedScene" uid="uid://bp6ggjxh8txki" path="res://scenes/lanes/PlayerMonitor.tscn" id="13_c476d"]
+[ext_resource type="PackedScene" uid="uid://b5hy6vu52box2" path="res://scenes/lanes/BossPin.tscn" id="14_vp2eb"]
+[ext_resource type="Script" uid="uid://ddohbvhjjcmit" path="res://scripts/bowling_alley/GameCamera.cs" id="15_w8jtm"]
+[ext_resource type="PackedScene" uid="uid://c02awwxwnakt8" path="res://scenes/lanes/Bumpers.tscn" id="16_3qvve"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_nbmko"]
 a = Vector2(12, -12)
@@ -75,6 +79,9 @@ Type = 3
 position = Vector2(144, 86)
 Type = 3
 
+[node name="BossPin" parent="PinContainer" instance=ExtResource("14_vp2eb")]
+position = Vector2(160, 94)
+
 [node name="GameManager" type="Node2D" parent="." node_paths=PackedStringArray("Meter")]
 script = ExtResource("11_nbmko")
 BallScene = ExtResource("9_ga0rv")
@@ -96,7 +103,11 @@ shape = SubResource("SegmentShape2D_hnf61")
 stream = ExtResource("8_1mb4a")
 volume_db = -15.053
 
+[node name="Bumpers" parent="." instance=ExtResource("16_3qvve")]
+position = Vector2(160, 121)
+
 [node name="PowerMeter" parent="." instance=ExtResource("10_6s8gb")]
+visible = false
 offset_left = 160.0
 offset_top = 124.0
 offset_right = 160.0
@@ -110,6 +121,7 @@ texture = ExtResource("10_tua5c")
 
 [node name="Spotlight" type="PointLight2D" parent="."]
 position = Vector2(160, 74)
+enabled = false
 energy = 0.8
 texture = ExtResource("11_hnf61")
 
@@ -118,3 +130,10 @@ stream = ExtResource("12_hnf61")
 
 [node name="Monitor" parent="." instance=ExtResource("9_mkrau")]
 position = Vector2(66, 0)
+
+[node name="PlayerMonitor" parent="." instance=ExtResource("13_c476d")]
+position = Vector2(280, 30)
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(160, 90)
+script = ExtResource("15_w8jtm")

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cl0knsgyuqjb"
-path="res://.godot/imported/screen_score.png-6c04039501aea9ebc0c2eae2a5462918.ctex"
+uid="uid://c0gjp01hg76jl"
+path="res://.godot/imported/bp_laugh.png-7807452e7c664af1c8ea4b217433a648.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/screen/screen_score.png"
-dest_files=["res://.godot/imported/screen_score.png-6c04039501aea9ebc0c2eae2a5462918.ctex"]
+source_file="res://textures/pins/boss/bp_laugh.png"
+dest_files=["res://.godot/imported/bp_laugh.png-7807452e7c664af1c8ea4b217433a648.ctex"]
 
 [params]
 

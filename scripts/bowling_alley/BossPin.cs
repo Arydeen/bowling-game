@@ -1,58 +1,46 @@
 using Godot;
-using Godot.Collections;
 using System;
-using System.ComponentModel.Design;
+using Godot.Collections;
 
-public partial class Pin : Area2D
+public partial class BossPin : Area2D
 {
 
-	public enum PinType { R1, R2, R3, R4 }
 
-	[Export] public PinType Type;
+	public enum BossState {shield, open, cracked, hidden}
+
+	[Export] public BossState state;
 	[Export] public Array<SpriteFrames> AnimationLibrary;
-	[Export] public Array<AudioStream> DeathSounds;
-
-	[Export] public double MaxHealth = 100;
-
-	[Export] public bool Alive = true;
+	[Export] public double MaxHealth = 500;
 
 	public bool _hitThisShot {get; set;} = false;
+	public bool Alive = false;
+
 
 	private double _currentHealth;
-	
 	private ProgressBar _healthBar;
-	private AudioStreamPlayer2D _audio;
-	private AudioStreamPlayer2D _shakeAudio;
 	private AnimatedSprite2D _sprite;
 	private Node2D _spritePivot;
 	private GameManager _gameManager;
+	private AudioStreamPlayer2D _audio;
+	private AudioStreamPlayer2D _shakeAudio;
 
+	// Kinetic ball vars
 	private Tween _kineticTween;
 	private GpuParticles2D _kineticExplosion;
-
 	public bool _kineticFlag { get; set; } = false; 
-
-
+	
 	// Initialization Methods --------------------------------------------------------------------------------------------------- //
 	public override void _Ready()
 	{
-
 		// Fetch Game Manager
 		_gameManager = GetNode<GameManager>("../../GameManager");
 
 		// Texture Handling
-		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/PinSprite");
+		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/BossSprite");
 		_spritePivot = GetNode<Node2D>("SpritePivot");
 		// Audio Handling
-		_audio = GetNode<AudioStreamPlayer2D>("DeathSound");
+		_audio = GetNode<AudioStreamPlayer2D>("SoundEffects");
 		_shakeAudio = GetNode<AudioStreamPlayer2D>("ShakeSound");
-
-		int index = (int)Type;
-
-		if (AnimationLibrary != null && index < AnimationLibrary.Count)
-		{
-			_sprite.SpriteFrames = AnimationLibrary[index];
-		}
 		
 		// Health Bar Handling
 		_currentHealth = MaxHealth;
@@ -64,8 +52,11 @@ public partial class Pin : Area2D
 		_kineticTween = CreateTween();
 		_kineticExplosion = GetNode<GpuParticles2D>("KineticExplosionParticles");
 
+		state = BossState.hidden;
+		Modulate = new Color(1, 1, 1, 0);
 	}
 
+	
 	public override void _Process(double delta)
 	{
 		if (_kineticFlag && !_kineticTween.IsRunning()) 
@@ -94,42 +85,6 @@ public partial class Pin : Area2D
 		{
 			DamageAnimation(sweet, false);
 		}
-
-		GetTree().CreateTimer(0.15f).Timeout += () => CalculateShake(amount, sweet);
-	}
-
-	private void ShakeDamage(Pin pin, int amount, bool sweet) 
-	{
-
-		if (!pin.Alive) return;
-
-		int shakeDamage = amount / 2;
-
-		pin.SetHealth(pin.GetHealth() - shakeDamage);
-		pin.SetHealthBar(pin.GetHealth());
-
-		if (pin.GetHealth() <= 0)
-		{
-			pin.Die();
-		} else
-		{
-			pin.DamageAnimation(sweet, true);
-			HandleKinetic(pin);
-		}
-	}
-
-	private void CalculateShake(int damage, bool sweet)
-	{
-		Area2D shakebox = GetNode<Area2D>("Shakebox");
-		var areas = shakebox.GetOverlappingAreas();
-
-		foreach(Area2D area in areas)
-		{
-			if (area is Pin pin && pin != this)
-			{
-				ShakeDamage(pin, damage, sweet);
-			}
-		}
 	}
 
 	public void Die()
@@ -140,31 +95,7 @@ public partial class Pin : Area2D
 
 			_gameManager.AddScore(1, shot:true);
 
-			if (DeathSounds != null && DeathSounds.Count > 0)
-			{
-				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-				_audio.Stream = DeathSounds[randomIndex];
-			}
-
 			if (_kineticFlag) {PlayKineticParticles();}
-			_audio.Play();
-			_sprite.Play();
-			FadeOut();
-		}
-	}
-
-	public void DieNoScore()
-	{
-		if (Alive)
-		{
-			Alive = false;
-
-			if (DeathSounds != null && DeathSounds.Count > 0)
-			{
-				int randomIndex = (int)(GD.Randi() % DeathSounds.Count);
-				_audio.Stream = DeathSounds[randomIndex];
-			}
-
 			_audio.Play();
 			_sprite.Play();
 			FadeOut();
@@ -173,8 +104,43 @@ public partial class Pin : Area2D
 
 	// End Damage Methods --------------------------------------------------------------------------------------------------- //
 
-	// Base Animation Methods ------------------------------------------------------------------------------------------------------- //
+	// Boss Animation Methods --------------------------------------------------------------------------------------------------- //
+	public void BossEnter()
+	{
+		if (state == BossState.hidden)
+		{
+			Vector2 targetPos = Position;
+
+			Position = new Vector2(targetPos.X, targetPos.Y - 500);
+
+			Tween tween = GetTree().CreateTween();
+			tween.SetParallel(true);
+
+			tween.TweenProperty(this, "position", targetPos, 0.8f);
+				// .SetTrans(Tween.TransitionType.Expo);
+
+			tween.TweenProperty(this, "modulate:a", 1.0f, 0.5f);
+
+			tween.Chain().TweenCallback(Callable.From(TriggerImpact));
+
+			tween.Finished += () => Alive = true;
+		}
+	}
+
+	private void TriggerImpact()
+	{
+		// Find the camera in the scene and call Shake
+		var camera = GetTree().Root.FindChild("Camera", true, false) as GameCamera;
+		camera?.Shake(15.0f); // 15 is a decent 'heavy' shake for 320x180
+		
+		// Play a sound effect if you have one!
+		GD.Print("Boss Pin Landed!");
+	}
+
 	
+	// End Boss Animation Methods --------------------------------------------------------------------------------------------------- //
+	
+	// Base Animation Methods ------------------------------------------------------------------------------------------------------- //
 	public void DamageAnimation(bool sweet, bool shake)
 	{
 		if (sweet) {PlayHeavyWobble();} else {PlayWobble();}
@@ -240,7 +206,7 @@ public partial class Pin : Area2D
 	}
 
 	// End Base Animation Methods --------------------------------------------------------------------------------------------------- //
-
+	
 	// Kinetic Power Up Methods --------------------------------------------------------------------------------------------------- //
 	private static void HandleKinetic(Pin pin)
 	{
@@ -308,5 +274,6 @@ public partial class Pin : Area2D
 	{
 		return _healthBar.Value;
 	}
+
 
 }

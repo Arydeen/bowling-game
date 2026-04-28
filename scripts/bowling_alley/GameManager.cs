@@ -10,8 +10,12 @@ public partial class GameManager : Node2D
 	[Export] public PowerMeter Meter;
 	[Export] public int PinHealth = 100;
 	[Export] public bool isNight = false;
+	[Export] public bool isBoss = false;
+	[Export] public double PinHealthScale = 1;
 
 	private Monitor _monitor;
+	private Bumpers _bumpers;
+	private PlayerMonitor _coach;
 	private PointLight2D _spotlight;
 	private AudioStreamPlayer2D _switchNoise;
 
@@ -33,6 +37,8 @@ public partial class GameManager : Node2D
 	public override void _Ready()
 	{
 		_monitor = GetNode<Monitor>("../Monitor");
+		_bumpers = GetNode<Bumpers>("../Bumpers");
+		_coach = GetNode<PlayerMonitor>("../PlayerMonitor");
 
 		_spotlight = GetNode<PointLight2D>("../Spotlight");
 		_spotlight.Enabled = false;
@@ -54,8 +60,9 @@ public partial class GameManager : Node2D
 			{
 				if (!pin.Alive) { pin.FadeIn(); }
 				pin.Alive = true;
-				pin.SetHitThisRound(false);
-				pin.SetHealth(PinHealth);
+				pin._hitThisShot = false;
+				pin.SetHealth(PinHealth * PinHealthScale);
+				GD.Print(pin.GetHealth());
 				pin.SetHealthBar(PinHealth);
 
 				pin._kineticFlag = false;
@@ -87,8 +94,22 @@ public partial class GameManager : Node2D
 
 	}
 
+	private void ClearPins()
+	{
+		var allPins = GetTree().GetNodesInGroup("Pins");
+
+		foreach (Node node in allPins)
+		{
+			if (node is Pin pin)
+			{
+				pin.DieNoScore();
+			}
+		}
+	}
+
 	private void StartRound()
 	{
+		if (!_firstFrame) {PinHealthScale += 0.2;}
 		_roundNum += 1;
 
 		_roundScore = 0;
@@ -153,9 +174,24 @@ public partial class GameManager : Node2D
 
 	private void StartShot()
 	{
+		ResetPinsForRound();
 		_shotScore = 0;
 		_shotNum += 1;
 	}
+
+	private void StartBossFrame()
+	{
+		isBoss = true;
+		ResetDayScoreboard();
+		ResetPins();
+		
+		// Eventual will add conditional here for different bosses
+		BossPin boss = GetNode<BossPin>("../PinContainer/BossPin");
+	
+		GetTree().CreateTimer(1.5f).Timeout += boss.BossEnter;
+		GetTree().CreateTimer(2.2f).Timeout += ClearPins;
+	}
+
 
 	// This method resets the "Hit this round" status for all pins
 	private void ResetPinsForRound()
@@ -166,8 +202,12 @@ public partial class GameManager : Node2D
 		{
 			if (node is Pin pin && pin.Alive)
 			{
-				pin.SetHitThisRound(false);
+				pin._hitThisShot = false;
 			}
+			// if (node is BossPin boss && boss.Alive)
+			// {
+			// 	boss._hitThisShot = false;
+			// }
 		}
 	}
 	// End Reset Methods //
@@ -208,6 +248,7 @@ public partial class GameManager : Node2D
 		 tween.Finished += ActivateSpotlight;
 		 tween.Finished += () => GetTree().CreateTimer(0.10f).Timeout += _monitor.ActivateSpotlight;
 		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += Meter.ActivateSpotlight;
+		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += _coach.ActivateSpotlight;
 		 tween.Finished += UpdateNightReqText;
 		 tween.Finished += UpdateFrameText;
 	}
@@ -219,6 +260,7 @@ public partial class GameManager : Node2D
 			DeactivateSpotlight();
 			_monitor.DeactivateSpotlight();
 			Meter.DeactivateSpotlight();
+			_coach.DeactivateSpotlight();
 			_monitor._video.Play();
 			_monitor._video.Finished += () => GetTree().Paused = true;
 			return;
@@ -236,6 +278,7 @@ public partial class GameManager : Node2D
 		DeactivateSpotlight();
 		GetTree().CreateTimer(0.10f).Timeout += _monitor.DeactivateSpotlight;
 		GetTree().CreateTimer(0.20f).Timeout += Meter.DeactivateSpotlight;
+		GetTree().CreateTimer(0.20f).Timeout += _coach.DeactivateSpotlight;
 
 		tween.TweenProperty(lights, "color", DayColor, duration)
 		 .SetTrans(Tween.TransitionType.Sine)
@@ -287,8 +330,6 @@ public partial class GameManager : Node2D
 	// Ball Methods //
 	public void SpawnNewBall()
 	{
-		ResetPinsForRound();
-
 		_currentBall = BallScene.Instantiate<Ball>();
 		_currentBall.Initialize(BallSpawnPos);
 		AddChild(_currentBall);
@@ -341,11 +382,37 @@ public partial class GameManager : Node2D
 	}
 	// End Score Methods
 
+	void SkipToNight()
+	{
+		_frameNum = 4;
+		StartNightFrame();
+	}
+
+	void SkipToBoss()
+	{
+		_frameNum = 4;
+		StartBossFrame();
+	}
+
 	public override void _Process(double delta)
 	{
 		if (Input.IsActionJustPressed("GiveKineticBall"))
 		{
 			GlobalData.Instance.KineticBall = true;
+		}
+
+		if (Input.IsActionJustPressed("SkipToNight"))
+		{
+			SkipToNight();
+		}
+		if (Input.IsActionJustPressed("SkipToBoss"))
+		{
+			SkipToBoss();
+		}
+		if (Input.IsActionJustPressed("GiveBumpers"))
+		{
+			_bumpers.hitsAllowed = 2;
+			_bumpers.ShowBumpers();
 		}
 	}
 }

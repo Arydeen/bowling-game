@@ -14,20 +14,27 @@ public partial class BossPin : Area2D
 
 	public bool _hitThisShot {get; set;} = false;
 	public bool Alive = false;
-
+	public bool _kineticFlag { get; set; } = false; 
 
 	private double _currentHealth;
+	private int _activePinions = 0;
 	private ProgressBar _healthBar;
 	private AnimatedSprite2D _sprite;
+	private Sprite2D _shield;
+	private Tween _shieldTween;
 	private Node2D _spritePivot;
 	private GameManager _gameManager;
 	private AudioStreamPlayer2D _audio;
 	private AudioStreamPlayer2D _shakeAudio;
+	private AnimatedSprite2D _lanesSprite;
+
+	// Pinions
+	private Pinion _pinion1;
+	private Pinion _pinion2;
 
 	// Kinetic ball vars
 	private Tween _kineticTween;
 	private GpuParticles2D _kineticExplosion;
-	public bool _kineticFlag { get; set; } = false; 
 	
 	// Initialization Methods --------------------------------------------------------------------------------------------------- //
 	public override void _Ready()
@@ -38,6 +45,11 @@ public partial class BossPin : Area2D
 		// Texture Handling
 		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/BossSprite");
 		_spritePivot = GetNode<Node2D>("SpritePivot");
+		_lanesSprite = GetNode<AnimatedSprite2D>("../../Lanes");
+
+		_shield = GetNode<Sprite2D>("SpritePivot/Shield");
+		_shield.Modulate = new Color(1, 1, 1, 0);
+
 		// Audio Handling
 		_audio = GetNode<AudioStreamPlayer2D>("SoundEffects");
 		_shakeAudio = GetNode<AudioStreamPlayer2D>("ShakeSound");
@@ -52,6 +64,14 @@ public partial class BossPin : Area2D
 		_kineticTween = CreateTween();
 		_kineticExplosion = GetNode<GpuParticles2D>("KineticExplosionParticles");
 
+		// Pinion Handling
+		_pinion1 = GetNode<Pinion>("Pinion1");
+		_pinion2 = GetNode<Pinion>("Pinion2");
+		_pinion1.PinionDied += OnPinionDied;
+		_pinion2.PinionDied += OnPinionDied;
+		_pinion2.ShieldsUp += BossShieldUp;
+
+		// Start Boss Hidden
 		state = BossState.hidden;
 		Modulate = new Color(1, 1, 1, 0);
 	}
@@ -104,7 +124,46 @@ public partial class BossPin : Area2D
 
 	// End Damage Methods --------------------------------------------------------------------------------------------------- //
 
+	// Pinion Handling Methods --------------------------------------------------------------------------------------------------- //
+	private void OnPinionDied()
+	{
+		_activePinions -= 1;
+		if (_activePinions <= 0)
+		{
+			// remove Shield
+		}
+	}
+
+	// End Pinion Handling Methods --------------------------------------------------------------------------------------------------- //
+
 	// Boss Animation Methods --------------------------------------------------------------------------------------------------- //
+	private void BossLaugh()
+	{
+		_sprite.Play("laugh");
+	}
+
+	private void BossEnterLaugh()
+	{
+		_sprite.Play("enter_laugh");
+	}
+
+	private void BossScared()
+	{
+		_sprite.Play("scared");
+	}
+
+	public void BossShieldUp()
+	{
+		state = BossState.shield;
+
+		_shieldTween?.Kill(); 
+	
+		_shieldTween = CreateTween().SetLoops();
+		_shieldTween.TweenProperty(_shield, "modulate:a", 1.0f, 0.8f);
+		_shieldTween.TweenProperty(_shield, "modulate:a", 0.5f, 0.8f);
+
+	}
+
 	public void BossEnter()
 	{
 		if (state == BossState.hidden)
@@ -123,7 +182,17 @@ public partial class BossPin : Area2D
 
 			tween.Chain().TweenCallback(Callable.From(TriggerImpact));
 
-			tween.Finished += () => Alive = true;
+			tween.Finished += () => {
+				Alive = true; 
+				_lanesSprite.Play();
+				GetTree().CreateTimer(0.5f).Timeout += () => {
+					BossEnterLaugh();
+					_pinion1.PinionEnter();
+					GetTree().CreateTimer(0.2f).Timeout += _pinion2.PinionEnter;
+				};
+			};
+			
+
 		}
 	}
 
@@ -154,12 +223,10 @@ public partial class BossPin : Area2D
 		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.7f);
 	}
 
-	public void FadeIn()
+	public void MakeVisible()
 	{
 		Tween tween = CreateTween().SetParallel(false);
-
-		_sprite.PlayBackwards();
-		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 1), 0.7f);
+		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 1), 0f);
 	}
 
 		// Heavy Wobble for sweet spot shake

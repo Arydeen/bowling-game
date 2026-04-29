@@ -1,0 +1,161 @@
+[gd_scene load_steps=24 format=3 uid="uid://4shoth8rsar"]
+
+[ext_resource type="Script" uid="uid://l5ybov6qj6t3" path="res://scripts/bowling_alley/Pinion.cs" id="1_0op2i"]
+[ext_resource type="Texture2D" uid="uid://7bpbiqearjlo" path="res://textures/pins/boss/pinion.png" id="3_pan80"]
+[ext_resource type="Texture2D" uid="uid://c7ulxggmpicp1" path="res://textures/pins/boss/pinion_shield.png" id="4_0op2i"]
+[ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="6_rbvyr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o88tt"]
+size = Vector2(6.6875, 5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0op2i"]
+atlas = ExtResource("3_pan80")
+region = Rect2(0, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_346t1"]
+atlas = ExtResource("3_pan80")
+region = Rect2(11, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gm4br"]
+atlas = ExtResource("3_pan80")
+region = Rect2(22, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1kbhn"]
+atlas = ExtResource("3_pan80")
+region = Rect2(33, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fgnm3"]
+atlas = ExtResource("3_pan80")
+region = Rect2(44, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ogrjs"]
+atlas = ExtResource("3_pan80")
+region = Rect2(55, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2y2ls"]
+atlas = ExtResource("3_pan80")
+region = Rect2(66, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nr2jc"]
+atlas = ExtResource("3_pan80")
+region = Rect2(77, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qw2gt"]
+atlas = ExtResource("3_pan80")
+region = Rect2(88, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_alryt"]
+atlas = ExtResource("3_pan80")
+region = Rect2(99, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bn6gg"]
+atlas = ExtResource("3_pan80")
+region = Rect2(110, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rbvyr"]
+atlas = ExtResource("3_pan80")
+region = Rect2(121, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0n33r"]
+atlas = ExtResource("3_pan80")
+region = Rect2(132, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q8352"]
+atlas = ExtResource("3_pan80")
+region = Rect2(143, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qq485"]
+atlas = ExtResource("3_pan80")
+region = Rect2(154, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oe8x0"]
+atlas = ExtResource("3_pan80")
+region = Rect2(165, 0, 11, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tg8rn"]
+atlas = ExtResource("3_pan80")
+region = Rect2(176, 0, 11, 22)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5cdrb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0op2i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_346t1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gm4br")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1kbhn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fgnm3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ogrjs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2y2ls")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nr2jc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qw2gt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_alryt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bn6gg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rbvyr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0n33r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q8352")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qq485")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oe8x0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tg8rn")
+}],
+"loop": false,
+"name": &"pinion",
+"speed": 10.0
+}]
+
+[node name="Pinion" type="Area2D" groups=["Pins"]]
+collision_layer = 3
+script = ExtResource("1_0op2i")
+AnimationLibrary = Array[SpriteFrames]([])
+
+[node name="SoundEffects" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_rbvyr")
+volume_db = -20.582
+
+[node name="PinHitbox" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_o88tt")
+
+[node name="SpritePivot" type="Node2D" parent="."]
+
+[node name="PinSprite" type="AnimatedSprite2D" parent="SpritePivot"]
+position = Vector2(-1, -9)
+sprite_frames = SubResource("SpriteFrames_5cdrb")
+animation = &"pinion"
+speed_scale = 2.0
+
+[node name="Shield" type="Sprite2D" parent="SpritePivot"]
+position = Vector2(-1, -9)
+texture = ExtResource("4_0op2i")

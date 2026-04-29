@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b5hy6vu52box2"]
+[gd_scene load_steps=16 format=3 uid="uid://b5hy6vu52box2"]
 
 [ext_resource type="Script" uid="uid://cg32d7h48702l" path="res://scripts/bowling_alley/BossPin.cs" id="1_2fje5"]
 [ext_resource type="Texture2D" uid="uid://c4r7mh7y68i3l" path="res://textures/pins/boss/boss_pin.png" id="1_5d53g"]
@@ -8,22 +8,41 @@
 [ext_resource type="Texture2D" uid="uid://bfx1xrjy75n57" path="res://textures/pins/boss/bp_scared.png" id="5_5rtoa"]
 [ext_resource type="Texture2D" uid="uid://bibfh3ygu4q2e" path="res://textures/pins/boss/bp_crack.png" id="6_nygkk"]
 [ext_resource type="Texture2D" uid="uid://cf431ei8c2jq5" path="res://textures/pins/boss/bp_shield.png" id="7_sih3p"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_td6q0"]
-atlas = ExtResource("3_r4h1h")
-region = Rect2(0, 0, 30, 62)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_6wqoi"]
-atlas = ExtResource("3_r4h1h")
-region = Rect2(30, 0, 30, 62)
+[ext_resource type="PackedScene" uid="uid://4shoth8rsar" path="res://scenes/lanes/Pinion.tscn" id="9_2fpsw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_llno5"]
 atlas = ExtResource("3_r4h1h")
 region = Rect2(60, 0, 30, 62)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_6wqoi"]
+atlas = ExtResource("3_r4h1h")
+region = Rect2(30, 0, 30, 62)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_td6q0"]
+atlas = ExtResource("3_r4h1h")
+region = Rect2(0, 0, 30, 62)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_j8lrl"]
 animations = [{
 "frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_td6q0")
 }, {
@@ -38,10 +57,69 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
 }],
-"loop": true,
+"loop": false,
+"name": &"enter_laugh",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_llno5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}],
+"loop": false,
 "name": &"laugh",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -55,7 +133,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("5_5rtoa")
 }],
-"loop": true,
+"loop": false,
 "name": &"scared",
 "speed": 5.0
 }]
@@ -90,7 +168,7 @@ volume_db = -20.582
 [node name="BossSprite" type="AnimatedSprite2D" parent="SpritePivot"]
 position = Vector2(0, -28)
 sprite_frames = SubResource("SpriteFrames_j8lrl")
-animation = &"laugh"
+animation = &"enter_laugh"
 
 [node name="Crack" type="Sprite2D" parent="SpritePivot"]
 visible = false
@@ -98,7 +176,6 @@ position = Vector2(0, -28)
 texture = ExtResource("6_nygkk")
 
 [node name="Shield" type="Sprite2D" parent="SpritePivot"]
-visible = false
 position = Vector2(0, -28)
 texture = ExtResource("7_sih3p")
 
@@ -124,3 +201,9 @@ process_material = SubResource("ParticleProcessMaterial_vyy2x")
 visible = false
 offset_right = 4.0
 offset_bottom = 27.0
+
+[node name="Pinion1" parent="." instance=ExtResource("9_2fpsw")]
+position = Vector2(-33, 30)
+
+[node name="Pinion2" parent="." instance=ExtResource("9_2fpsw")]
+position = Vector2(33, 30)

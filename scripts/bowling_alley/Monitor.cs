@@ -11,6 +11,7 @@ public partial class Monitor : Node2D
 	private AnimatedSprite2D _animSprite;
 	private ShaderMaterial _shaderMat;
 	private PointLight2D _monitorlight;
+	private GameManager _gameManager;
 
 	// Day Scorboard //
 	// Frame 1 Nodes
@@ -50,6 +51,8 @@ public partial class Monitor : Node2D
 
 	public override void _Ready()
 	{
+		_gameManager = GetNode<GameManager>("../GameManager");
+
 		_video = GetNode<VideoStreamPlayer>("VideoStreamPlayer");
 		_monitorlight = GetNode<PointLight2D>("Spotlight");
 
@@ -143,7 +146,9 @@ public partial class Monitor : Node2D
 	{
 		// 1. Get the texture for the first frame of the day animation
 		var dayFrames = _animSprite.SpriteFrames;
-		Texture2D dayTex = dayFrames.GetFrameTexture("day_scoreboard", 0);
+		Texture2D dayTex = _gameManager.NextChallenge == GameManager.Challenge.Night ? 
+							dayFrames.GetFrameTexture("day_scoreboard", 0) : 
+							dayFrames.GetFrameTexture("day_scoreboard_boss", 0);
 
 		// 2. Pass that texture to the shader's "target_texture" slot
 		_shaderMat.SetShaderParameter("target_texture", dayTex);
@@ -154,7 +159,11 @@ public partial class Monitor : Node2D
 
 		// 4. When finished, swap the actual animation and reset the weight
 		tween.Finished += () => {
-			_animSprite.Play("day_scoreboard");
+			if (_gameManager.NextChallenge == GameManager.Challenge.Night) 
+				{_animSprite.Play("day_scoreboard");}
+			else
+				{_animSprite.Play("day_scoreboard_boss");}
+			
 			_shaderMat.SetShaderParameter("mix_weight", 0.0f);
 		};
 	}

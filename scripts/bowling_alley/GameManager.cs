@@ -5,6 +5,7 @@ using System.Threading;
 public partial class GameManager : Node2D
 {
 
+	public enum Challenge {Boss, Night}
 	[Export] public PackedScene BallScene;
 	[Export] public Vector2 BallSpawnPos = new Vector2(160, 175);
 	[Export] public PowerMeter Meter;
@@ -12,6 +13,7 @@ public partial class GameManager : Node2D
 	[Export] public bool isNight = false;
 	[Export] public bool isBoss = false;
 	[Export] public double PinHealthScale = 1;
+	[Export] public Challenge NextChallenge = Challenge.Night;
 
 	private Monitor _monitor;
 	private Bumpers _bumpers;
@@ -62,7 +64,6 @@ public partial class GameManager : Node2D
 				pin.Alive = true;
 				pin._hitThisShot = false;
 				pin.SetHealth(PinHealth * PinHealthScale);
-				GD.Print(pin.GetHealth());
 				pin.SetHealthBar(PinHealth);
 
 				pin._kineticFlag = false;
@@ -124,11 +125,11 @@ public partial class GameManager : Node2D
 	private void StartFrame()
 	{
 		if (_frameNum + 1 == 5) {
-			GetTree().CreateTimer(1.25f).Timeout += StartNightFrame; 
+			StartChallenge();
 			return;
 		} else if (_frameNum + 1 > 5)
 		{
-			GetTree().CreateTimer(1.25f).Timeout += EndNightFrame;
+			EndChallenge();
 			return;
 		} 
 		_frameScore = 0;
@@ -143,6 +144,28 @@ public partial class GameManager : Node2D
 		StartShot();
 
 		
+	}
+
+	private void StartChallenge()
+	{
+		if (NextChallenge == Challenge.Night)
+		{
+			GetTree().CreateTimer(1.25f).Timeout += StartNightFrame; 
+		} else
+		{
+			StartBossFrame();
+		}
+	}
+
+	private void EndChallenge()
+	{
+		if (NextChallenge == Challenge.Night)
+		{
+			GetTree().CreateTimer(1.25f).Timeout += EndNightFrame;
+		} else
+		{
+			// EndBossFrame();
+		}
 	}
 
 	private void StartNightFrame()
@@ -166,8 +189,9 @@ public partial class GameManager : Node2D
 	{
 		isNight = false;
 		ResetNightScoreboard();
-		FadeToDay();
 		ResetPins();
+		NextChallenge = (_roundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
+		FadeToDay();
 
 		StartRound();
 	}

@@ -4,6 +4,16 @@ signal drink_count_changed(drink_id: StringName, new_count: int)
 signal prize_count_changed(prize_id: StringName, new_count: int)
 signal stats_changed()
 
+# -------------------------
+# Manual starting inventory (Debugging)
+# -------------------------
+@export var clear_prizes_on_ready: bool = true
+
+var starting_prizes: Dictionary = {
+	&"CreamShammy": 2,
+	&"OneNail": 1,
+}
+
 # StringName -> int
 var drinks: Dictionary = {}
 var prizes: Dictionary = {}
@@ -49,6 +59,20 @@ func get_stats_snapshot() -> Dictionary:
 
 func _ready() -> void:
 	_hook_currency_manager()
+	_apply_starting_prizes()
+
+func _apply_starting_prizes() -> void:
+	if clear_prizes_on_ready:
+		prizes.clear()
+
+	for id in starting_prizes.keys():
+		var prize_id: StringName = id
+		var amt = max(1, int(starting_prizes[id]))
+
+		prizes[prize_id] = int(prizes.get(prize_id, 0)) + amt
+		prize_count_changed.emit(prize_id, int(prizes[prize_id]))
+
+	_print_inventory()
 
 func _hook_currency_manager() -> void:
 	var cm := get_node_or_null("/root/CurrencyManager")

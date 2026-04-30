@@ -19,6 +19,8 @@ public partial class Ball : CharacterBody2D
 	private AudioStreamPlayer2D _thudAudio;
 	private GameManager _gameManager;
 
+	[Export] public NodePath PlayerPath = new NodePath("/root/Player");
+
 	[Export] public float AimSpeed = 150f; // Speed of ball when aiming
 	[Export] public float RollSpeed = 60.0f; // Speed of ball rolling
 	[Export] public int BallDamage = 0; // Impact damage of ball
@@ -33,6 +35,9 @@ public partial class Ball : CharacterBody2D
 	private float _gutterDirection = 0f;
 
 	// private SpriteFrames _ballAnimation;
+
+	private Node _player;
+	private int _impactDamage = 0;
 
 
 	// Startup Methods //
@@ -50,7 +55,12 @@ public partial class Ball : CharacterBody2D
 		_rollAudio = GetNode<AudioStreamPlayer2D>("RollSound");
 		_thudAudio = GetNode<AudioStreamPlayer2D>("ThudSound");
 
-		_gameManager = GetParent<GameManager>();
+		_player = GetNodeOrNull<Node>(PlayerPath);
+		if (_player == null)
+			GD.PushWarning($"Ball: Player not found at {PlayerPath}");
+
+		EnsureGameManager();
+		EnsureMeter();
 	}
 
 	public void Initialize(Vector2 startPos)
@@ -87,6 +97,37 @@ public partial class Ball : CharacterBody2D
 	}
 	// End State Handling //
 
+	// Player Stat Handling //
+	private float GetPlayerSpeed()
+	{
+		if (_player == null) return 0f;
+		return (float)(double)_player.Call("get_speed_value");
+	}
+
+	private float GetPlayerImpact()
+	{
+		if (_player == null) return 0f;
+		return (float)(double)_player.Call("get_impact_value");
+	}
+
+	private float GetPlayerCritChance()
+	{
+		if (_player == null) return 0.01f;
+		return (float)(double)_player.Call("get_crit_chance");
+	}
+
+	private void EnsureGameManager()
+	{
+		if (_gameManager != null) return;
+
+		_gameManager = GetTree().Root.FindChild("GameManager", recursive: true, owned: false) as GameManager
+			?? GetTree().Root.FindChild("GameManager", recursive: true, owned: true) as GameManager;
+
+		if (_gameManager == null)
+			GD.PushError("Ball: GameManager not found. Make sure the node is named exactly 'GameManager' in the running scene.");
+	}
+	// End Player Stat Handling //
+
 	// Gutter Methods //
 	private void OnGutterEntered(Area2D area)
 	{
@@ -111,6 +152,8 @@ public partial class Ball : CharacterBody2D
 	// Aiming and Power Methods
 	private void HandleAiming(double delta)
 	{
+		EnsureMeter();
+		EnsureGameManager();
 		if (_currentOffset >= _laneWidthLimit) _aimingLeft = true;
 		else if (_currentOffset <= -_laneWidthLimit) _aimingLeft = false;
 
@@ -131,12 +174,29 @@ public partial class Ball : CharacterBody2D
 	public void FinalizePower(float speed, float rawX, bool sweet)
 	{
 		GD.Print($"Zone Speed: {speed}, Raw X: {rawX}");
-		RollSpeed = speed;
+		RollSpeed = speed + GetPlayerSpeed();
 		BallDamage = ((int) speed) + 20;
+
+		_impactDamage = Mathf.RoundToInt(GetPlayerImpact());
 		_powerVal = rawX;
 		_thudAudio.Play();
 		_currState = BallState.Rolling;
 		IsSweet = sweet;
+
+		GD.Print(
+			$"ROLL -> Speed: {RollSpeed:0.00} | BaseDmg: {BallDamage} | Impact: {_impactDamage} | TotalPerHit(no crit): {BallDamage + _impactDamage}"
+		);
+	}
+
+	private void EnsureMeter()
+	{
+		if (Meter != null) return;
+
+		Meter = GetTree().Root.FindChild("PowerMeter", recursive: true, owned: false) as PowerMeter
+			?? GetTree().Root.FindChild("PowerMeter", recursive: true, owned: true) as PowerMeter;
+
+		if (Meter == null)
+				GD.PushError("Ball: PowerMeter not found. Make sure the node is named exactly 'PowerMeter' in the running scene.");
 	}
 	// End Aiming and Power Methods //
 	
@@ -212,8 +272,21 @@ public partial class Ball : CharacterBody2D
 			{
 				if (!pin._hitThisShot)
 				{
-					pin.TakeDamage(BallDamage, IsSweet, 1);
+					// Roll crit every time we hit a pin
+					float critChance = Mathf.Clamp(GetPlayerCritChance(), 0f, 1f);
+					bool isCrit = GD.Randf() < critChance;
+
+					// Base damage 
+					int baseDamage = BallDamage;
+					if (isCrit)
+						baseDamage *= 2;
+
+					// Impact is added after and is never doubled
+					int damageToDeal = baseDamage + _impactDamage;
+
+					pin.TakeDamage(damageToDeal, IsSweet, 1);
 					pin._hitThisShot = true;
+
 					BallDamage = BallDamage / 3;
 
 					if (pin.Alive)
@@ -222,7 +295,7 @@ public partial class Ball : CharacterBody2D
 						break;
 					}
 				} 
-				
+					
 			}
 		}
 	}

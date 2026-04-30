@@ -1,6 +1,6 @@
 extends Node
 
-const PrizeEffects := preload("res://scripts/arcade/prize_effects.gd")
+const PrizeEffect := preload("res://scripts/arcade/prize_effects.gd")
 
 signal drink_count_changed(drink_id: StringName, new_count: int)
 signal prize_count_changed(prize_id: StringName, new_count: int)
@@ -34,6 +34,16 @@ var bumpers: float = 0.0
 
 # Coconut ball: temporary +30% strength for 1 frame
 var coconut_ball_frames_left: int = 0
+
+var rubber_ball_count: int = 0;
+
+var after_image_count: int = 0
+var split_count: int = 0
+var pin_slayer_count: int = 0
+
+var souvenir_cup_count: int = 0
+var kinetic_impact_count: int = 0
+var golden_rotation_count: int = 0
 
 # -------------------------
 # Getters
@@ -119,7 +129,7 @@ func add_prize(item_id: String, _rarity: int = -1, amount: int = 1) -> void:
 	prizes[key] = int(prizes.get(key, 0)) + amount
 	prize_count_changed.emit(key, int(prizes[key]))
 
-	PrizeEffects.apply_delta(self, key, amount)
+	PrizeEffect.apply_delta(self, key, amount)
 
 	stats_changed.emit()
 	_print_inventory()

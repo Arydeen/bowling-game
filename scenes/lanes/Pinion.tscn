@@ -1,8 +1,9 @@
-[gd_scene load_steps=24 format=3 uid="uid://4shoth8rsar"]
+[gd_scene load_steps=25 format=3 uid="uid://4shoth8rsar"]
 
 [ext_resource type="Script" uid="uid://l5ybov6qj6t3" path="res://scripts/bowling_alley/Pinion.cs" id="1_0op2i"]
 [ext_resource type="Texture2D" uid="uid://7bpbiqearjlo" path="res://textures/pins/boss/pinion.png" id="3_pan80"]
 [ext_resource type="Texture2D" uid="uid://c7ulxggmpicp1" path="res://textures/pins/boss/pinion_shield.png" id="4_0op2i"]
+[ext_resource type="AudioStream" uid="uid://dj1075xwkx2ey" path="res://music/sfx/lanes/pinion_death.wav" id="5_346t1"]
 [ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="6_rbvyr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o88tt"]
@@ -159,3 +160,7 @@ speed_scale = 2.0
 [node name="Shield" type="Sprite2D" parent="SpritePivot"]
 position = Vector2(-1, -9)
 texture = ExtResource("4_0op2i")
+
+[node name="ScreamSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_346t1")
+volume_db = -6.975

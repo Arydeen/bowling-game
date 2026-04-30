@@ -4,29 +4,35 @@ using Godot.Collections;
 
 public partial class BossPin : Area2D
 {
-
+	[Signal] public delegate void BossHealthChangedEventHandler(double newValue, double maxValue);
+	[Signal] public delegate void BossKilledEventHandler();
 
 	public enum BossState {shield, open, cracked, hidden}
 
 	[Export] public BossState state;
 	[Export] public Array<SpriteFrames> AnimationLibrary;
-	[Export] public double MaxHealth = 500;
+	[Export] public Array<AudioStream> Sounds;
+	[Export] public double MaxHealth = 300;
+	[Export] public int ActivePinions = 0;
 
 	public bool _hitThisShot {get; set;} = false;
 	public bool Alive = false;
 	public bool _kineticFlag { get; set; } = false; 
 
 	private double _currentHealth;
-	private int _activePinions = 0;
-	private ProgressBar _healthBar;
 	private AnimatedSprite2D _sprite;
 	private Sprite2D _shield;
+	private Sprite2D _crack;
+	private Sprite2D _screenShield;
 	private Tween _shieldTween;
+	private Tween _screenShieldTween;
 	private Node2D _spritePivot;
+	private GpuParticles2D _crackParticles;
 	private GameManager _gameManager;
 	private AudioStreamPlayer2D _audio;
 	private AudioStreamPlayer2D _shakeAudio;
 	private AnimatedSprite2D _lanesSprite;
+	private CollisionShape2D _hitbox;
 
 	// Pinions
 	private Pinion _pinion1;
@@ -44,11 +50,18 @@ public partial class BossPin : Area2D
 
 		// Texture Handling
 		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/BossSprite");
+		_sprite.AnimationFinished += OnAnimationFinished;
 		_spritePivot = GetNode<Node2D>("SpritePivot");
 		_lanesSprite = GetNode<AnimatedSprite2D>("../../Lanes");
 
 		_shield = GetNode<Sprite2D>("SpritePivot/Shield");
 		_shield.Modulate = new Color(1, 1, 1, 0);
+		_screenShield = GetNode<Sprite2D>("ScreenShield");
+		_screenShield.Modulate = new Color(1, 1, 1, 0);
+
+		_crack = GetNode<Sprite2D>("SpritePivot/Crack");
+		_crack.Modulate = new Color(1, 1, 1, 0);
+		_crackParticles = GetNode<GpuParticles2D>("CrackParticles");
 
 		// Audio Handling
 		_audio = GetNode<AudioStreamPlayer2D>("SoundEffects");
@@ -56,13 +69,13 @@ public partial class BossPin : Area2D
 		
 		// Health Bar Handling
 		_currentHealth = MaxHealth;
-		_healthBar = GetNode<ProgressBar>("ProgressBar");
-		_healthBar.MaxValue = MaxHealth;
-		_healthBar.Value = _currentHealth;
 
 		// Kinetic Ball Handling
 		_kineticTween = CreateTween();
 		_kineticExplosion = GetNode<GpuParticles2D>("KineticExplosionParticles");
+
+		_hitbox = GetNode<CollisionShape2D>("PinHitbox");
+		_hitbox.Disabled = true;
 
 		// Pinion Handling
 		_pinion1 = GetNode<Pinion>("Pinion1");
@@ -74,6 +87,7 @@ public partial class BossPin : Area2D
 		// Start Boss Hidden
 		state = BossState.hidden;
 		Modulate = new Color(1, 1, 1, 0);
+		AreaEntered += TakeDamage;
 	}
 
 	
@@ -90,20 +104,41 @@ public partial class BossPin : Area2D
 	// End Initializaion Methods --------------------------------------------------------------------------------------------------- //
 
 	// Damage Methods --------------------------------------------------------------------------------------------------- //
-	public void TakeDamage(int amount, bool sweet, int type)
+	public void ApplyOnHits()
+	{
+		if (GlobalData.Instance.KineticBall) {_kineticFlag = true;}
+	}
+
+	public void TakeDamage(Area2D area)
 	{
 
-		if (type == 1 && _kineticFlag) { amount *= 2;}
+		if (!area.Owner.IsInGroup("Ball")) return;
+		
+		Ball ball = (Ball)area.GetParent();
+		int amount = ball.BallDamage;
 
-		_currentHealth -= amount;
-		_healthBar.Value = _currentHealth;
+		if (!_hitThisShot)
+		{
+			_hitThisShot = true;
+			if (state == BossState.shield) {
+				ball.StartBounce();
+				BossLaugh();
+				return;
+			}
 
-		if (_currentHealth <= 0)
-		{
-			Die();
-		} else
-		{
-			DamageAnimation(sweet, false);
+			if (_kineticFlag) { amount *= 2;}
+
+			_currentHealth -= amount;
+			EmitSignal(SignalName.BossHealthChanged, _currentHealth, MaxHealth);
+
+			if (_currentHealth <= 0)
+			{
+				Die();
+			} else
+			{
+				DamageAnimation(ball.IsSweet, false);
+				ball.StartBounce();
+			}
 		}
 	}
 
@@ -112,10 +147,12 @@ public partial class BossPin : Area2D
 		if (Alive)
 		{
 			Alive = false;
-
-			_gameManager.AddScore(1, shot:true);
+			_hitbox.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);;
+			state = BossState.hidden;
+			EmitSignal(SignalName.BossKilled);
 
 			if (_kineticFlag) {PlayKineticParticles();}
+			_lanesSprite.PlayBackwards();
 			_audio.Play();
 			_sprite.Play();
 			FadeOut();
@@ -127,24 +164,43 @@ public partial class BossPin : Area2D
 	// Pinion Handling Methods --------------------------------------------------------------------------------------------------- //
 	private void OnPinionDied()
 	{
-		_activePinions -= 1;
-		if (_activePinions <= 0)
+		ActivePinions -= 1;
+		if (ActivePinions <= 0)
 		{
-			// remove Shield
+			state = BossState.open;
+			_shieldTween?.Kill(); 
+			_shieldTween = CreateTween();
+			_shieldTween.TweenProperty(_shield, "modulate:a", 0.0f, 0.5f);
+			_screenShieldTween?.Kill(); 
+			_screenShieldTween = CreateTween();
+			_screenShieldTween.TweenProperty(_screenShield, "modulate:a", 0.0f, 0.5f);
+			ApplyOnHits();
 		}
 	}
 
 	// End Pinion Handling Methods --------------------------------------------------------------------------------------------------- //
 
 	// Boss Animation Methods --------------------------------------------------------------------------------------------------- //
+	private void OnAnimationFinished()
+	{
+		if (_sprite.Animation == "laugh" || _sprite.Animation == "enter_laugh")
+		{
+			_sprite.Play("idle");
+		}
+	}
+
 	private void BossLaugh()
 	{
 		_sprite.Play("laugh");
+		_audio.Stream = Sounds[1];
+		_audio.Play();
 	}
 
 	private void BossEnterLaugh()
 	{
 		_sprite.Play("enter_laugh");
+		_audio.Stream = Sounds[1];
+		_audio.Play();
 	}
 
 	private void BossScared()
@@ -155,12 +211,19 @@ public partial class BossPin : Area2D
 	public void BossShieldUp()
 	{
 		state = BossState.shield;
+		ActivePinions = 2;
 
 		_shieldTween?.Kill(); 
 	
 		_shieldTween = CreateTween().SetLoops();
 		_shieldTween.TweenProperty(_shield, "modulate:a", 1.0f, 0.8f);
 		_shieldTween.TweenProperty(_shield, "modulate:a", 0.5f, 0.8f);
+
+		_screenShieldTween?.Kill(); 
+	
+		_screenShieldTween = CreateTween().SetLoops();
+		_screenShieldTween.TweenProperty(_screenShield, "modulate:a", 1.0f, 0.8f);
+		_screenShieldTween.TweenProperty(_screenShield, "modulate:a", 0.5f, 0.8f);
 
 	}
 
@@ -182,8 +245,16 @@ public partial class BossPin : Area2D
 
 			tween.Chain().TweenCallback(Callable.From(TriggerImpact));
 
+			_currentHealth = MaxHealth;
+
 			tween.Finished += () => {
-				Alive = true; 
+				Alive = true;
+				_hitbox.Disabled = false;
+				
+				// Monitor Change
+				GetNode<Monitor>("../../Monitor").TransitionToBoss();
+				EmitSignal(SignalName.BossHealthChanged, _currentHealth, MaxHealth); 
+
 				_lanesSprite.Play();
 				GetTree().CreateTimer(0.5f).Timeout += () => {
 					BossEnterLaugh();
@@ -191,8 +262,6 @@ public partial class BossPin : Area2D
 					GetTree().CreateTimer(0.2f).Timeout += _pinion2.PinionEnter;
 				};
 			};
-			
-
 		}
 	}
 
@@ -201,9 +270,6 @@ public partial class BossPin : Area2D
 		// Find the camera in the scene and call Shake
 		var camera = GetTree().Root.FindChild("Camera", true, false) as GameCamera;
 		camera?.Shake(15.0f); // 15 is a decent 'heavy' shake for 320x180
-		
-		// Play a sound effect if you have one!
-		GD.Print("Boss Pin Landed!");
 	}
 
 	
@@ -213,7 +279,15 @@ public partial class BossPin : Area2D
 	public void DamageAnimation(bool sweet, bool shake)
 	{
 		if (sweet) {PlayHeavyWobble();} else {PlayWobble();}
-		if (_kineticFlag && !shake) {PlayKineticParticles();}
+		if (_kineticFlag && !shake) {PlayKineticParticles();  _kineticFlag = false; }
+		if (_currentHealth <= MaxHealth / 2)
+		{
+			state = BossState.cracked;
+			_crackParticles.Emitting = true;
+			_crackParticles.Restart();
+			_crack.Modulate = new Color(1, 1, 1, 1);
+			BossScared();
+		}
 	}
 
 	public void FadeOut()
@@ -221,6 +295,10 @@ public partial class BossPin : Area2D
 		Tween tween = CreateTween();
 
 		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 0), 0.7f);
+		tween.Finished += () => {
+			_crack.Modulate = new Color(1, 1, 1, 0);
+			_sprite.PlayBackwards("enter_laugh");
+		};
 	}
 
 	public void MakeVisible()
@@ -229,39 +307,24 @@ public partial class BossPin : Area2D
 		tween.TweenProperty(this, "modulate", new Color(1, 1, 1, 1), 0f);
 	}
 
-		// Heavy Wobble for sweet spot shake
-	public void PlayHeavyWobble()
-	{
-		Tween tween = CreateTween().SetParallel(false);
-		float intensity = 0.4f; // Starting tilt
-		float duration = 0.1f;
-
-		tween.TweenProperty(_spritePivot, "rotation", 0f, 0.15f);
-		_shakeAudio.PitchScale = 1.25f;
-		_shakeAudio.Play();
-
-		for (int i = 0; i < 6; i++)
-		{
-			// Alternate directions: positive, negative, positive, negative
-			float direction = (i % 2 == 0) ? 1 : -1;
-			
-			tween.TweenProperty(_spritePivot, "rotation", intensity * direction, duration)
-				.SetTrans(Tween.TransitionType.Quad)
-				.SetEase(Tween.EaseType.Out);
-			
-			// Reduce intensity each time for a "settling" effect
-			if (i % 2 == 0) { intensity *= 0.6f; }
-		}
-
-		// Final snap back to zero
-		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
-	}
-
-	// Small wobble for normal
-	private void PlayWobble()
+	private void PlayHeavyWobble()
 	{
 		Tween tween = CreateTween().SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
 		float wobbleAngle = 0.2f; 
+		float duration = 0.15f;
+
+		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
+		_shakeAudio.PitchScale = 1f;
+		_shakeAudio.Play();
+		tween.TweenProperty(_spritePivot, "rotation", wobbleAngle, duration);
+		tween.TweenProperty(_spritePivot, "rotation", -wobbleAngle, duration);
+		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
+	}
+
+	private void PlayWobble()
+	{
+		Tween tween = CreateTween().SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+		float wobbleAngle = 0.05f; 
 		float duration = 0.15f;
 
 		tween.TweenProperty(_spritePivot, "rotation", 0f, duration);
@@ -331,16 +394,4 @@ public partial class BossPin : Area2D
 	{
 		return _currentHealth;
 	}
-
-	public void SetHealthBar(double amount)
-	{
-		_healthBar.Value = amount;
-	}
-
-	public double GetHealthBar()
-	{
-		return _healthBar.Value;
-	}
-
-
 }

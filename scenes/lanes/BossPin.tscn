@@ -1,14 +1,17 @@
-[gd_scene load_steps=16 format=3 uid="uid://b5hy6vu52box2"]
+[gd_scene load_steps=19 format=3 uid="uid://b5hy6vu52box2"]
 
 [ext_resource type="Script" uid="uid://cg32d7h48702l" path="res://scripts/bowling_alley/BossPin.cs" id="1_2fje5"]
 [ext_resource type="Texture2D" uid="uid://c4r7mh7y68i3l" path="res://textures/pins/boss/boss_pin.png" id="1_5d53g"]
 [ext_resource type="AudioStream" uid="uid://sagmsoiiqlg5" path="res://music/sfx/lanes/pin_knock_1.mp3" id="1_6gfix"]
+[ext_resource type="AudioStream" uid="uid://31xr7lokboxs" path="res://music/sfx/lanes/pin_knock_3.mp3" id="2_i6452"]
 [ext_resource type="AudioStream" uid="uid://h3pupt4sgpl7" path="res://music/sfx/lanes/shake.mp3" id="3_2fje5"]
 [ext_resource type="Texture2D" uid="uid://c0gjp01hg76jl" path="res://textures/pins/boss/bp_laugh.png" id="3_r4h1h"]
+[ext_resource type="AudioStream" uid="uid://2np5oytviicx" path="res://music/sfx/lanes/boss_laugh.wav" id="3_vih4y"]
 [ext_resource type="Texture2D" uid="uid://bfx1xrjy75n57" path="res://textures/pins/boss/bp_scared.png" id="5_5rtoa"]
 [ext_resource type="Texture2D" uid="uid://bibfh3ygu4q2e" path="res://textures/pins/boss/bp_crack.png" id="6_nygkk"]
 [ext_resource type="Texture2D" uid="uid://cf431ei8c2jq5" path="res://textures/pins/boss/bp_shield.png" id="7_sih3p"]
 [ext_resource type="PackedScene" uid="uid://4shoth8rsar" path="res://scenes/lanes/Pinion.tscn" id="9_2fpsw"]
+[ext_resource type="Texture2D" uid="uid://uk8qcn02enm5" path="res://textures/screen/score_monitor/screen_boss_shield.png" id="10_vih4y"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_llno5"]
 atlas = ExtResource("3_r4h1h")
@@ -78,7 +81,36 @@ animations = [{
 }],
 "loop": false,
 "name": &"enter_laugh",
-"speed": 10.0
+"speed": 13.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_td6q0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wqoi")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 3.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -119,7 +151,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"laugh",
-"speed": 10.0
+"speed": 13.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -139,8 +171,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ovkvq"]
-radius = 12.0
-height = 26.0
+radius = 11.0
+height = 22.0
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vyy2x"]
 lifetime_randomness = 0.52
@@ -148,20 +180,25 @@ particle_flag_disable_z = true
 emission_shape = 1
 emission_sphere_radius = 5.0
 direction = Vector3(0, -1, 0)
-spread = 61.519
+spread = 45.57
 flatness = 1.0
 initial_velocity_min = 54.219997
 initial_velocity_max = 103.399994
-gravity = Vector3(0, 0, 0)
-color = Color(0.8845813, 0.00064321933, 0.8875311, 1)
+gravity = Vector3(0, 500, 0)
+color = Color(1, 0.9843137, 0.9529412, 1)
 
 [node name="BossPin" type="Area2D"]
 script = ExtResource("1_2fje5")
+Sounds = Array[AudioStream]([ExtResource("2_i6452"), ExtResource("3_vih4y")])
 
 [node name="SoundEffects" type="AudioStreamPlayer2D" parent="."]
 position = Vector2(0, -15)
 stream = ExtResource("1_6gfix")
-volume_db = -20.582
+volume_db = -6.974
+
+[node name="ScreenShield" type="Sprite2D" parent="."]
+position = Vector2(-94, -57)
+texture = ExtResource("10_vih4y")
 
 [node name="SpritePivot" type="Node2D" parent="."]
 
@@ -171,7 +208,6 @@ sprite_frames = SubResource("SpriteFrames_j8lrl")
 animation = &"enter_laugh"
 
 [node name="Crack" type="Sprite2D" parent="SpritePivot"]
-visible = false
 position = Vector2(0, -28)
 texture = ExtResource("6_nygkk")
 
@@ -180,8 +216,7 @@ position = Vector2(0, -28)
 texture = ExtResource("7_sih3p")
 
 [node name="PinHitbox" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(0, -15)
+position = Vector2(0, -10)
 shape = SubResource("CapsuleShape2D_ovkvq")
 
 [node name="ShakeSound" type="AudioStreamPlayer2D" parent="."]
@@ -197,13 +232,17 @@ one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_vyy2x")
 
-[node name="ProgressBar" type="ProgressBar" parent="."]
-visible = false
-offset_right = 4.0
-offset_bottom = 27.0
-
 [node name="Pinion1" parent="." instance=ExtResource("9_2fpsw")]
 position = Vector2(-33, 30)
 
 [node name="Pinion2" parent="." instance=ExtResource("9_2fpsw")]
 position = Vector2(33, 30)
+
+[node name="CrackParticles" type="GPUParticles2D" parent="."]
+position = Vector2(0, -9)
+emitting = false
+amount = 20
+lifetime = 0.39
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_vyy2x")

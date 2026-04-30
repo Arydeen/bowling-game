@@ -89,6 +89,9 @@ stream = ExtResource("3_ua68m")
 volume_db = -20.0
 autoplay = true
 
+[node name="Monitor" parent="." instance=ExtResource("9_mkrau")]
+position = Vector2(66, 0)
+
 [node name="PinContainer" type="Node2D" parent="."]
 y_sort_enabled = true
 
@@ -179,9 +182,6 @@ texture = ExtResource("11_hnf61")
 
 [node name="SpotlightNoise" type="AudioStreamPlayer2D" parent="Spotlight"]
 stream = ExtResource("12_hnf61")
-
-[node name="Monitor" parent="." instance=ExtResource("9_mkrau")]
-position = Vector2(66, 0)
 
 [node name="PlayerMonitor" parent="." instance=ExtResource("13_c476d")]
 position = Vector2(280, 30)

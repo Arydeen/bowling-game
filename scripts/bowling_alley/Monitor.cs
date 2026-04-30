@@ -3,7 +3,8 @@ using System;
 
 public partial class Monitor : Node2D
 {
-	
+	public enum MonitorState {day, night, boss}
+	private MonitorState _state = MonitorState.day;
 	private Vector2 _hiddenPos;
 	private Vector2 _visiblePos = new Vector2(66, 64);
 
@@ -49,6 +50,13 @@ public partial class Monitor : Node2D
 	public Label fnt { get; set;}
 	// End Night Scoreboard //
 
+	// Boss Scoreboard //
+	public Label BallsLeft;
+	public Label TotalBalls;
+	public Label PinionCount;
+	public ProgressBar Health;
+	// End Boss Scoreboard //
+
 	public override void _Ready()
 	{
 		_gameManager = GetNode<GameManager>("../GameManager");
@@ -90,6 +98,27 @@ public partial class Monitor : Node2D
 		fnt = GetNode<Label>("NightScoreboardControl/ScoreboardVBox/Have");
 		// End Night Scoreboard //
 
+		// Boss Scoreboard //
+		BallsLeft = GetNode<Label>("BossScoreboardControl/BallsLeft");
+		TotalBalls = GetNode<Label>("BossScoreboardControl/TotalBalls");
+		PinionCount = GetNode<Label>("BossScoreboardControl/PinionCount");
+		Health = GetNode<ProgressBar>("BossScoreboardControl/Health");
+
+		if (GetTree().Root.FindChild("BossPin", true, false) is BossPin boss)
+		{
+			boss.BossHealthChanged += (val, max) =>
+			{
+				Health.MaxValue = max;
+				Health.Value = val;
+			};
+		}
+
+		BallsLeft.Visible = false;
+		TotalBalls.Visible = false;
+		PinionCount.Visible = false;
+		Health.Visible = false;
+		// End Boss Scoreboard //
+
 		_hiddenPos = Position;
 		ShowMonitor();
 	}
@@ -120,6 +149,30 @@ public partial class Monitor : Node2D
 		tween.TweenProperty(_monitorlight, "energy", 0f, 0.2f).From(0.8f);
 		tween.Finished += () => _monitorlight.Enabled = false;
 	}
+
+	public void TransitionToBoss(float duration = 1.0f)
+	{
+		var bossFrames = _animSprite.SpriteFrames;
+		Texture2D bossTex = bossFrames.GetFrameTexture("boss_scoreboard", 0);
+
+		_shaderMat.SetShaderParameter("target_texture", bossTex);
+
+		Tween tween = CreateTween();
+		tween.TweenProperty(_shaderMat, "shader_parameter/mix_weight", 1.0f, duration);
+
+		tween.Finished += () => {
+			_state = MonitorState.boss;
+			_animSprite.Play("boss_scoreboard");
+			_shaderMat.SetShaderParameter("mix_weight", 0.0f);
+
+			BallsLeft.Visible = true;
+			TotalBalls.Visible = true;
+			PinionCount.Visible = true;
+			Health.Visible = true;
+
+			PinionCount.Text = "2";
+		};
+	}
 	
 
 	public void TransitionToNight(float duration = 1.0f)
@@ -137,6 +190,7 @@ public partial class Monitor : Node2D
 
 		// 4. When finished, swap the actual animation and reset the weight
 		tween.Finished += () => {
+			_state = MonitorState.night;
 			_animSprite.Play("night_scoreboard");
 			_shaderMat.SetShaderParameter("mix_weight", 0.0f);
 		};
@@ -144,6 +198,14 @@ public partial class Monitor : Node2D
 
 	public void TransitionToDay(float duration = 1.0f)
 	{
+		if (_state == MonitorState.boss)
+		{
+			BallsLeft.Visible = false;
+			TotalBalls.Visible = false;
+			PinionCount.Visible = false;
+			Health.Visible = false;
+		}
+
 		// 1. Get the texture for the first frame of the day animation
 		var dayFrames = _animSprite.SpriteFrames;
 		Texture2D dayTex = _gameManager.NextChallenge == GameManager.Challenge.Night ? 
@@ -159,6 +221,7 @@ public partial class Monitor : Node2D
 
 		// 4. When finished, swap the actual animation and reset the weight
 		tween.Finished += () => {
+			_state = MonitorState.day;
 			if (_gameManager.NextChallenge == GameManager.Challenge.Night) 
 				{_animSprite.Play("day_scoreboard");}
 			else

@@ -18,6 +18,7 @@ public partial class Pinion : Area2D
 	private Tween _shieldTween;
 	private Node2D _spritePivot;
 	private AudioStreamPlayer2D _audio;
+	private AudioStreamPlayer2D _scream;
 
 	// Initialization Methods --------------------------------------------------------------------------------------------------- //
 	public override void _Ready()
@@ -32,6 +33,7 @@ public partial class Pinion : Area2D
 
 		// Audio Handling
 		_audio = GetNode<AudioStreamPlayer2D>("SoundEffects");
+		_scream = GetNode<AudioStreamPlayer2D>("ScreamSound");
 
 		AreaEntered += Die;
 	}
@@ -59,6 +61,7 @@ public partial class Pinion : Area2D
 			EmitSignal(SignalName.PinionDied);
 
 			_audio.Play();
+			_scream.Play();
 			// _sprite.Play();
 			FadeOut();
 		}

@@ -22,6 +22,7 @@ public partial class Ball : CharacterBody2D
 	[Export] public float AimSpeed = 150f; // Speed of ball when aiming
 	[Export] public float RollSpeed = 60.0f; // Speed of ball rolling
 	[Export] public int BallDamage = 0; // Impact damage of ball
+	[Export] public  bool IsSweet = false; // If landed in sweet spot
 	[Export] public PowerMeter Meter;
 
 	private bool _aimingLeft = false;
@@ -30,7 +31,7 @@ public partial class Ball : CharacterBody2D
 	private float _currentOffset = 0f; // How far moved from center
 	private float _powerVal = 0; // Should be called angle
 	private float _gutterDirection = 0f;
-	private bool _isSweet = false; // If landed in sweet spot
+
 	// private SpriteFrames _ballAnimation;
 
 
@@ -48,6 +49,8 @@ public partial class Ball : CharacterBody2D
 		GetNode<Area2D>("Hitbox").AreaEntered += HitBumper;
 		_rollAudio = GetNode<AudioStreamPlayer2D>("RollSound");
 		_thudAudio = GetNode<AudioStreamPlayer2D>("ThudSound");
+
+		_gameManager = GetParent<GameManager>();
 	}
 
 	public void Initialize(Vector2 startPos)
@@ -116,7 +119,7 @@ public partial class Ball : CharacterBody2D
 
 		Position = new Vector2(_startX + _currentOffset, Position.Y);
 
-		if (Input.IsActionJustPressed("ball_aim_stop"))
+		if (Input.IsActionJustPressed("ball_aim_stop") && !_gameManager.InputLock)
 		{
 			_currState = BallState.Powering;
 			Meter.ShowMeter(); 
@@ -133,7 +136,7 @@ public partial class Ball : CharacterBody2D
 		_powerVal = rawX;
 		_thudAudio.Play();
 		_currState = BallState.Rolling;
-		_isSweet = sweet;
+		IsSweet = sweet;
 	}
 	// End Aiming and Power Methods //
 	
@@ -150,7 +153,7 @@ public partial class Ball : CharacterBody2D
 		Scale = new Vector2(t, t);
 	}
 
-	private void StartBounce()
+	public void StartBounce()
 	{
 		_currState = BallState.Bouncing;
 		_thudAudio.Play();
@@ -187,12 +190,12 @@ public partial class Ball : CharacterBody2D
 
 			if (bumperName.Contains("Left"))
 			{
-				_powerVal = _isSweet ? 300 : 200f;
+				_powerVal = IsSweet ? 300 : 200f;
 				BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
 			}
 			else if (bumperName.Contains("Right"))
 			{
-				_powerVal = _isSweet ? -300 : -200f;
+				_powerVal = IsSweet ? -300 : -200f;
 				BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
 			}
 		}
@@ -209,7 +212,7 @@ public partial class Ball : CharacterBody2D
 			{
 				if (!pin._hitThisShot)
 				{
-					pin.TakeDamage(BallDamage, _isSweet, 1);
+					pin.TakeDamage(BallDamage, IsSweet, 1);
 					pin._hitThisShot = true;
 					BallDamage = BallDamage / 3;
 
@@ -220,23 +223,6 @@ public partial class Ball : CharacterBody2D
 					}
 				} 
 				
-			} else if (area is BossPin boss)
-			{
-				if (boss.Alive)
-				{
-					GD.Print("Boss Hit");
-					if (!boss._hitThisShot)
-					{
-						boss.TakeDamage(BallDamage, _isSweet, 1);
-						boss._hitThisShot = true;
-
-						if (boss.Alive)
-						{
-							StartBounce();
-							break;
-						}
-					}
-				}
 			}
 		}
 	}

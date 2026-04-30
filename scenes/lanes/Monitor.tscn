@@ -1,10 +1,12 @@
-[gd_scene load_steps=52 format=3 uid="uid://dirdho85p16wr"]
+[gd_scene load_steps=76 format=3 uid="uid://dirdho85p16wr"]
 
 [ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/score_monitor/monitor.png" id="1_7x07b"]
 [ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scripts/bowling_alley/Monitor.cs" id="1_220yk"]
 [ext_resource type="Shader" uid="uid://wteb273aj4qf" path="res://scripts/bowling_alley/shaders/crossfade.gdshader" id="3_1ktiv"]
 [ext_resource type="Texture2D" uid="uid://cc52876ybuxqq" path="res://textures/screen/score_monitor/screen_score_final.png" id="4_2bgoo"]
 [ext_resource type="Texture2D" uid="uid://cl0knsgyuqjb" path="res://textures/screen/score_monitor/screen_score.png" id="4_3t2tn"]
+[ext_resource type="Texture2D" uid="uid://bgol8bcswvwr1" path="res://textures/screen/score_monitor/screen_boss.png" id="4_v13ws"]
+[ext_resource type="Texture2D" uid="uid://44fqcw65jq41" path="res://textures/screen/score_monitor/screen_score_boss.png" id="5_buqro"]
 [ext_resource type="FontFile" uid="uid://b0yocnmps7ojr" path="res://textures/fonts/Vaticanus-G3yVG.ttf" id="5_tawgn"]
 [ext_resource type="VideoStream" uid="uid://dcvty0ehu27cy" path="res://textures/videos/cat_loss.ogv" id="6_1ktiv"]
 [ext_resource type="Texture2D" uid="uid://cs0s832l0v7b5" path="res://textures/screen/score_monitor/monitor_light.png" id="8_8llwd"]
@@ -94,6 +96,86 @@ region = Rect2(1728, 0, 96, 44)
 atlas = ExtResource("4_3t2tn")
 region = Rect2(1824, 0, 96, 44)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_jtue4"]
+atlas = ExtResource("5_buqro")
+region = Rect2(0, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8kkyx"]
+atlas = ExtResource("5_buqro")
+region = Rect2(96, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_al7x2"]
+atlas = ExtResource("5_buqro")
+region = Rect2(192, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8w7jh"]
+atlas = ExtResource("5_buqro")
+region = Rect2(288, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_71wqc"]
+atlas = ExtResource("5_buqro")
+region = Rect2(384, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mfani"]
+atlas = ExtResource("5_buqro")
+region = Rect2(480, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y2bl4"]
+atlas = ExtResource("5_buqro")
+region = Rect2(576, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bb8ev"]
+atlas = ExtResource("5_buqro")
+region = Rect2(672, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cimkw"]
+atlas = ExtResource("5_buqro")
+region = Rect2(768, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qd7pn"]
+atlas = ExtResource("5_buqro")
+region = Rect2(864, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j84l4"]
+atlas = ExtResource("5_buqro")
+region = Rect2(960, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i5v23"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1056, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_64ryk"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1152, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w4lus"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1248, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k0vic"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1344, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hclbu"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1440, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v65kg"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1536, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4avux"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1632, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gt2m7"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1728, 0, 96, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ublek"]
+atlas = ExtResource("5_buqro")
+region = Rect2(1824, 0, 96, 44)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_2hdn5"]
 atlas = ExtResource("4_2bgoo")
 region = Rect2(0, 0, 96, 44)
@@ -178,6 +260,14 @@ region = Rect2(1824, 0, 96, 44)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("4_v13ws")
+}],
+"loop": true,
+"name": &"boss_scoreboard",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_tawgn")
 }, {
 "duration": 1.0,
@@ -239,6 +329,71 @@ animations = [{
 }],
 "loop": true,
 "name": &"day_scoreboard",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jtue4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8kkyx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_al7x2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8w7jh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_71wqc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mfani")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2bl4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bb8ev")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cimkw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qd7pn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j84l4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i5v23")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_64ryk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w4lus")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k0vic")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hclbu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v65kg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4avux")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gt2m7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ublek")
+}],
+"loop": true,
+"name": &"day_scoreboard_boss",
 "speed": 5.0
 }, {
 "frames": [{
@@ -307,6 +462,10 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_v13ws"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7m067"]
+
 [node name="Monitor" type="Node2D"]
 script = ExtResource("1_220yk")
 
@@ -318,7 +477,7 @@ texture = ExtResource("1_7x07b")
 material = SubResource("ShaderMaterial_i7d2r")
 position = Vector2(0, -28)
 sprite_frames = SubResource("SpriteFrames_2hdn5")
-animation = &"day_scoreboard"
+animation = &"boss_scoreboard"
 autoplay = "day_scoreboard"
 
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
@@ -564,3 +723,49 @@ texture = ExtResource("8_8llwd")
 
 [node name="SpotlightNoise" type="AudioStreamPlayer2D" parent="Spotlight"]
 stream = ExtResource("9_buqro")
+
+[node name="BossScoreboardControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -48.0
+offset_top = -50.0
+offset_right = 48.0
+offset_bottom = -6.0
+
+[node name="BallsLeft" type="Label" parent="BossScoreboardControl"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 3.0
+offset_right = 38.0
+offset_bottom = 26.0
+theme_override_fonts/font = ExtResource("5_tawgn")
+text = "0
+"
+
+[node name="TotalBalls" type="Label" parent="BossScoreboardControl"]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 3.0
+offset_right = 61.0
+offset_bottom = 26.0
+theme_override_fonts/font = ExtResource("5_tawgn")
+text = "6"
+
+[node name="PinionCount" type="Label" parent="BossScoreboardControl"]
+layout_mode = 0
+offset_left = 84.0
+offset_top = 27.0
+offset_right = 95.0
+offset_bottom = 50.0
+theme_override_fonts/font = ExtResource("5_tawgn")
+text = "2"
+
+[node name="Health" type="ProgressBar" parent="BossScoreboardControl"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 18.0
+offset_right = 44.0
+offset_bottom = 45.0
+theme_override_fonts/font = ExtResource("5_tawgn")
+theme_override_styles/background = SubResource("StyleBoxTexture_v13ws")
+theme_override_styles/fill = SubResource("StyleBoxTexture_7m067")

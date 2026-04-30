@@ -11,9 +11,9 @@ public partial class Pin : Area2D
 	[Export] public PinType Type;
 	[Export] public Array<SpriteFrames> AnimationLibrary;
 	[Export] public Array<AudioStream> DeathSounds;
+	[Export] public CollisionShape2D Hitbox;
 
 	[Export] public double MaxHealth = 100;
-
 	[Export] public bool Alive = true;
 
 	public bool _hitThisShot {get; set;} = false;
@@ -36,6 +36,8 @@ public partial class Pin : Area2D
 	// Initialization Methods --------------------------------------------------------------------------------------------------- //
 	public override void _Ready()
 	{
+		// Fetch Hitbox
+		Hitbox = GetNode<CollisionShape2D>("PinHitbox");
 
 		// Fetch Game Manager
 		_gameManager = GetNode<GameManager>("../../GameManager");
@@ -43,6 +45,7 @@ public partial class Pin : Area2D
 		// Texture Handling
 		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/PinSprite");
 		_spritePivot = GetNode<Node2D>("SpritePivot");
+
 		// Audio Handling
 		_audio = GetNode<AudioStreamPlayer2D>("DeathSound");
 		_shakeAudio = GetNode<AudioStreamPlayer2D>("ShakeSound");

@@ -290,7 +290,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Ball" type="CharacterBody2D"]
+[node name="Ball" type="CharacterBody2D" groups=["Ball"]]
 script = ExtResource("1_ja1hk")
 
 [node name="Hitbox" type="Area2D" parent="."]

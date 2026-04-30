@@ -1,17 +1,23 @@
 using Godot;
 using System;
+using System.Dynamic;
 using System.Threading;
 
 public partial class GameManager : Node2D
 {
 
+	public enum Challenge {Boss, Night}
 	[Export] public PackedScene BallScene;
 	[Export] public Vector2 BallSpawnPos = new Vector2(160, 175);
 	[Export] public PowerMeter Meter;
 	[Export] public int PinHealth = 100;
+	[Export] public double PinHealthScale = 1;
+	[Export] public bool InputLock = false;
+ 
+	// Public Challenge Variables
+	[Export] public Challenge NextChallenge = Challenge.Night;
 	[Export] public bool isNight = false;
 	[Export] public bool isBoss = false;
-	[Export] public double PinHealthScale = 1;
 
 	private Monitor _monitor;
 	private Bumpers _bumpers;
@@ -26,11 +32,18 @@ public partial class GameManager : Node2D
 	private int _frameScore = 0; // Score this frame
 	private int _shotScore = 0; // Score this shot
 
+	private BossPin _boss; // Frame Boss if active
+
 	private int _roundNum = 0; // Current round
 	private int _frameNum = 0; // Current frame in round
 	private int _shotNum = 0; // Current shot in frame
 	private int _nightReq = 4; // Number of pins needed to pass the night
 	private bool _firstFrame = true; // Is this the first Frame
+
+	// Boss Tracking Vars //
+	private int _bossBallsLeft;
+
+	// End Boss Tracking Vars //
 
 	// End Game Tracking Variables --------------------------------------------- //
 
@@ -44,8 +57,29 @@ public partial class GameManager : Node2D
 		_spotlight.Enabled = false;
 		_switchNoise = GetNode<AudioStreamPlayer2D>("../Spotlight/SpotlightNoise");
 
+		if (GetTree().Root.FindChild("Pinion1", true, false) is Pinion pinion)
+		{
+			pinion.PinionDied += () =>
+			{
+				_monitor.PinionCount.Text = _boss.ActivePinions.ToString();
+			};
+		}
+		if (GetTree().Root.FindChild("Pinion2", true, false) is Pinion pinion2)
+		{
+			pinion2.PinionDied += () =>
+			{
+				_monitor.PinionCount.Text = _boss.ActivePinions.ToString();
+			};
+		}
+
 		StartRound();
 		SpawnNewBall();
+	}
+
+	public void StartInputLockout(float duration)
+	{
+		InputLock = true;
+		GetTree().CreateTimer(duration).Timeout += () => InputLock = false;
 	}
 
 
@@ -62,7 +96,6 @@ public partial class GameManager : Node2D
 				pin.Alive = true;
 				pin._hitThisShot = false;
 				pin.SetHealth(PinHealth * PinHealthScale);
-				GD.Print(pin.GetHealth());
 				pin.SetHealthBar(PinHealth);
 
 				pin._kineticFlag = false;
@@ -94,6 +127,15 @@ public partial class GameManager : Node2D
 
 	}
 
+	public void ResetBossScoreboard()
+	{
+		_monitor.BallsLeft.Visible = false;
+		_monitor.TotalBalls.Visible = false;
+		_monitor.PinionCount.Visible = false;
+		_monitor.Health.Visible = false;
+	}
+
+
 	private void ClearPins()
 	{
 		var allPins = GetTree().GetNodesInGroup("Pins");
@@ -103,6 +145,32 @@ public partial class GameManager : Node2D
 			if (node is Pin pin)
 			{
 				pin.DieNoScore();
+			}
+		}
+	}
+
+	private void DeactivatePins()
+	{
+		var allPins = GetTree().GetNodesInGroup("Pins");
+
+		foreach (Node node in allPins)
+		{
+			if (node is Pin pin)
+			{
+				pin.Hitbox.Disabled = true;
+			}
+		}
+	}
+
+	private void ActivatePins()
+	{
+		var allPins = GetTree().GetNodesInGroup("Pins");
+
+		foreach (Node node in allPins)
+		{
+			if (node is Pin pin)
+			{
+				pin.Hitbox.Disabled = false;
 			}
 		}
 	}
@@ -124,11 +192,11 @@ public partial class GameManager : Node2D
 	private void StartFrame()
 	{
 		if (_frameNum + 1 == 5) {
-			GetTree().CreateTimer(1.25f).Timeout += StartNightFrame; 
+			StartChallenge();
 			return;
 		} else if (_frameNum + 1 > 5)
 		{
-			GetTree().CreateTimer(1.25f).Timeout += EndNightFrame;
+			EndChallenge();
 			return;
 		} 
 		_frameScore = 0;
@@ -143,6 +211,28 @@ public partial class GameManager : Node2D
 		StartShot();
 
 		
+	}
+
+	private void StartChallenge()
+	{
+		if (NextChallenge == Challenge.Night)
+		{
+			GetTree().CreateTimer(1.25f).Timeout += StartNightFrame; 
+		} else
+		{
+			GetTree().CreateTimer(1.25f).Timeout += StartBossFrame;
+		}
+	}
+
+	private void EndChallenge()
+	{
+		if (NextChallenge == Challenge.Night)
+		{
+			GetTree().CreateTimer(1.25f).Timeout += EndNightFrame;
+		} else
+		{
+			// EndBossFrame();
+		}
 	}
 
 	private void StartNightFrame()
@@ -166,8 +256,9 @@ public partial class GameManager : Node2D
 	{
 		isNight = false;
 		ResetNightScoreboard();
-		FadeToDay();
 		ResetPins();
+		NextChallenge = (_roundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
+		FadeToDay();
 
 		StartRound();
 	}
@@ -182,20 +273,82 @@ public partial class GameManager : Node2D
 	private void StartBossFrame()
 	{
 		isBoss = true;
-		ResetDayScoreboard();
-		ResetPins();
-		
 		// Eventual will add conditional here for different bosses
-		BossPin boss = GetNode<BossPin>("../PinContainer/BossPin");
+		_boss = GetNode<BossPin>("../PinContainer/BossPin");
+		_boss.BossKilled += () =>
+		{
+			AddScore(10 * _bossBallsLeft, shot:true);
+			EndBossFrame(true);
+		};
+
+		ResetPins();
+		DeactivatePins();
+
+		_frameScore = 0;
+		_frameNum += 1;
+		_shotNum = 3;
+		_shotScore = 0;
+
+		_bossBallsLeft = 6;
+		_monitor.BallsLeft.Text = "6";
 	
-		GetTree().CreateTimer(1.5f).Timeout += boss.BossEnter;
+		StartInputLockout(3.5f);
+		GetTree().CreateTimer(1.5f).Timeout += _boss.BossEnter;
+		GetTree().CreateTimer(2.2f).Timeout += ResetDayScoreboard;
 		GetTree().CreateTimer(2.2f).Timeout += ClearPins;
 	}
 
+	private void EndBossFrame(bool win)
+	{
+		if (win)
+		{
+			GetTree().CreateTimer(2f).Timeout += () =>
+			{
+				ResetBossScoreboard();
+				ResetPins();
+				ActivatePins();
+				NextChallenge = (_roundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
+				_monitor.TransitionToDay();
+				isBoss = false;
+				
+				StartRound();
+			};
+		} else
+		{
+			_monitor._video.Play();
+			_monitor._video.Finished += () => GetTree().Paused = true;
+			return;
+		}
+	}
 
-	// This method resets the "Hit this round" status for all pins
+	public void StartBossShot()
+	{
+		if (_bossBallsLeft > 0)
+		{
+			ResetPinsForRound();
+		} else
+		{
+			GetTree().CreateTimer(1f).Timeout += () => {
+				if (_boss.Alive)
+				{
+					if (GetTree().Root.FindChild("ScreenShield", true, false) is Sprite2D screenShield) {screenShield.Visible = false;}
+					ResetBossScoreboard();
+					EndBossFrame(false);
+				}
+			};
+		}
+	}
+
+
+	// This method resets the "Hit this round" status for all pins or Boss if Boss is active
 	private void ResetPinsForRound()
 	{
+		if (isBoss)
+		{
+			_boss._hitThisShot = false;
+			return;
+		}
+
 		var allPins = GetTree().GetNodesInGroup("Pins");
 
 		foreach (Node node in allPins)
@@ -204,10 +357,6 @@ public partial class GameManager : Node2D
 			{
 				pin._hitThisShot = false;
 			}
-			// if (node is BossPin boss && boss.Alive)
-			// {
-			// 	boss._hitThisShot = false;
-			// }
 		}
 	}
 	// End Reset Methods //
@@ -345,6 +494,14 @@ public partial class GameManager : Node2D
 
 	private void OnBallRemoved() 
 	{
+		if (isBoss) {
+			_bossBallsLeft -= 1;
+			_monitor.BallsLeft.Text = _bossBallsLeft.ToString();
+			StartBossShot();
+			GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall(); 
+			return;
+		}
+
 		UpdateShotText();
 		AddScore(_shotScore, frame:true, total:true);
 
@@ -390,7 +547,7 @@ public partial class GameManager : Node2D
 
 	void SkipToBoss()
 	{
-		_frameNum = 4;
+		
 		StartBossFrame();
 	}
 
@@ -413,6 +570,11 @@ public partial class GameManager : Node2D
 		{
 			_bumpers.hitsAllowed = 2;
 			_bumpers.ShowBumpers();
+		}
+		if (Input.IsActionJustPressed("NextFrame"))
+		{
+			UpdateFrameText();
+			StartFrame();
 		}
 	}
 }

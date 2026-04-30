@@ -30,6 +30,7 @@ public partial class PowerMeter : Control
 
 	private PointLight2D _meterlight;
 	private AudioStreamPlayer2D _meterSounds;
+	private GameManager _gameManager;
 	
 	private Vector2 _sliderPos = new Vector2(0, 0);
 	private Vector2 _targetPos; // The "Home" position on screen
@@ -42,6 +43,7 @@ public partial class PowerMeter : Control
 	{
 		_meterlight = GetNode<PointLight2D>("Spotlight");
 		_meterSounds = GetNode<AudioStreamPlayer2D>("MeterSounds");
+		_gameManager = GetNode<GameManager>("../GameManager");
 
 		_slider = GetNode<Sprite2D>("Slider");
 		_greenZone = GetNode<ColorRect>("ZonesContainer/ColorRectGreen");
@@ -224,6 +226,7 @@ public partial class PowerMeter : Control
 
 		if (_meterActive && _canStop && Input.IsActionJustPressed("power_meter_stop"))
 		{
+			if (_gameManager.InputLock) {return;}
 			PowerVal = StopSlider();
 		}
 	}

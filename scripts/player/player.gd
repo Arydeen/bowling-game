@@ -1,5 +1,7 @@
 extends Node
 
+const PrizeEffects := preload("res://scripts/arcade/prize_effects.gd")
+
 signal drink_count_changed(drink_id: StringName, new_count: int)
 signal prize_count_changed(prize_id: StringName, new_count: int)
 signal stats_changed()
@@ -28,6 +30,7 @@ var strength: float = 0.0
 var speed: float = 0.0
 var impact: float = 0.0
 var crit_chance: float = 0.01 # 1%
+var bumpers: float = 0.0
 
 # Coconut ball: temporary +30% strength for 1 frame
 var coconut_ball_frames_left: int = 0
@@ -48,12 +51,16 @@ func get_impact_value() -> float:
 func get_crit_chance() -> float:
 	return crit_chance
 
+func get_bumpers() -> float:
+	return bumpers
+
 func get_stats_snapshot() -> Dictionary:
 	return {
 		"strength": strength,
 		"speed": speed,
 		"impact": impact,
 		"crit_chance": crit_chance,
+		"bumpers": bumpers,
 		"coconut_ball_frames_left": coconut_ball_frames_left,
 	}
 
@@ -65,14 +72,8 @@ func _apply_starting_prizes() -> void:
 	if clear_prizes_on_ready:
 		prizes.clear()
 
-	for id in starting_prizes.keys():
-		var prize_id: StringName = id
-		var amt = max(1, int(starting_prizes[id]))
-
-		prizes[prize_id] = int(prizes.get(prize_id, 0)) + amt
-		prize_count_changed.emit(prize_id, int(prizes[prize_id]))
-
-	_print_inventory()
+	for raw_id in starting_prizes.keys():
+		add_prize(String(raw_id), -1, max(1, int(starting_prizes[raw_id])))
 
 func _hook_currency_manager() -> void:
 	var cm := get_node_or_null("/root/CurrencyManager")
@@ -113,10 +114,14 @@ func add_prize(item_id: String, _rarity: int = -1, amount: int = 1) -> void:
 	if item_id == "" or amount <= 0:
 		return
 
-	var key := StringName(item_id)
+	var key := StringName(item_id) # keep EXACT ids
+
 	prizes[key] = int(prizes.get(key, 0)) + amount
 	prize_count_changed.emit(key, int(prizes[key]))
 
+	PrizeEffects.apply_delta(self, key, amount)
+
+	stats_changed.emit()
 	_print_inventory()
 
 func get_drink_count(drink_id: StringName) -> int:

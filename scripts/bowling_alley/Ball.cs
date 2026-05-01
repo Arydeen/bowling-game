@@ -37,9 +37,22 @@ public partial class Ball : CharacterBody2D
 
 	// private SpriteFrames _ballAnimation;
 
-	//After Image
+	// After Image
 	public bool IsAfterImage = false;
+	public int AfterImageIndex = 0;
 	private bool _afterImagesSpawned = false;
+
+	// Split
+	private readonly HashSet<Area2D> _bumpersHitThisBall = new();
+	public bool IsSplitBall = false;
+	public bool SplitScheduled = false;
+	private bool _splitUsed = false;
+	private bool _splitInputArmed = true;
+	private bool _ballBounceCooldown = false;
+	private float _ballRepelVelocityX = 0f;
+	private float _sizeMult = 1f;
+
+	public bool HasSplit => _splitUsed;
 
 	private Node _player;
 	private int _impactDamage = 0;
@@ -59,6 +72,7 @@ public partial class Ball : CharacterBody2D
 
 		GetNode<Area2D>("Hitbox").AreaEntered += OnGutterEntered;
 		GetNode<Area2D>("Hitbox").AreaEntered += HitBumper;
+		GetNode<Area2D>("Hitbox").AreaEntered += OnBumperAreaEntered;
 		_rollAudio = GetNode<AudioStreamPlayer2D>("RollSound");
 		_thudAudio = GetNode<AudioStreamPlayer2D>("ThudSound");
 
@@ -79,6 +93,13 @@ public partial class Ball : CharacterBody2D
 
 		_hitPins.Clear();
 		_afterImagesSpawned = false;
+
+		IsSplitBall = false;
+		SplitScheduled = false;
+		_splitUsed = false;
+		_splitInputArmed = true;
+		_sizeMult = 1f;
+		_bumpersHitThisBall.Clear();
 	}
 	// End Startup Methods //
 
@@ -96,7 +117,8 @@ public partial class Ball : CharacterBody2D
 				if (_ballSprite.IsPlaying()) {_ballSprite.Stop();}
 				break;
 			case BallState.Rolling:
-				UpdateScale(); // Only scale while rolling or in Gutter
+				HandleSplitInput();
+				UpdateScale();
 				if (!_ballSprite.IsPlaying()) {_ballSprite.Play();}
 				break;
 			case BallState.Gutter:
@@ -144,7 +166,159 @@ public partial class Ball : CharacterBody2D
 	}
 	// End Player Stat Handling //
 
+	// Bumper Methods //
+
+	private void OnBumperAreaEntered(Area2D area)
+	{
+		if (!area.IsInGroup("Bumpers"))
+			return;
+
+		if (!_bumpersHitThisBall.Add(area))
+			return;
+
+		HitBumper(area);
+	}
+	private void CheckForBumpers()
+	{
+		if (_currState != BallState.Rolling)
+			return;
+
+		Area2D hitbox = GetNode<Area2D>("Hitbox");
+		var areas = hitbox.GetOverlappingAreas();
+
+		foreach (Area2D area in areas)
+		{
+			if (!area.IsInGroup("Bumpers"))
+				continue;
+
+			if (!_bumpersHitThisBall.Add(area))
+				continue;
+
+			HitBumper(area);
+		}
+	}
+	// End Bumper Methods //
+
 	// Ball PowerUps //
+
+	private int GetPlayerSplitCount()
+	{
+		if (_player == null)
+			return 0;
+
+		if (!_player.HasMethod("get_split_count"))
+			return 0;
+
+		return Math.Max(0, (int)(long)_player.Call("get_split_count"));
+	}
+
+	private bool SplitActionJustPressed()
+	{
+		return Input.IsActionJustPressed("ball_aim_stop") || Input.IsActionJustPressed("power_meter_stop");
+	}
+
+	private bool SplitActionHeld()
+	{
+		return Input.IsActionPressed("ball_aim_stop") || Input.IsActionPressed("power_meter_stop");
+	}
+
+	private void HandleSplitInput()
+	{
+		if (_currState != BallState.Rolling)
+			return;
+
+		if (IsAfterImage)
+			return;
+
+		if (IsSplitBall)
+			return;
+
+		if (_splitUsed)
+			return;
+
+		if (!_splitInputArmed)
+		{
+			if (!SplitActionHeld())
+				_splitInputArmed = true;
+
+			return;
+		}
+
+		if (!SplitActionJustPressed())
+			return;
+
+		int splitCount = GetPlayerSplitCount();
+
+		if (splitCount <= 0)
+			return;
+
+		EnsureGameManager();
+
+		if (_gameManager == null)
+			return;
+
+		_gameManager.TriggerSplitChain(this);
+		GetViewport().SetInputAsHandled();
+	}
+
+	public void PerformSplit()
+	{
+		if (_splitUsed)
+			return;
+
+		if (_currState != BallState.Rolling)
+			return;
+
+		if (IsSplitBall)
+			return;
+
+		int splitCount = GetPlayerSplitCount();
+
+		if (splitCount <= 0)
+			return;
+
+		_splitUsed = true;
+		SplitScheduled = true;
+
+		EnsureGameManager();
+
+		if (_gameManager == null)
+			return;
+
+		GD.Print($"[Split] {Name} splitting with count={splitCount}");
+
+		_gameManager.SpawnSplitBallsFrom(this, splitCount);
+
+		CallDeferred(Node.MethodName.QueueFree);
+	}
+
+	public void InitializeSplitCloneFrom(Ball source, Vector2 startPos, float splitScaleMult, float addedPowerVal)
+	{
+		Initialize(startPos);
+
+		IsSplitBall = true;
+		IsAfterImage = source.IsAfterImage;
+		AfterImageIndex = source.AfterImageIndex;
+
+		_splitUsed = true;
+		SplitScheduled = true;
+		_afterImagesSpawned = true;
+
+		_sizeMult = splitScaleMult;
+
+		RollSpeed = source.RollSpeed;
+		BallDamage = source.BallDamage;
+		IsSweet = source.IsSweet;
+		Meter = source.Meter;
+
+		_impactDamage = source._impactDamage;
+		_powerVal = Mathf.Clamp(source._powerVal + addedPowerVal, -450f, 450f);
+
+		_currState = BallState.Rolling;
+
+		GD.Print($"[Split] clone made. scale={splitScaleMult}, addedPowerVal={addedPowerVal}, finalPowerVal={_powerVal}");
+	}
+
 	private int GetPlayerAfterImages()
 	{
 		if (_player == null) return 0;
@@ -172,6 +346,63 @@ public partial class Ball : CharacterBody2D
 		_powerVal = Mathf.Clamp(_powerVal, -450f, 450f);
 
 		GD.Print($"[Ball] Rubber bounce applied. oldPowerVal={oldPowerVal}, newPowerVal={_powerVal}, mult={multiplier}");
+	}
+
+	private void HitOtherBall(Area2D area)
+	{
+		if (_currState != BallState.Rolling)
+			return;
+
+		if (_ballBounceCooldown)
+			return;
+
+		Node parent = area.GetParent();
+
+		if (parent is not Ball otherBall)
+			return;
+
+		if (otherBall == this)
+			return;
+
+		if (otherBall._currState != BallState.Rolling)
+			return;
+
+		_ballBounceCooldown = true;
+		otherBall._ballBounceCooldown = true;
+
+		float diffX = GlobalPosition.X - otherBall.GlobalPosition.X;
+
+		if (Mathf.Abs(diffX) < 0.1f)
+			diffX = GD.Randf() < 0.5f ? -1f : 1f;
+
+		float dir = Mathf.Sign(diffX);
+
+		//Immediately separate them so they do not stay overlapped.
+		float separation = 8f;
+		GlobalPosition += new Vector2(dir * separation, 0);
+		otherBall.GlobalPosition -= new Vector2(dir * separation, 0);
+
+		//Give both balls a short-lived sideways push.
+		float repelStrength = 120f;
+		_ballRepelVelocityX += dir * repelStrength;
+		otherBall._ballRepelVelocityX -= dir * repelStrength;
+
+		_powerVal += dir * 180f;
+		otherBall._powerVal -= dir * 180f;
+
+		_powerVal = Mathf.Clamp(_powerVal, -450f, 450f);
+		otherBall._powerVal = Mathf.Clamp(otherBall._powerVal, -450f, 450f);
+
+		GD.Print($"[BallBounce] {Name} separated from {otherBall.Name}");
+
+		GetTree().CreateTimer(0.12f).Timeout += () =>
+		{
+			if (GodotObject.IsInstanceValid(this))
+				_ballBounceCooldown = false;
+
+			if (GodotObject.IsInstanceValid(otherBall))
+				otherBall._ballBounceCooldown = false;
+		};
 	}
 	// End Ball PowerUps //
 
@@ -231,6 +462,8 @@ public partial class Ball : CharacterBody2D
 		_currState = BallState.Rolling;
 		IsSweet = sweet;
 
+		_splitInputArmed = false;
+
 		GD.Print(
 			$"ROLL -> Speed: {RollSpeed:0.00} | BaseDmg: {BallDamage} | Impact: {_impactDamage} | TotalPerHit(no crit): {BallDamage + _impactDamage}"
 		);
@@ -271,7 +504,7 @@ public partial class Ball : CharacterBody2D
 
 		// Remap the current Y position to a scale value
 		float t = Mathf.Remap(GlobalPosition.Y, endY, startY, minScale, maxScale);
-		Scale = new Vector2(t, t);
+		Scale = new Vector2(t * _sizeMult, t * _sizeMult);
 	}
 
 	public void StartBounce()
@@ -381,24 +614,22 @@ public partial class Ball : CharacterBody2D
 	{
 		if (_currState == BallState.Rolling) 
 		{
-
 			if (!_rollAudio.Playing)
 			{
 				_rollAudio.Play();
 			}
-			CheckForHits();
 
-			// IMPORTANT: Checks if ball bounced, not pointless I promise
+			CheckForHits();
+			CheckForBumpers();
+
 			if (_currState != BallState.Rolling) return;
 
-			// Hook Strength: Adjusting val, but 0.8 feels good for now.
 			float hookStrength = 0.8f;
 			_powerVal = Mathf.MoveToward(_powerVal, Mathf.Clamp(_powerVal, -20, 20), (float)delta * 10f);
 			float horizontalDrift = _powerVal * hookStrength;
 
-			// Apply drift to X, and speed to Y
 			Velocity = new Vector2(horizontalDrift, -RollSpeed);
-		} 
+		}
 		else if (_currState == BallState.Gutter)
 		{
 			// If ball in gutter, follow track of the gutter

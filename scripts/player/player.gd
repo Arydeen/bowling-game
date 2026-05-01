@@ -17,10 +17,11 @@ var starting_prizes: Dictionary = {
 	&"AfterImage": 10,
 	&"KineticImpact": 1,
 	&"SouvenirCup": 3,
-	&"OneBumper": 10,
+	&"OneBumper": 1000,
 	&"PinSlayer": 2,
-	&"RubberBall": 150,
+	#&"RubberBall": 150,
 	#&"GoldenRotation": 3,
+	&"Split": 5,
 }
 
 # StringName -> int
@@ -66,6 +67,9 @@ var honeybeer_count: int = 0
 # -------------------------
 # Getters
 # -------------------------
+
+func get_split_count() -> int:
+	return split_count
 
 func has_golden_rotation() -> bool:
 	return golden_rotation_count > 0
@@ -133,6 +137,7 @@ func get_stats_snapshot() -> Dictionary:
 		"coconut_ball_frames_left": coconut_ball_frames_left,
 		"after_image_count": after_image_count,
 		"bonus_speed": bonus_speed,
+		"split_count": split_count,
 	}
 
 # END Getters

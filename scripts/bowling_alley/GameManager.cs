@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class GameManager : Node2D
 {
@@ -46,6 +47,13 @@ public partial class GameManager : Node2D
 	// Bumper Tracking Vars //
 	private Node _stats;
 	// End Bumper Tracking Vars //
+
+	// Ball Tracking Vars //
+	private readonly List<Ball> _activeBalls = new();
+
+	private bool _splitChainUsedThisShot = false;
+	private ulong _splitChainStartedAtMs = 0;
+	// End Ball Tracking Vars //
 
 	// End Game Tracking Variables --------------------------------------------- //
 
@@ -217,6 +225,151 @@ public partial class GameManager : Node2D
 	private void SyncKineticImpactFlag()
 	{
 		GlobalData.Instance.KineticBall = GetKineticImpactCount() > 0;
+	}
+
+	private int GetSplitCount()
+	{
+		if (_stats == null)
+			return 0;
+
+		if (!_stats.HasMethod("get_split_count"))
+			return 0;
+
+		Variant v = _stats.Call("get_split_count");
+		return Math.Max(0, (int)v);
+	}
+
+	private float GetSplitScale(int splitCount)
+	{
+		// 1 split = 75%
+		// 2 splits = 60%
+		// 3 splits = 45%
+		// 4 splits = 30%
+		// 5+ splits = 25% minimum
+		return Mathf.Max(0.25f, 0.75f - (0.15f * (splitCount - 1)));
+	}
+
+	public void TriggerSplitChain(Ball source)
+	{
+		if (source == null)
+			return;
+
+		if (_splitChainUsedThisShot)
+			return;
+
+		int splitCount = GetSplitCount();
+
+		if (splitCount <= 0)
+			return;
+
+		_splitChainUsedThisShot = true;
+		_splitChainStartedAtMs = Time.GetTicksMsec();
+
+		GD.Print($"[Split] chain started. splitCount={splitCount}");
+
+		ScheduleSplitForBall(source, 0.01f);
+
+		foreach (Ball ball in _activeBalls.ToArray())
+		{
+			if (ball == null || !GodotObject.IsInstanceValid(ball))
+				continue;
+
+			if (ball == source)
+				continue;
+
+			if (!ball.IsAfterImage)
+				continue;
+
+			if (ball.IsSplitBall || ball.HasSplit || ball.SplitScheduled)
+				continue;
+
+			float delay = 0.10f * Math.Max(1, ball.AfterImageIndex);
+			ScheduleSplitForBall(ball, delay);
+		}
+	}
+
+	private void MaybeScheduleSplitForNewAfterImage(Ball ball)
+	{
+		if (!_splitChainUsedThisShot)
+			return;
+
+		if (ball == null)
+			return;
+
+		if (!ball.IsAfterImage)
+			return;
+
+		if (ball.IsSplitBall || ball.HasSplit || ball.SplitScheduled)
+			return;
+
+		float targetDelay = 0.10f * Math.Max(1, ball.AfterImageIndex);
+
+		double elapsed = (Time.GetTicksMsec() - _splitChainStartedAtMs) / 1000.0;
+		float remaining = Mathf.Max(0.01f, targetDelay - (float)elapsed);
+
+		ScheduleSplitForBall(ball, remaining);
+	}
+
+	private void ScheduleSplitForBall(Ball ball, float delay)
+	{
+		if (ball == null)
+			return;
+
+		if (ball.SplitScheduled || ball.HasSplit || ball.IsSplitBall)
+			return;
+
+		ball.SplitScheduled = true;
+
+		GetTree().CreateTimer(delay).Timeout += () =>
+		{
+			if (ball == null || !GodotObject.IsInstanceValid(ball))
+				return;
+
+			ball.PerformSplit();
+		};
+	}
+
+	public void SpawnSplitBallsFrom(Ball source, int splitCount)
+	{
+		if (source == null || !GodotObject.IsInstanceValid(source))
+			return;
+
+		splitCount = Math.Max(1, splitCount);
+
+		float splitScale = GetSplitScale(splitCount);
+
+		int ballsToSpawn = splitCount * 2;
+		_shotBallsAlive += ballsToSpawn;
+
+		GD.Print($"[Split] spawning {ballsToSpawn} balls from {source.Name}, scale={splitScale}");
+
+		float xSpacing = 10f;
+		float baseKick = 120f;
+		float kickStep = 45f;
+
+		for (int i = 1; i <= splitCount; i++)
+		{
+			float kick = baseKick + ((i - 1) * kickStep);
+
+			SpawnOneSplitBall(source, new Vector2(-xSpacing * i, 0), splitScale, -kick);
+			SpawnOneSplitBall(source, new Vector2(xSpacing * i, 0), splitScale, kick);
+		}
+	}
+
+	private void SpawnOneSplitBall(Ball source, Vector2 offset, float splitScale, float addedPowerVal)
+	{
+		var b = BallScene.Instantiate<Ball>();
+
+		AddChild(b);
+
+		b.InitializeSplitCloneFrom(
+			source,
+			source.GlobalPosition + offset,
+			splitScale,
+			addedPowerVal
+		);
+
+		RegisterShotBall(b);
 	}
 
 	// Reset Methods //
@@ -410,6 +563,9 @@ public partial class GameManager : Node2D
 	private void StartShot()
 	{
 		_pinSlayerUsedThisShot = false;
+		_splitChainUsedThisShot = false;
+		_splitChainStartedAtMs = 0;
+
 		ResetPinsForRound();
 		GlobalData.Instance.ShotScore = 0;
 		GlobalData.Instance.ShotNum += 1;
@@ -611,6 +767,21 @@ public partial class GameManager : Node2D
 	// End Scoreboard Methods //
 
 	// Ball Methods //
+
+	private void RegisterShotBall(Ball ball)
+	{
+		if (ball == null)
+			return;
+
+		_activeBalls.Add(ball);
+
+		ball.TreeExited += () =>
+		{
+			_activeBalls.Remove(ball);
+			OnShotBallExited();
+		};
+	}
+
 	public void SpawnNewBall()
 	{
 		_currentBall = BallScene.Instantiate<Ball>();
@@ -622,7 +793,7 @@ public partial class GameManager : Node2D
 		Meter.Ball = _currentBall;
 
 		_shotBallsAlive = 1;
-		_currentBall.TreeExited += OnShotBallExited;
+		RegisterShotBall(_currentBall);
 	}
 
 	private void OnShotBallExited()
@@ -647,13 +818,16 @@ public partial class GameManager : Node2D
 			{
 				var b = BallScene.Instantiate<Ball>();
 				b.IsAfterImage = true;
+				b.AfterImageIndex = idx;
 
 				AddChild(b);
-				b.Initialize(startPos + new Vector2(0, 10 * idx)); // spawn slightly behind 
+				b.Initialize(startPos + new Vector2(0, 10 * idx));
 
-				b.TreeExited += OnShotBallExited;
+				RegisterShotBall(b);
 
 				b.CallDeferred("FinalizePower", speed, rawX, sweet);
+
+				MaybeScheduleSplitForNewAfterImage(b);
 			};
 		}
 	}

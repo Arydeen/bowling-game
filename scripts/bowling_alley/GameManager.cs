@@ -60,6 +60,7 @@ public partial class GameManager : Node2D
 	public override void _Ready()
 	{
 		_monitor = GetNode<Monitor>("../Monitor");
+		FixScoreboardLabelSizing();
 		_bumpers = GetNode<Bumpers>("../Bumpers");
 		_coach = GetNode<PlayerMonitor>("../PlayerMonitor");
 		_spotlight = GetNode<PointLight2D>("../Spotlight");
@@ -488,7 +489,7 @@ public partial class GameManager : Node2D
 		StartFrame();
 	}
 
-	private void StartFrame()
+	private void StartFrame(bool resetPinsInstantly = false)
 	{
 		if (GlobalData.Instance.FrameNum + 1 == 5)
 		{
@@ -506,7 +507,14 @@ public partial class GameManager : Node2D
 		GlobalData.Instance.ShotNum = 0;
 		GlobalData.Instance.ShotScore = 0;
 
-		if (!GlobalData.Instance.FirstFrame) { GetTree().CreateTimer(1.25f).Timeout += ResetPins; }
+		if (!GlobalData.Instance.FirstFrame)
+		{
+			if (resetPinsInstantly)
+				ResetPins();
+			else
+				GetTree().CreateTimer(1.25f).Timeout += ResetPins;
+		}
+
 		GlobalData.Instance.FirstFrame = false;
 
 		StartShot();
@@ -750,14 +758,34 @@ public partial class GameManager : Node2D
 		}
 	}
 
-	private void UpdateShotText()
+	private void UpdateShotText(string overrideText = null)
 	{
 		string path = isNight 
 			? $"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot{GlobalData.Instance.ShotNum}" 
 			: $"ScoreboardControl/ScoreboardHBox/Frame{GlobalData.Instance.FrameNum}/Shots/Shot{GlobalData.Instance.ShotNum}";
 		
 		Label shotLabel = _monitor.GetNode<Label>(path);
-		if (shotLabel != null) shotLabel.Text = GlobalData.Instance.ShotScore.ToString();
+
+		if (shotLabel != null)
+		{
+			shotLabel.Text = overrideText ?? GlobalData.Instance.ShotScore.ToString();
+		}
+	}
+
+	private bool AreAllPinsDown()
+	{
+		if (isBoss)
+			return false;
+
+		var allPins = GetTree().GetNodesInGroup("Pins");
+
+		foreach (Node node in allPins)
+		{
+			if (node is Pin pin && pin.Alive)
+				return false;
+		}
+
+		return true;
 	}
 
 	private void UpdateNightReqText()
@@ -843,6 +871,46 @@ public partial class GameManager : Node2D
 			return;
 		}
 
+		bool allPinsDown = AreAllPinsDown();
+		bool isStrike = allPinsDown && GlobalData.Instance.ShotNum == 1;
+		bool isSpare = allPinsDown && GlobalData.Instance.ShotNum > 1;
+
+		if (isStrike)
+		{
+			UpdateShotText("X");
+
+			AddScore(GlobalData.Instance.ShotScore, frame: true, total: true);
+			AddScore(GlobalData.Instance.FrameScore, round: true);
+
+			UpdateFrameText();
+
+			GetTree().CreateTimer(0.55f).Timeout += () =>
+			{
+				StartFrame(resetPinsInstantly: true);
+				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+			};
+
+			return;
+		}
+
+		if (isSpare)
+		{
+			UpdateShotText("/");
+
+			AddScore(GlobalData.Instance.ShotScore, frame: true, total: true);
+			AddScore(GlobalData.Instance.FrameScore, round: true);
+
+			UpdateFrameText();
+
+			GetTree().CreateTimer(0.55f).Timeout += () =>
+			{
+				StartFrame(resetPinsInstantly: true);
+				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+			};
+
+			return;
+		}
+
 		UpdateShotText();
 		AddScore(GlobalData.Instance.ShotScore, frame: true, total: true);
 
@@ -874,6 +942,46 @@ public partial class GameManager : Node2D
 		if (frame) { GlobalData.Instance.FrameScore += amount; }
 		if (shot) { GlobalData.Instance.ShotScore += amount; }
 	}
+
+	private void FixScoreboardLabelSizing()
+	{
+		string[] dayPaths =
+		{
+			"ScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot1",
+			"ScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot2",
+			"ScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot3",
+
+			"ScoreboardControl/ScoreboardHBox/Frame2/Shots/Shot1",
+			"ScoreboardControl/ScoreboardHBox/Frame2/Shots/Shot2",
+			"ScoreboardControl/ScoreboardHBox/Frame2/Shots/Shot3",
+
+			"ScoreboardControl/ScoreboardHBox/Frame3/Shots/Shot1",
+			"ScoreboardControl/ScoreboardHBox/Frame3/Shots/Shot2",
+			"ScoreboardControl/ScoreboardHBox/Frame3/Shots/Shot3",
+
+			"ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot1",
+			"ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot2",
+			"ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot3",
+
+			"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot1",
+			"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot2",
+			"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot3",
+		};
+
+		foreach (string path in dayPaths)
+		{
+			Label label = _monitor.GetNodeOrNull<Label>(path);
+
+			if (label == null)
+				continue;
+
+			label.CustomMinimumSize = new Vector2(5, 0);
+			label.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+			label.HorizontalAlignment = HorizontalAlignment.Center;
+			label.AutowrapMode = TextServer.AutowrapMode.Off;
+			label.ClipText = true;
+		}
+	}
 	// End Score Methods
 
 	void SkipToNight()
@@ -890,10 +998,6 @@ public partial class GameManager : Node2D
 
 	public override void _Process(double delta)
 	{
-		if (Input.IsActionJustPressed("GiveKineticBall"))
-		{
-			GD.Print($"[KineticImpact] count={GetKineticImpactCount()}, mult={GetKineticImpactDamageMultiplier()}x");
-		}
 		if (Input.IsActionJustPressed("SkipToNight"))
 		{
 			SkipToNight();
@@ -901,11 +1005,6 @@ public partial class GameManager : Node2D
 		if (Input.IsActionJustPressed("SkipToBoss"))
 		{
 			SkipToBoss();
-		}
-		if (Input.IsActionJustPressed("GiveBumpers"))
-		{
-			_bumpers.hitsAllowed = 2;
-			_bumpers.ShowBumpers();
 		}
 		if (Input.IsActionJustPressed("NextFrame"))
 		{

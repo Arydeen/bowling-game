@@ -19,9 +19,9 @@ var starting_prizes: Dictionary = {
 	&"SouvenirCup": 3,
 	&"OneBumper": 1000,
 	&"PinSlayer": 2,
-	#&"RubberBall": 150,
+	&"RubberBall": 150,
 	#&"GoldenRotation": 3,
-	&"Split": 5,
+	&"Split": 4,
 }
 
 # StringName -> int

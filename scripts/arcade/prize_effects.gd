@@ -13,13 +13,13 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 		# COMMON
 
 		&"CreamShammy":
-			player.speed += 6.0 * c
+			player.add_speed_amount(4.0 * c)
 
 		&"OneNail":
-			player.impact += 6.0 * c
+			player.impact += 4.0 * c
 
 		&"WeightedBall":
-			player.strength += 6.0 * c
+			player.strength += 4.0 * c
 
 		&"OneBumper":
 			player.bumpers += 1.0 * c
@@ -30,7 +30,7 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 			player.strength += 8.0 * c
 
 		&"RedBall": 
-			player.speed += 8.0 * c
+			player.add_speed_amount(8.0 * c)
 
 		&"ThreeBumper":
 			player.bumpers += 3.0 * c
@@ -53,7 +53,17 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 		#LEGENDARY
 
 		&"GoldenRotation":
-			player.golden_rotation_count += c
+			if player.golden_rotation_count <= 0:
+				player.golden_rotation_count += 1
+				player.speed = player.MAX_SPEED
+				player.bonus_speed = 0.0
+
+				# If somehow more than 1 got added at once, extras become bonus speed
+				if c > 1:
+					player.bonus_speed += 16.0 * float(c - 1)
+			else:
+				player.golden_rotation_count += c
+				player.bonus_speed += 16.0 * float(c)
 
 		&"KineticImpact":
 			player.kinetic_impact_count += c

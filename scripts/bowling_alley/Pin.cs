@@ -136,7 +136,10 @@ public partial class Pin : Area2D
 	{
 		if (!pin.Alive) return;
 
-		int shakeDamage = amount / 2;
+		double shakeMult = GetShakeDamageMult();
+		int shakeDamage = Mathf.RoundToInt(amount * (float)shakeMult);
+
+		GD.Print($"[GoldenRotation] bonus shake mult={shakeMult}, damage={shakeDamage}");
 
 		pin.SetHealth(pin.GetHealth() - shakeDamage);
 		pin.SetHealthBar(pin.GetHealth());
@@ -151,6 +154,18 @@ public partial class Pin : Area2D
 		{
 			pin.DamageAnimation(sweet, true);
 		}
+	}
+
+	private double GetShakeDamageMult()
+	{
+		if (_player == null)
+			return 0.33;
+
+		if (!_player.HasMethod("get_shake_damage_mult"))
+			return 0.33;
+
+		Variant v = _player.Call("get_shake_damage_mult");
+		return Math.Max(0.0, (double)v);
 	}
 
 	private void CalculateShake(int damage, bool sweet)

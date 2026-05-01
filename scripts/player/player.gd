@@ -14,12 +14,13 @@ signal stats_changed()
 var starting_prizes: Dictionary = {
 	#&"CreamShammy": 20,
 	#&"OneNail": 1,
-	#&"AfterImage": 6,
-	#&"KineticImpact": 1,
+	&"AfterImage": 10,
+	&"KineticImpact": 1,
 	&"SouvenirCup": 3,
 	&"OneBumper": 10,
 	&"PinSlayer": 2,
 	&"RubberBall": 150,
+	#&"GoldenRotation": 3,
 }
 
 # StringName -> int
@@ -39,6 +40,7 @@ var _speed: float = 0.0
 var impact: float = 0.0
 var crit_chance: float = 0.01 # 1%
 var bumpers: float = 0.0
+var bonus_speed: float = 0.0
 
 var speed: float:
 	get:
@@ -59,9 +61,31 @@ var souvenir_cup_count: int = 0
 var kinetic_impact_count: int = 0
 var golden_rotation_count: int = 0
 
+var honeybeer_count: int = 0
+
 # -------------------------
 # Getters
 # -------------------------
+
+func has_golden_rotation() -> bool:
+	return golden_rotation_count > 0
+
+func get_bonus_speed() -> float:
+	return bonus_speed
+
+func get_shake_damage_mult() -> float:
+	# Base shake damage is 33%.
+	# Every 1 bonus_speed adds 0.5%.
+	return 0.33 + (bonus_speed * 0.005)
+
+func get_honeybeer_count() -> int:
+	return honeybeer_count
+
+func get_power_meter_speed_mult() -> float:
+	# Each HoneyBeer slows the power meter by 5%
+	# Caps at 50% slower
+	var slow_amount: float = min(honeybeer_count * 0.05, 0.5)
+	return 1.0 - slow_amount
 
 func get_rubber_ball_count() -> int:
 	return rubber_ball_count
@@ -108,6 +132,7 @@ func get_stats_snapshot() -> Dictionary:
 		"bumpers": bumpers,
 		"coconut_ball_frames_left": coconut_ball_frames_left,
 		"after_image_count": after_image_count,
+		"bonus_speed": bonus_speed,
 	}
 
 # END Getters
@@ -219,14 +244,17 @@ func _apply_drink_effect(drink_id: StringName) -> void:
 		&"milk":
 			strength += 5.0
 		&"coffee":
-			speed += 5.0
+			add_speed_amount(5.0)
 		&"rootbeer":
 			impact += 5.0
 		&"critcola":
 			crit_chance += 0.05
+		
+		&"honeybeer":
+			honeybeer_count += 1
 
 		&"martini":
-			speed *= 1.5
+			multiply_speed_amount(1.5)
 		&"xxxbrew":
 			impact *= 2.0
 		&"coconut":
@@ -272,3 +300,15 @@ func _print_inventory() -> void:
 	print("Prizes: ", prizes)
 	print("Stats: ", get_stats_snapshot())
 	print("=================")
+
+func add_speed_amount(amount: float) -> void:
+	if has_golden_rotation():
+		bonus_speed += amount
+	else:
+		speed += amount
+
+func multiply_speed_amount(mult: float) -> void:
+	if has_golden_rotation():
+		bonus_speed *= mult
+	else:
+		speed *= mult

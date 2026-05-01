@@ -7,6 +7,8 @@ public partial class PowerMeter : Control
 	[Export] public float SliderSpeed = 400f; // Increased for noticeable movement per frame
 	[Export] public float PowerVal = 0f;
 	[Export] public Ball Ball;
+
+	[Export] public NodePath PlayerPath = new NodePath("/root/Player");
 	
 	// Sound Effects
 	[ExportGroup("Sounds")]
@@ -31,6 +33,7 @@ public partial class PowerMeter : Control
 	private PointLight2D _meterlight;
 	private AudioStreamPlayer2D _meterSounds;
 	private GameManager _gameManager;
+	private Node _player;
 	
 	private Vector2 _sliderPos = new Vector2(0, 0);
 	private Vector2 _targetPos; // The "Home" position on screen
@@ -44,6 +47,8 @@ public partial class PowerMeter : Control
 		_meterlight = GetNode<PointLight2D>("Spotlight");
 		_meterSounds = GetNode<AudioStreamPlayer2D>("MeterSounds");
 		_gameManager = GetNode<GameManager>("../GameManager");
+
+		_player = GetNodeOrNull<Node>(PlayerPath);
 
 		_slider = GetNode<Sprite2D>("Slider");
 		_greenZone = GetNode<ColorRect>("ZonesContainer/ColorRectGreen");
@@ -59,6 +64,23 @@ public partial class PowerMeter : Control
 
 		UpdateZoneSizes();
 	}
+
+	// HoneyBeer Methods --------------------------------------------------------- //
+	private float GetPowerMeterSpeedMult()
+	{
+		if (_player == null)
+			_player = GetNodeOrNull<Node>(PlayerPath);
+
+		if (_player == null)
+			return 1f;
+
+		if (!_player.HasMethod("get_power_meter_speed_mult"))
+			return 1f;
+
+		Variant v = _player.Call("get_power_meter_speed_mult");
+		return Mathf.Clamp((float)(double)v, 0f, 1f);
+	}
+	// End HoneyBeer Methods ----------------------------------------------------- //
 
 
 	// Start Meter Show-Hide Functions ------------------------------------------- //
@@ -150,14 +172,18 @@ public partial class PowerMeter : Control
 	public void MoveSlider(double delta)
 	{
 		// Only move the slider if the meter is actually being played
-		if (!_meterActive || _sliderStop)  return;
+		if (!_meterActive || _sliderStop) return;
 
 		// Logic to ping-pong the slider back and forth
 		if (_sliderPos.X >= 112) _movingLeft = true;
 		else if (_sliderPos.X <= -112) _movingLeft = false;
 
 		float direction = _movingLeft ? -1 : 1;
-		_sliderPos.X += direction * SliderSpeed * (float)delta;
+
+		float honeyBeerMult = GetPowerMeterSpeedMult();
+		float adjustedSpeed = SliderSpeed * honeyBeerMult;
+
+		_sliderPos.X += direction * adjustedSpeed * (float)delta;
 		
 		_slider.Position = _sliderPos;
 	}

@@ -58,7 +58,7 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 			player.kinetic_impact_count += c
 
 		&"SouvenirCup":
-			player.souvenir_cup_count += 1
+			player.souvenir_cup_count += c
 
 		_:
 			pass

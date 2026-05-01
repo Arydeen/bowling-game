@@ -493,11 +493,13 @@ func _on_soda_drink_chosen(d: DrinkData) -> void:
 	if d == null:
 		return
 
-	if not CurrencyManager.spend_tokens(d.cost_tokens):
+	var cost := Player.get_discounted_drink_cost(d.cost_tokens)
+
+	if not CurrencyManager.spend_tokens(cost):
 		print("Not enough tokens to buy %s!" % d.display_name)
 		return
 
-	print("You bought %s for %d token%s!" % [d.display_name, d.cost_tokens, "" if d.cost_tokens == 1 else "s"])
+	print("You bought %s for %d token%s!" % [d.display_name, cost, "" if cost == 1 else "s"])
 	_spawn_and_drop_drink(d)
 	Player.add_drink(d, 1)
 

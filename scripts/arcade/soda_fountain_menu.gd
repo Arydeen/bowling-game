@@ -12,15 +12,14 @@ func open_menu(drinks: Array[DrinkData], rect: Rect2i) -> void:
 	list.clear()
 
 	for d in drinks:
-		var idx := list.add_item("%s - %d" % [d.display_name, d.cost_tokens])
+		var cost := Player.get_discounted_drink_cost(d.cost_tokens)
+		var idx := list.add_item("%s - %d" % [d.display_name, cost])
 
 		list.set_item_metadata(idx, d)
 
-		# What the HOVER POPUP shows:
 		d.ensure_default_hover_toasts()
 		if d.hover_toasts.size() > 0:
-			list.set_item_tooltip(idx, d.hover_toasts[0]) # custom tooltip text
-			# list.set_item_tooltip_enabled(idx, true) # optional, tooltips are enabled by default
+			list.set_item_tooltip(idx, d.hover_toasts[0])
 		else:
 			list.set_item_tooltip(idx, d.display_name)
 

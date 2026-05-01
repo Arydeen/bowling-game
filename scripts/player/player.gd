@@ -16,6 +16,7 @@ var starting_prizes: Dictionary = {
 	&"OneNail": 1,
 	&"AfterImage": 20,
 	&"KineticImpact": 1,
+	&"SouvenirCup": 3,
 }
 
 # StringName -> int
@@ -58,6 +59,11 @@ var golden_rotation_count: int = 0
 # -------------------------
 # Getters
 # -------------------------
+
+func get_discounted_drink_cost(base_cost: int) -> int:
+	if base_cost <= 1:
+		return 1
+	return max(1, base_cost - souvenir_cup_count)
 
 func get_kinetic_impact_mult() -> int:
 	return 1 + kinetic_impact_count

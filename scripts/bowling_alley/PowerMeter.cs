@@ -152,19 +152,27 @@ public partial class PowerMeter : Control
 	// Start Slider Functions ---------------------------------------------------- //
 	public float StopSlider()
 	{
+		if (_sliderStop)
+			return _sliderPos.X;
+
+		if (Ball == null)
+			return _sliderPos.X;
+
+		_sliderStop = true;
+		_meterActive = false;
+		_canStop = false;
 
 		if (IsSweet())
 		{
 			PlaySound(SoundPerfect);
 		}
 
-		_sliderStop = true;
-		HideMeter();
-
 		float finalSpeed = GetSpeedFromZone();
 		bool sweet = IsSweet(); 
 
 		Ball.FinalizePower(finalSpeed, _sliderPos.X, sweet);
+
+		HideMeter();
 
 		return _sliderPos.X;
 	}
@@ -247,12 +255,12 @@ public partial class PowerMeter : Control
 
 	public override void _Process(double delta)
 	{
-		// Only process slider logic if meter is active
 		MoveSlider(delta);
 
-		if (_meterActive && _canStop && Input.IsActionJustPressed("power_meter_stop"))
+		if (_meterActive && _canStop && !_sliderStop && Input.IsActionJustPressed("power_meter_stop"))
 		{
-			if (_gameManager.InputLock) {return;}
+			if (_gameManager.InputLock) return;
+
 			PowerVal = StopSlider();
 		}
 	}

@@ -39,6 +39,7 @@ public partial class Ball : CharacterBody2D
 
 	//After Image
 	public bool IsAfterImage = false;
+	private bool _afterImagesSpawned = false;
 
 	private Node _player;
 	private int _impactDamage = 0;
@@ -77,6 +78,7 @@ public partial class Ball : CharacterBody2D
 		_currState = BallState.Aiming;
 
 		_hitPins.Clear();
+		_afterImagesSpawned = false;
 	}
 	// End Startup Methods //
 
@@ -237,12 +239,14 @@ public partial class Ball : CharacterBody2D
 		IsSweet = sweet;
 
 		EnsureGameManager();
-		if (!IsAfterImage && _gameManager != null)
+		if (!IsAfterImage && !_afterImagesSpawned && _gameManager != null)
 		{
+			_afterImagesSpawned = true;
+
 			int count = GetPlayerAfterImages();
 			if (count > 0)
 				_gameManager.SpawnAfterImages(GlobalPosition, speed, rawX, sweet, count);
- 		}
+		}
 	}
 
 	private void EnsureMeter()

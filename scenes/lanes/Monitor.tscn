@@ -477,7 +477,7 @@ texture = ExtResource("1_7x07b")
 material = SubResource("ShaderMaterial_i7d2r")
 position = Vector2(0, -28)
 sprite_frames = SubResource("SpriteFrames_2hdn5")
-animation = &"boss_scoreboard"
+animation = &"day_scoreboard"
 autoplay = "day_scoreboard"
 
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="."]
@@ -715,15 +715,6 @@ theme_override_font_sizes/font_size = 8
 text = "
 "
 
-[node name="Spotlight" type="PointLight2D" parent="."]
-position = Vector2(0, -28)
-enabled = false
-energy = 0.8
-texture = ExtResource("8_8llwd")
-
-[node name="SpotlightNoise" type="AudioStreamPlayer2D" parent="Spotlight"]
-stream = ExtResource("9_buqro")
-
 [node name="BossScoreboardControl" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
@@ -769,3 +760,12 @@ offset_bottom = 45.0
 theme_override_fonts/font = ExtResource("5_tawgn")
 theme_override_styles/background = SubResource("StyleBoxTexture_v13ws")
 theme_override_styles/fill = SubResource("StyleBoxTexture_7m067")
+
+[node name="Spotlight" type="PointLight2D" parent="."]
+position = Vector2(0, -28)
+enabled = false
+energy = 0.8
+texture = ExtResource("8_8llwd")
+
+[node name="SpotlightNoise" type="AudioStreamPlayer2D" parent="Spotlight"]
+stream = ExtResource("9_buqro")

@@ -19,6 +19,7 @@ var starting_prizes: Dictionary = {
 	&"SouvenirCup": 3,
 	&"OneBumper": 10,
 	&"PinSlayer": 2,
+	&"RubberBall": 150,
 }
 
 # StringName -> int
@@ -61,6 +62,9 @@ var golden_rotation_count: int = 0
 # -------------------------
 # Getters
 # -------------------------
+
+func get_rubber_ball_count() -> int:
+	return rubber_ball_count
 
 func get_pin_slayer_count() -> int:
 	return pin_slayer_count

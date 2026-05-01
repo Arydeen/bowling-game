@@ -36,6 +36,7 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 			player.bumpers += 3.0 * c
 
 		&"RubberBall":
+			player.bumpers += 2.0 * c
 			player.rubber_ball_count += c
 
 		#EPIC

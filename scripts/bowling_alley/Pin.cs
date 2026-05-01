@@ -14,7 +14,7 @@ public partial class Pin : Area2D
 	[Export] public CollisionShape2D Hitbox;
 
 	[Export] public double MaxHealth = 100;
-	[Export] public double PinArmor;
+	[Export] public double PinArmor = 15;
 	[Export] public bool Alive = true;
 
 	public bool _hitThisShot {get; set;} = false;

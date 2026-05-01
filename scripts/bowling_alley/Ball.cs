@@ -148,6 +148,29 @@ public partial class Ball : CharacterBody2D
 		if (_player == null) return 0;
 		return (int)(long)_player.Call("get_after_image_count"); // GDScript int comes through as long
 	}
+
+	public void ApplyRubberBounce(float multiplier)
+	{
+		if (_currState != BallState.Rolling)
+			return;
+
+		CallDeferred(nameof(ApplyRubberBounceDeferred), multiplier);
+	}
+
+	public void ApplyRubberBounceDeferred(float multiplier)
+	{
+		if (_currState != BallState.Rolling)
+			return;
+
+		float oldPowerVal = _powerVal;
+
+		_powerVal *= multiplier;
+
+		// Safety cap so sweet bumper 300 * 1.5 = 450 max.
+		_powerVal = Mathf.Clamp(_powerVal, -450f, 450f);
+
+		GD.Print($"[Ball] Rubber bounce applied. oldPowerVal={oldPowerVal}, newPowerVal={_powerVal}, mult={multiplier}");
+	}
 	// End Ball PowerUps //
 
 	// Gutter Methods //

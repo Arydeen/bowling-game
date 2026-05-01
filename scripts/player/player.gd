@@ -14,6 +14,8 @@ signal stats_changed()
 var starting_prizes: Dictionary = {
 	&"CreamShammy": 2,
 	&"OneNail": 1,
+	&"AfterImage": 20,
+	&"KineticImpact": 1,
 }
 
 # StringName -> int
@@ -26,11 +28,19 @@ var tokens: int = 0
 # -------------------------
 # Player stats
 # -------------------------
+const MAX_SPEED: float = 120.0
+
 var strength: float = 0.0
-var speed: float = 0.0
+var _speed: float = 0.0
 var impact: float = 0.0
 var crit_chance: float = 0.01 # 1%
 var bumpers: float = 0.0
+
+var speed: float:
+	get:
+		return _speed
+	set(value):
+		_speed = min(value, MAX_SPEED)
 
 # Coconut ball: temporary +30% strength for 1 frame
 var coconut_ball_frames_left: int = 0
@@ -48,6 +58,13 @@ var golden_rotation_count: int = 0
 # -------------------------
 # Getters
 # -------------------------
+
+func get_kinetic_impact_mult() -> int:
+	return 1 + kinetic_impact_count
+
+func get_after_image_count() -> int:
+	return after_image_count
+
 func get_strength_value() -> float:
 	var temp_mult := 1.3 if coconut_ball_frames_left > 0 else 1.0
 	return strength * temp_mult
@@ -72,11 +89,15 @@ func get_stats_snapshot() -> Dictionary:
 		"crit_chance": crit_chance,
 		"bumpers": bumpers,
 		"coconut_ball_frames_left": coconut_ball_frames_left,
+		"after_image_count": after_image_count,
 	}
+
+# END Getters
 
 func _ready() -> void:
 	_hook_currency_manager()
 	_apply_starting_prizes()
+	speed = speed
 
 func _apply_starting_prizes() -> void:
 	if clear_prizes_on_ready:

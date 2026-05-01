@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Formats.Tar;
+using System.Collections.Generic;
 
 public partial class Ball : CharacterBody2D
 {
@@ -36,8 +37,13 @@ public partial class Ball : CharacterBody2D
 
 	// private SpriteFrames _ballAnimation;
 
+	//After Image
+	public bool IsAfterImage = false;
+
 	private Node _player;
 	private int _impactDamage = 0;
+
+	private readonly HashSet<Pin> _hitPins = new();
 
 
 	// Startup Methods //
@@ -69,6 +75,8 @@ public partial class Ball : CharacterBody2D
 		_startX = startPos.X;
 		_currentOffset = 0f;
 		_currState = BallState.Aiming;
+
+		_hitPins.Clear();
 	}
 	// End Startup Methods //
 
@@ -110,6 +118,12 @@ public partial class Ball : CharacterBody2D
 		return (float)(double)_player.Call("get_impact_value");
 	}
 
+	private int GetPlayerKineticImpactMult()
+	{
+		if (_player == null) return 1;
+		return 1 + (int)(long)_player.Call("get_kinetic_impact_mult");
+	}
+
 	private float GetPlayerCritChance()
 	{
 		if (_player == null) return 0.01f;
@@ -127,6 +141,14 @@ public partial class Ball : CharacterBody2D
 			GD.PushError("Ball: GameManager not found. Make sure the node is named exactly 'GameManager' in the running scene.");
 	}
 	// End Player Stat Handling //
+
+	// Ball PowerUps //
+	private int GetPlayerAfterImages()
+	{
+		if (_player == null) return 0;
+		return (int)(long)_player.Call("get_after_image_count"); // GDScript int comes through as long
+	}
+	// End Ball PowerUps //
 
 	// Gutter Methods //
 	private void OnGutterEntered(Area2D area)
@@ -152,6 +174,7 @@ public partial class Ball : CharacterBody2D
 	// Aiming and Power Methods
 	private void HandleAiming(double delta)
 	{
+		if (IsAfterImage) return;
 		EnsureMeter();
 		EnsureGameManager();
 		if (_currentOffset >= _laneWidthLimit) _aimingLeft = true;
@@ -186,6 +209,17 @@ public partial class Ball : CharacterBody2D
 		GD.Print(
 			$"ROLL -> Speed: {RollSpeed:0.00} | BaseDmg: {BallDamage} | Impact: {_impactDamage} | TotalPerHit(no crit): {BallDamage + _impactDamage}"
 		);
+
+		_currState = BallState.Rolling;
+		IsSweet = sweet;
+
+		EnsureGameManager();
+		if (!IsAfterImage && _gameManager != null)
+		{
+			int count = GetPlayerAfterImages();
+			if (count > 0)
+				_gameManager.SpawnAfterImages(GlobalPosition, speed, rawX, sweet, count);
+ 		}
 	}
 
 	private void EnsureMeter()
@@ -268,34 +302,50 @@ public partial class Ball : CharacterBody2D
 
 		foreach (Area2D area in areas)
 		{
-			if (area is Pin pin)
+			if (area is not Pin pin)
+				continue;
+
+			// per-ball hit gate (fixes afterimage balls skipping pins)
+			if (!_hitPins.Add(pin))
+				continue;
+
+			// roll crit every time we hit a pin
+			float critChance = Mathf.Clamp(GetPlayerCritChance(), 0f, 1f);
+			bool isCrit = GD.Randf() < critChance;
+
+			int baseDamage = BallDamage;
+			if (isCrit)
+				baseDamage *= 2;
+
+			// impact is added after and is never doubled
+			int damageToDeal = baseDamage + _impactDamage;
+
+			int kCount = GetPlayerKineticImpactMult();
+			int detonateMult = 1 + kCount;
+
+			if (!IsAfterImage && kCount > 0)
 			{
-				if (!pin._hitThisShot)
-				{
-					// Roll crit every time we hit a pin
-					float critChance = Mathf.Clamp(GetPlayerCritChance(), 0f, 1f);
-					bool isCrit = GD.Randf() < critChance;
+				// arm (mark) the pin
+				pin._kineticFlag = true;
+			}
 
-					// Base damage 
-					int baseDamage = BallDamage;
-					if (isCrit)
-						baseDamage *= 2;
+			int finalDamage = damageToDeal;
 
-					// Impact is added after and is never doubled
-					int damageToDeal = baseDamage + _impactDamage;
+			if (IsAfterImage && kCount > 0 && pin._kineticFlag)
+			{
+				// detonate (big hit)
+				finalDamage *= detonateMult;
+			}
 
-					pin.TakeDamage(damageToDeal, IsSweet, 1);
-					pin._hitThisShot = true;
+			// pass 0 so Pin.cs doesn't apply its own kinetic multiplier on top
+			pin.TakeDamage(finalDamage, IsSweet, 0);
 
-					BallDamage = BallDamage / 3;
+			BallDamage = BallDamage / 3;
 
-					if (pin.Alive)
-					{
-						StartBounce();
-						break;
-					}
-				} 
-					
+			if (pin.Alive)
+			{
+				StartBounce();
+				break;
 			}
 		}
 	}

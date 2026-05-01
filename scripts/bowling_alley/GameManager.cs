@@ -31,6 +31,7 @@ public partial class GameManager : Node2D
 	private int _roundScore = 0; // Score over is round (5 Frames)
 	private int _frameScore = 0; // Score this frame
 	private int _shotScore = 0; // Score this shot
+	private int _shotBallsAlive = 0; // Current active balls
 
 	private BossPin _boss; // Frame Boss if active
 
@@ -483,13 +484,45 @@ public partial class GameManager : Node2D
 		_currentBall.Initialize(BallSpawnPos);
 		AddChild(_currentBall);
 
-		// Ball - Meter linking
 		_currentBall.Position = BallSpawnPos;
 		_currentBall.Meter = Meter;
-
 		Meter.Ball = _currentBall;
 
-		_currentBall.TreeExited += OnBallRemoved;
+		_shotBallsAlive = 1;
+		_currentBall.TreeExited += OnShotBallExited;
+	}
+
+	private void OnShotBallExited()
+	{
+		_shotBallsAlive--;
+		if (_shotBallsAlive <= 0)
+			OnBallRemoved(); 
+	}
+
+	public void SpawnAfterImages(Vector2 startPos, float speed, float rawX, bool sweet, int count)
+	{
+		if (count <= 0) return;
+
+		_shotBallsAlive += count;
+
+		for (int i = 1; i <= count; i++)
+		{
+			int idx = i; 
+			float delay = 0.10f * idx; 
+
+			GetTree().CreateTimer(delay).Timeout += () =>
+			{
+				var b = BallScene.Instantiate<Ball>();
+				b.IsAfterImage = true;
+
+				AddChild(b);
+				b.Initialize(startPos + new Vector2(0, 10 * idx)); // spawn slightly behind 
+
+				b.TreeExited += OnShotBallExited;
+
+				b.CallDeferred("FinalizePower", speed, rawX, sweet);
+			};
+		}
 	}
 
 	private void OnBallRemoved() 

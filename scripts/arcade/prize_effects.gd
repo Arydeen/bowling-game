@@ -41,7 +41,7 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 		#EPIC
 		
 		&"AfterImage":
-			player.after_image_count += 1
+			player.after_image_count += c
 
 		&"PinSlayer":
 			player.pin_slayer_count += 1
@@ -55,7 +55,7 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 			player.golden_rotation_count += 1
 
 		&"KineticImpact":
-			player.kinetic_impact_count += 1
+			player.kinetic_impact_count += c
 
 		&"SouvenirCup":
 			player.souvenir_cup_count += 1

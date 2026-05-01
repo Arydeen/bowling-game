@@ -96,6 +96,7 @@ public partial class Monitor : Node2D
 
 		fnn = GetNode<Label>("NightScoreboardControl/ScoreboardVBox/Need");
 		fnt = GetNode<Label>("NightScoreboardControl/ScoreboardVBox/Have");
+		FixNightScoreboardSpacing();
 		// End Night Scoreboard //
 
 		// Boss Scoreboard //
@@ -229,6 +230,63 @@ public partial class Monitor : Node2D
 			
 			_shaderMat.SetShaderParameter("mix_weight", 0.0f);
 		};
+	}
+
+	public void ForceDayScoreboard(GameManager.Challenge nextChallenge)
+	{
+		_state = MonitorState.day;
+
+		if (nextChallenge == GameManager.Challenge.Night)
+		{
+			_animSprite.Play("day_scoreboard");
+		}
+		else
+		{
+			_animSprite.Play("day_scoreboard_boss");
+		}
+
+		_shaderMat.SetShaderParameter("mix_weight", 0.0f);
+
+		BallsLeft.Visible = false;
+		TotalBalls.Visible = false;
+		PinionCount.Visible = false;
+		Health.Visible = false;
+	}
+
+	private void FixNightScoreboardSpacing()
+	{
+		Control nightHBox = GetNodeOrNull<Control>("NightScoreboardControl/ScoreboardHBox");
+		Control nightShots = GetNodeOrNull<Control>("NightScoreboardControl/ScoreboardHBox/Frame1/Shots");
+		Control nightVBox = GetNodeOrNull<Control>("NightScoreboardControl/ScoreboardVBox");
+
+		if (nightHBox != null)
+			nightHBox.AddThemeConstantOverride("separation", 0);
+
+		if (nightShots != null)
+			nightShots.AddThemeConstantOverride("separation", 7);
+
+		if (nightVBox != null)
+			nightVBox.AddThemeConstantOverride("separation", 0);
+
+		// Shot number labels
+		FixNightLabel(fns1, 5);
+		FixNightLabel(fns2, 5);
+		FixNightLabel(fns3, 5);
+
+		FixNightLabel(fnn, 14);
+		FixNightLabel(fnt, 14);
+	}
+
+	private void FixNightLabel(Label label, float width)
+	{
+		if (label == null)
+			return;
+
+		label.CustomMinimumSize = new Vector2(width, 0);
+		label.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+		label.HorizontalAlignment = HorizontalAlignment.Center;
+		label.AutowrapMode = TextServer.AutowrapMode.Off;
+		label.ClipText = false;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

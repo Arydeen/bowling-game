@@ -22,13 +22,6 @@ border_color = Color(1, 1, 1, 0.8901961)
 
 [node name="PlayerMenu" type="CanvasLayer"]
 script = ExtResource("1_xwxel")
-prize_icon_dir = null
-drink_icon_dir = null
-icon_size_max = null
-icon_size_min = null
-shrink_start = null
-shrink_full = null
-icon_spacing = null
 count_font = ExtResource("1_4uo60")
 
 [node name="Root" type="Control" parent="."]
@@ -108,12 +101,20 @@ offset_bottom = 164.0
 [node name="DrinkFlow" type="HFlowContainer" parent="Root/Menu/DrinkScrollContainer"]
 layout_mode = 2
 
+[node name="StatsBackground" type="Panel" parent="Root/Menu"]
+layout_mode = 0
+offset_left = 243.0
+offset_top = 31.0
+offset_right = 307.0
+offset_bottom = 76.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_3cec4")
+
 [node name="StatsGrid" type="GridContainer" parent="Root/Menu"]
 layout_mode = 0
-offset_left = 240.0
-offset_top = 10.0
-offset_right = 310.0
-offset_bottom = 160.0
+offset_left = 245.0
+offset_top = 33.0
+offset_right = 305.0
+offset_bottom = 69.0
 columns = 2
 
 [node name="TextureRect" type="TextureRect" parent="Root"]
@@ -132,7 +133,7 @@ offset_right = -36.0
 offset_bottom = 36.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("1_4uo60")
 theme_override_font_sizes/font_size = 7
@@ -147,7 +148,7 @@ offset_right = 15.0
 offset_bottom = 36.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(0.93333334, 0.93333334, 0.93333334, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("1_4uo60")
 theme_override_font_sizes/font_size = 7

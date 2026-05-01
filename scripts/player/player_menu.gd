@@ -2,12 +2,22 @@ extends CanvasLayer
 
 @onready var prize_flow: HFlowContainer = $Root/Menu/PrizeScrollContainer/PrizeFlow
 @onready var drink_flow: HFlowContainer = $Root/Menu/DrinkScrollContainer/DrinkFlow
+@onready var stats_grid: GridContainer = $Root/Menu/StatsGrid
+@onready var stats_bg: Panel = $Root/Menu/StatsBackground
 
 @onready var pins_label: Label = $PinsLabel
 @onready var tokens_label: Label = $TokensLabel
 
-@export var prize_icon_dir: String = "res://textures/prizes/"          # recursive (common/rare/epic/legendary)
-@export var drink_icon_dir: String = "res://textures/drink_icons/"     # flat folder: rootbeer.png, honeybeer.png, etc.
+@export var prize_icon_dir: String = "res://textures/prizes/"
+@export var drink_icon_dir: String = "res://textures/drink_icons/"
+
+# --- Stats UI ---
+@export var stats_font_size: int = 5
+@export var stats_decimals: int = 0
+
+# Outline for stats text (change these if you want)
+@export var stats_outline_size: int = 3
+@export var stats_outline_color: Color = Color(0, 0, 0, 0)
 
 # icon sizes
 @export var icon_size_max: int = 35
@@ -18,7 +28,7 @@ extends CanvasLayer
 # no gaps between icons
 @export var icon_spacing: int = 0
 
-# font for x2/x3...
+# font for x2/x3... and stats labels
 @export var count_font: FontFile
 
 # ------- PRIZES -------
@@ -34,6 +44,19 @@ var _drink_counts: Dictionary[StringName, int] = {}
 # ------- CURRENCY -------
 var _currency_manager: Node = null
 
+# ------- PLAYER STATS -------
+var _stat_value_labels: Dictionary[StringName, Label] = {}
+
+# --- Cache your editor layout so we keep it ---
+var _stats_base_grid_pos: Vector2
+var _stats_base_grid_size: Vector2
+var _stats_base_bg_pos: Vector2
+var _stats_base_bg_size: Vector2
+var _stats_pad_left: float
+var _stats_pad_right: float
+var _stats_layout_cached: bool = false
+var _stats_expand_enabled: bool = false  # stays false for the FIRST fit (so it won't resize on start)
+
 
 func _ready() -> void:
 	_setup_flow(prize_flow)
@@ -48,19 +71,21 @@ func _ready() -> void:
 		Player.drink_count_changed.connect(_on_drink_changed)
 
 	_hook_currency_manager()
-
 	call_deferred("_rebuild_all")
+
+	_setup_stats_grid()
+	_cache_stats_layout()
+	_update_stats_grid()
+
+	if not Player.stats_changed.is_connected(_on_stats_changed):
+		Player.stats_changed.connect(_on_stats_changed)
 
 
 func _setup_flow(flow: HFlowContainer) -> void:
 	flow.add_theme_constant_override("h_separation", icon_spacing)
 	flow.add_theme_constant_override("v_separation", icon_spacing)
-	# flow.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
 	flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	flow.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-
-	# flow.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 
 func _rebuild_all() -> void:
@@ -81,6 +106,7 @@ func _rebuild_from_dict(flow: HFlowContainer, dict: Dictionary, slots: Dictionar
 		if not is_prize:
 			id = StringName(String(id).to_lower())
 			_drink_counts[id] = count
+
 		_create_or_update_slot(flow, slots, id, count, is_prize)
 
 
@@ -88,7 +114,7 @@ func _rebuild_from_dict(flow: HFlowContainer, dict: Dictionary, slots: Dictionar
 func _hook_currency_manager() -> void:
 	_currency_manager = get_node_or_null("/root/CurrencyManager")
 
-	# Connect once 
+	# Connect once
 	if _currency_manager != null and _currency_manager.has_signal("currencies_changed"):
 		if not _currency_manager.currencies_changed.is_connected(_on_currencies_changed):
 			_currency_manager.currencies_changed.connect(_on_currencies_changed)
@@ -186,7 +212,7 @@ func _make_slot(id: StringName, is_prize: bool) -> Control:
 	lbl.offset_top = 2
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1))
 	lbl.add_theme_constant_override("outline_size", 3)
 
 	if count_font != null:
@@ -306,3 +332,115 @@ func _index_dir_recursive(dir_path: String, out_map: Dictionary[StringName, Stri
 
 		f = dir.get_next()
 	dir.list_dir_end()
+
+
+# -----------------------
+# Player Stats
+# -----------------------
+func _on_stats_changed() -> void:
+	_update_stats_grid()
+
+func _setup_stats_grid() -> void:
+	for child in stats_grid.get_children():
+		child.queue_free()
+	_stat_value_labels.clear()
+
+	_add_stat_row(&"strength", "Strength")
+	_add_stat_row(&"speed", "Speed")
+	_add_stat_row(&"impact", "Impact")
+	_add_stat_row(&"bumpers", "Bumpers")
+	_add_stat_row(&"crit", "Critical")
+
+func _add_stat_row(key: StringName, title: String) -> void:
+	var left := Label.new()
+	left.text = "%s:" % title
+	left.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_apply_stat_label_style(left)
+	stats_grid.add_child(left)
+
+	var right := Label.new()
+	right.text = "0"
+	right.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_apply_stat_label_style(right)
+	stats_grid.add_child(right)
+
+	_stat_value_labels[key] = right
+
+func _apply_stat_label_style(lbl: Label) -> void:
+	if count_font != null:
+		lbl.add_theme_font_override("font", count_font)
+
+	lbl.add_theme_font_size_override("font_size", stats_font_size)
+	lbl.add_theme_color_override("font_outline_color", stats_outline_color)
+	lbl.add_theme_constant_override("outline_size", stats_outline_size)
+
+func _update_stats_grid() -> void:
+	if _stat_value_labels.is_empty():
+		return
+
+	_stat_value_labels[&"strength"].text = _fmt_num(Player.get_strength_value())
+	_stat_value_labels[&"speed"].text = _fmt_speed(Player.get_speed_value())
+	_stat_value_labels[&"impact"].text = _fmt_num(Player.get_impact_value())
+	_stat_value_labels[&"bumpers"].text = _fmt_num(Player.get_bumpers())
+	_stat_value_labels[&"crit"].text = _fmt_percent(Player.get_crit_chance())
+
+	call_deferred("_fit_stats_bg")
+
+func _fmt_speed(v: float) -> String:
+	if v >= Player.MAX_SPEED:
+		return "MAX"
+	return _fmt_num(v)
+
+func _fmt_num(v: float) -> String:
+	if stats_decimals <= 0:
+		return str(int(round(v)))
+	return ("%0." + str(stats_decimals) + "f") % v
+
+func _fmt_percent(p: float) -> String:
+	return _fmt_num(p * 100.0) + "%"
+
+func _cache_stats_layout() -> void:
+	_stats_base_grid_pos = stats_grid.position
+	_stats_base_grid_size = stats_grid.size
+
+	_stats_base_bg_pos = stats_bg.position
+	_stats_base_bg_size = stats_bg.size
+
+	_stats_pad_left = _stats_base_grid_pos.x - _stats_base_bg_pos.x
+	_stats_pad_right = (_stats_base_bg_pos.x + _stats_base_bg_size.x) - (_stats_base_grid_pos.x + _stats_base_grid_size.x)
+
+	_stats_layout_cached = true
+	_stats_expand_enabled = false  # first fit won't resize anything
+
+func _fit_stats_bg() -> void:
+	if not _stats_layout_cached:
+		return
+
+	stats_grid.position = _stats_base_grid_pos
+	stats_grid.size = _stats_base_grid_size
+
+	stats_bg.position = _stats_base_bg_pos
+
+	var widest_value: float = 0.0
+
+	for lbl in _stat_value_labels.values():
+		if is_instance_valid(lbl):
+			var font = lbl.get_theme_font("font")
+			var text_w = font.get_string_size(
+				lbl.text,
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				stats_font_size
+			).x
+
+			widest_value = maxf(widest_value, text_w)
+
+	var speed_lbl: Label = _stat_value_labels[&"speed"]
+	var current_value_space: float = speed_lbl.size.x
+
+	var extra_needed: float = maxf(0.0, widest_value - current_value_space)
+
+	var new_bg_w: float = _stats_base_bg_size.x + extra_needed + 6.0
+
+	stats_bg.size = Vector2(new_bg_w, _stats_base_bg_size.y)

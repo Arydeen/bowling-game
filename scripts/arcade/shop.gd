@@ -9,6 +9,7 @@ extends Node2D
 @onready var capsule_shake_sfx: AudioStreamPlayer2D = $CapsuleShake
 @onready var capsule_prize := get_node_or_null("CapsulePrize")
 @onready var prize_description := get_node_or_null("PrizeDescription")
+@onready var esc_to_leave_label: Label = $ESCtoLeave
 
 @onready var drink_one_shot_sfx: AudioStreamPlayer2D = $BeerBottleOpen
 
@@ -102,10 +103,20 @@ var _rock_tween: Tween = null
 var _rock_mult: float = 1.0
 var _rock_target_angle: float = 0.0
 
+var _esc_blink_time: float = 0.0
+
+@export var esc_base_color: Color = Color(1.0, 0.85, 0.0, 1.0) # yellow/gold
+@export var esc_flicker_color: Color = Color.WHITE
+@export var esc_blink_speed: float = 10.0
+
+
 func _ready() -> void:
 	print("SHOP LOADED FROM:", get_tree().current_scene.scene_file_path)
 	Music.play_arcade()
 	randomize()
+
+	_start_esc_label_flicker()
+
 	_setup_open_light()
 	capsule_machine.clicked.connect(_on_capsule_machine_clicked)
 
@@ -125,6 +136,29 @@ func _ready() -> void:
 
 	if capsule_prize != null:
 		capsule_prize.prize_spawned.connect(Player.add_prize)
+
+
+func _start_esc_label_flicker() -> void:
+	if esc_to_leave_label == null:
+		print("ESC label is NULL")
+		return
+
+	esc_to_leave_label.visible = true
+	esc_to_leave_label.z_index = 500
+	esc_to_leave_label.self_modulate = esc_base_color
+	_esc_blink_time = 0.0
+
+
+func _process(delta: float) -> void:
+	if esc_to_leave_label == null:
+		return
+
+	_esc_blink_time += delta * esc_blink_speed
+
+	if sin(_esc_blink_time) > 0.0:
+		esc_to_leave_label.self_modulate = esc_base_color
+	else:
+		esc_to_leave_label.self_modulate = esc_flicker_color
 
 
 func _handle_space_press() -> void:
@@ -174,7 +208,7 @@ func _input(event: InputEvent) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 
-	if Input.is_action_just_pressed("go_shop"):
+	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("go_shop"):
 		var music := get_node_or_null("/root/Music")
 		if music and music.has_method("stop_music"):
 			music.stop_music()
@@ -493,11 +527,13 @@ func _on_soda_drink_chosen(d: DrinkData) -> void:
 	if d == null:
 		return
 
-	if not CurrencyManager.spend_tokens(d.cost_tokens):
+	var cost := Player.get_discounted_drink_cost(d.cost_tokens)
+
+	if not CurrencyManager.spend_tokens(cost):
 		print("Not enough tokens to buy %s!" % d.display_name)
 		return
 
-	print("You bought %s for %d token%s!" % [d.display_name, d.cost_tokens, "" if d.cost_tokens == 1 else "s"])
+	print("You bought %s for %d token%s!" % [d.display_name, cost, "" if cost == 1 else "s"])
 	_spawn_and_drop_drink(d)
 	Player.add_drink(d, 1)
 

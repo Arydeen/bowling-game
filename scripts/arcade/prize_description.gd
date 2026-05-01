@@ -10,7 +10,7 @@ class_name PrizeDescription
 	"OneNail": "Nail: Boosts Impact damage.",
 	"WeightedBall": "Weighted Ball: Strength up.",
 	"AfterImage": "After Image: Bowl a second ball.",
-	"PinSlayer": "Pin Slayer: First pin hit loses 50% Armor.",
+	"PinSlayer": "Pin Slayer: First pin hit loses 25% Armor.",
 	"Split": "Split: Press Space while rolling to split.",
 	"GoldenRotation": "Golden Rotation: Max Speed, converts extra to Shake Damage.",
 	"SouvenirCup": "Souvenir Cup: Drinks costing 2+ are 1 Token cheaper.",

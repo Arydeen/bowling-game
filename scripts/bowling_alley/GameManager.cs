@@ -12,10 +12,16 @@ public partial class GameManager : Node2D
 	[Export] public double PinHealthScale = 1.3;
 	[Export] public double PinArmorScale = 1.2;
 	[Export] public bool InputLock = false;
+	[Export] public string ShopScenePath = "res://scenes/shop.tscn";
 
 	[Export] public Challenge NextChallenge = Challenge.Night;
 	[Export] public bool isNight = false;
 	[Export] public bool isBoss = false;
+	[Export] public float SplitAfterImageBaseDelay = 0.14f;
+	[Export] public float SplitAfterImageReferenceSpeed = 60f;
+	[Export] public float SplitAfterImageMinDelay = 0.015f;
+	[Export] public float SplitAfterImageMaxDelay = 0.75f;
+	[Export] public float SplitAfterImageSpeedCurve = 1.35f;
 
 	private Monitor _monitor;
 	private Bumpers _bumpers;
@@ -23,6 +29,7 @@ public partial class GameManager : Node2D
 	private PointLight2D _spotlight;
 	private AudioStreamPlayer2D _switchNoise;
 	private bool _pinSlayerUsedThisShot = false;
+	private bool _isLeavingScene = false;
 
 	private Ball _currentBall;
 	private int _totalScore = 0; // Score over the whole game
@@ -103,9 +110,24 @@ public partial class GameManager : Node2D
 		if (GlobalData.Instance.RoundNum == 0)
 		{
 			StartRound();
+			SpawnNewBall();
 		}
-		
-		SpawnNewBall();
+		else if (GlobalData.Instance.PendingBossAfterShop)
+		{
+			RestoreLaneState();
+
+			GlobalData.Instance.PendingBossAfterShop = false;
+
+			GetTree().CreateTimer(0.25f).Timeout += () =>
+			{
+				StartChallenge();
+			};
+		}
+		else
+		{
+			RestoreLaneState();
+			SpawnNewBall();
+		}
 	}
 
 	public void StartInputLockout(float duration)
@@ -240,6 +262,24 @@ public partial class GameManager : Node2D
 		return Math.Max(0, (int)v);
 	}
 
+	private float GetScaledSplitDelay(Ball ball)
+	{
+		if (ball == null)
+			return SplitAfterImageBaseDelay;
+
+		float speed = Mathf.Max(1f, ball.RollSpeed);
+
+		// Bigger than 1.0 means:
+		// slow balls get noticeably slower delays
+		// fast balls get noticeably faster delays
+		float speedScale = SplitAfterImageReferenceSpeed / speed;
+		speedScale = Mathf.Pow(speedScale, SplitAfterImageSpeedCurve);
+
+		float delay = SplitAfterImageBaseDelay * speedScale;
+
+		return Mathf.Clamp(delay, SplitAfterImageMinDelay, SplitAfterImageMaxDelay);
+	}
+
 	private float GetSplitScale(int splitCount)
 	{
 		// 1 split = 75%
@@ -284,7 +324,7 @@ public partial class GameManager : Node2D
 			if (ball.IsSplitBall || ball.HasSplit || ball.SplitScheduled)
 				continue;
 
-			float delay = 0.10f * Math.Max(1, ball.AfterImageIndex);
+			float delay = GetScaledSplitDelay(ball) * Math.Max(1, ball.AfterImageIndex);
 			ScheduleSplitForBall(ball, delay);
 		}
 	}
@@ -303,7 +343,7 @@ public partial class GameManager : Node2D
 		if (ball.IsSplitBall || ball.HasSplit || ball.SplitScheduled)
 			return;
 
-		float targetDelay = 0.10f * Math.Max(1, ball.AfterImageIndex);
+		float targetDelay = GetScaledSplitDelay(ball) * Math.Max(1, ball.AfterImageIndex);
 
 		double elapsed = (Time.GetTicksMsec() - _splitChainStartedAtMs) / 1000.0;
 		float remaining = Mathf.Max(0.01f, targetDelay - (float)elapsed);
@@ -344,7 +384,8 @@ public partial class GameManager : Node2D
 
 		GD.Print($"[Split] spawning {ballsToSpawn} balls from {source.Name}, scale={splitScale}");
 
-		float xSpacing = 10f;
+		float maxSideSpread = 22f;
+		float xSpacing = maxSideSpread / splitCount;
 		float baseKick = 120f;
 		float kickStep = 45f;
 
@@ -594,6 +635,7 @@ public partial class GameManager : Node2D
 	{
 		isBoss = true;
 		_boss = GetNode<BossPin>("../PinContainer/BossPin");
+		_boss.ResetShotHits();
 		_boss.BossKilled += () =>
 		{
 			AddScore(10 * GlobalData.Instance.BossBallsLeft, total: true);
@@ -615,6 +657,7 @@ public partial class GameManager : Node2D
 		GetTree().CreateTimer(1.5f).Timeout += _boss.BossEnter;
 		GetTree().CreateTimer(2.2f).Timeout += ResetDayScoreboard;
 		GetTree().CreateTimer(2.2f).Timeout += ClearPins;
+		GetTree().CreateTimer(3.6f).Timeout += () => SpawnNewBall();
 	}
 
 	private void EndBossFrame(bool win)
@@ -630,6 +673,7 @@ public partial class GameManager : Node2D
 				_monitor.TransitionToDay();
 				isBoss = false;
 				StartRound();
+				UpdateFrameText(GlobalData.Instance.TotalPins.ToString());
 			};
 		}
 		else
@@ -665,7 +709,9 @@ public partial class GameManager : Node2D
 	{
 		if (isBoss)
 		{
-			_boss._hitThisShot = false;
+			if (_boss != null && GodotObject.IsInstanceValid(_boss))
+				_boss.ResetShotHits();
+
 			return;
 		}
 
@@ -719,7 +765,7 @@ public partial class GameManager : Node2D
 		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += Meter.ActivateSpotlight;
 		 tween.Finished += () => GetTree().CreateTimer(0.20f).Timeout += _coach.ActivateSpotlight;
 		 tween.Finished += UpdateNightReqText;
-		 tween.Finished += UpdateFrameText;
+		 tween.Finished += () => UpdateFrameText();
 	}
 
 	public void FadeToDay(float duration = 2.0f)
@@ -755,10 +801,65 @@ public partial class GameManager : Node2D
 	}
 	// End Animation / Effect Methods //
 
-	// Scoreboard Methods //
-	private void UpdateFrameText()
+	// Gameplay Methods //
+	private bool ShouldGoToShopAfterFrame()
 	{
-		string newText = GlobalData.Instance.RoundScore.ToString();
+		if (isBoss || isNight)
+			return false;
+
+		return GlobalData.Instance.FrameNum == 2 || GlobalData.Instance.FrameNum == 4;
+	}
+
+	private void GoToShopAfterFrame()
+	{
+		if (string.IsNullOrEmpty(ShopScenePath))
+		{
+			GD.PushError("ShopScenePath is empty.");
+			return;
+		}
+
+		// After frame 2, prepare frame 3 before going to shop.
+		if (GlobalData.Instance.FrameNum == 2)
+		{
+			bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
+
+			if (!startedPlayableFrame)
+				return;
+		}
+		// After frame 4, shop happens before boss.
+		else if (GlobalData.Instance.FrameNum == 4)
+		{
+			GlobalData.Instance.PendingBossAfterShop = true;
+		}
+
+		SaveLaneState();
+
+		GetNode<Node>("/root/TransitionCube").Call("change_scene_cube", ShopScenePath);
+	}
+
+	private void ContinueAfterCompletedFrame()
+	{
+		GetTree().CreateTimer(0.55f).Timeout += () =>
+		{
+			if (ShouldGoToShopAfterFrame())
+			{
+				GoToShopAfterFrame();
+				return;
+			}
+
+			bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
+
+			if (startedPlayableFrame)
+				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+		};
+	}
+	// End Gameplay Methods //
+
+	// Scoreboard Methods //
+	private void UpdateFrameText(string overrideText = null)
+	{
+		string newText = overrideText ?? GlobalData.Instance.RoundScore.ToString();
+
 		switch (GlobalData.Instance.FrameNum)
 		{
 			case 1: _monitor.f1t.Text = newText; break;
@@ -783,12 +884,122 @@ public partial class GameManager : Node2D
 		}
 	}
 
+	private string GetLabelText(string path)
+	{
+		Label label = _monitor.GetNodeOrNull<Label>(path);
+		return label == null ? "" : label.Text;
+	}
+
+	private void SetLabelText(string path, string text)
+	{
+		Label label = _monitor.GetNodeOrNull<Label>(path);
+
+		if (label != null)
+			label.Text = text ?? "";
+	}
+
+	private string DayShotPath(int frame, int shot)
+	{
+		return $"ScoreboardControl/ScoreboardHBox/Frame{frame}/Shots/Shot{shot}";
+	}
+
+	private string DayFrameTotalPath(int frame)
+	{
+		return $"ScoreboardControl/ScoreboardHBox/Frame{frame}/FrameTotal";
+	}
+
+	private string NightShotPath(int shot)
+	{
+		return $"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot{shot}";
+	}
+
+	private void SaveLaneState()
+	{
+		if (GlobalData.Instance == null || _monitor == null)
+			return;
+
+		GlobalData.Instance.SavedLaneGame = true;
+
+		GlobalData.Instance.SavedIsNight = isNight;
+		GlobalData.Instance.SavedIsBoss = isBoss;
+		GlobalData.Instance.SavedNextChallenge = (int)NextChallenge;
+
+		GlobalData.Instance.SavedPinHealthScale = PinHealthScale;
+		GlobalData.Instance.SavedPinArmorScale = PinArmorScale;
+
+		for (int frame = 1; frame <= 4; frame++)
+		{
+			for (int shot = 1; shot <= 3; shot++)
+			{
+				int index = ((frame - 1) * 3) + (shot - 1);
+				GlobalData.Instance.SavedDayShotTexts[index] = GetLabelText(DayShotPath(frame, shot));
+			}
+
+			GlobalData.Instance.SavedDayFrameTotals[frame - 1] = GetLabelText(DayFrameTotalPath(frame));
+		}
+
+		for (int shot = 1; shot <= 3; shot++)
+		{
+			GlobalData.Instance.SavedNightShotTexts[shot - 1] = GetLabelText(NightShotPath(shot));
+		}
+
+		GlobalData.Instance.SavedNightNeedText = GetLabelText("NightScoreboardControl/ScoreboardVBox/Need");
+		GlobalData.Instance.SavedNightHaveText = GetLabelText("NightScoreboardControl/ScoreboardVBox/Have");
+	}
+
+	private void RestoreLaneState()
+	{
+		if (GlobalData.Instance == null || _monitor == null)
+			return;
+
+		if (!GlobalData.Instance.SavedLaneGame)
+			return;
+
+		isNight = GlobalData.Instance.SavedIsNight;
+		isBoss = GlobalData.Instance.SavedIsBoss;
+		NextChallenge = (Challenge)GlobalData.Instance.SavedNextChallenge;
+
+		PinHealthScale = GlobalData.Instance.SavedPinHealthScale;
+		PinArmorScale = GlobalData.Instance.SavedPinArmorScale;
+
+		for (int frame = 1; frame <= 4; frame++)
+		{
+			for (int shot = 1; shot <= 3; shot++)
+			{
+				int index = ((frame - 1) * 3) + (shot - 1);
+				SetLabelText(DayShotPath(frame, shot), GlobalData.Instance.SavedDayShotTexts[index]);
+			}
+
+			SetLabelText(DayFrameTotalPath(frame), GlobalData.Instance.SavedDayFrameTotals[frame - 1]);
+		}
+
+		for (int shot = 1; shot <= 3; shot++)
+		{
+			SetLabelText(NightShotPath(shot), GlobalData.Instance.SavedNightShotTexts[shot - 1]);
+		}
+
+		SetLabelText("NightScoreboardControl/ScoreboardVBox/Need", GlobalData.Instance.SavedNightNeedText);
+		SetLabelText("NightScoreboardControl/ScoreboardVBox/Have", GlobalData.Instance.SavedNightHaveText);
+		if (!isNight && !isBoss)
+		{
+			_monitor.ForceDayScoreboard(NextChallenge);
+		}
+	}
+
 	private bool AreAllPinsDown()
 	{
+		if (_isLeavingScene || !IsInsideTree())
+			return false;
+
 		if (isBoss)
 			return false;
 
-		var allPins = GetTree().GetNodesInGroup("Pins");
+		SceneTree tree = GetTree();
+
+		if (tree == null)
+			return false;
+
+		var allPins = tree.GetNodesInGroup("Pins");
 
 		foreach (Node node in allPins)
 		{
@@ -837,7 +1048,11 @@ public partial class GameManager : Node2D
 
 	private void OnShotBallExited()
 	{
+		if (_isLeavingScene || !IsInsideTree())
+			return;
+
 		_shotBallsAlive--;
+
 		if (_shotBallsAlive <= 0)
 			OnBallRemoved(); 
 	}
@@ -895,14 +1110,7 @@ public partial class GameManager : Node2D
 
 			UpdateFrameText();
 
-			GetTree().CreateTimer(0.55f).Timeout += () =>
-			{
-				bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
-
-				if (startedPlayableFrame)
-					GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
-			};
-
+			ContinueAfterCompletedFrame();
 			return;
 		}
 
@@ -915,14 +1123,7 @@ public partial class GameManager : Node2D
 
 			UpdateFrameText();
 
-			GetTree().CreateTimer(0.55f).Timeout += () =>
-			{
-				bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
-
-				if (startedPlayableFrame)
-					GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
-			};
-
+			ContinueAfterCompletedFrame();
 			return;
 		}
 
@@ -934,14 +1135,7 @@ public partial class GameManager : Node2D
 			AddScore(GlobalData.Instance.FrameScore, round: true);
 			UpdateFrameText();
 
-			GetTree().CreateTimer(0.55f).Timeout += () =>
-			{
-				bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
-
-				if (startedPlayableFrame)
-					GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
-			};
-
+			ContinueAfterCompletedFrame();
 			return;
 		}
 		else
@@ -985,10 +1179,6 @@ public partial class GameManager : Node2D
 			"ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot1",
 			"ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot2",
 			"ScoreboardControl/ScoreboardHBox/Frame4/Shots/Shot3",
-
-			"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot1",
-			"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot2",
-			"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot3",
 		};
 
 		foreach (string path in dayPaths)
@@ -1017,6 +1207,12 @@ public partial class GameManager : Node2D
 	{
 		
 		StartBossFrame();
+	}
+
+	public override void _ExitTree()
+	{
+		_isLeavingScene = true;
+		SaveLaneState();
 	}
 
 	public override void _Process(double delta)

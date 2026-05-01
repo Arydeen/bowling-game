@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3 uid="uid://dirdho85p16wr"]
+[gd_scene load_steps=76 format=3 uid="uid://dglgqyt23vg6c"]
 
 [ext_resource type="Texture2D" uid="uid://d4cmy4y5pged2" path="res://textures/screen/score_monitor/monitor.png" id="1_7x07b"]
 [ext_resource type="Script" uid="uid://bx5lsrs5yswum" path="res://scripts/bowling_alley/Monitor.cs" id="1_220yk"]
@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://bgol8bcswvwr1" path="res://textures/screen/score_monitor/screen_boss.png" id="4_v13ws"]
 [ext_resource type="Texture2D" uid="uid://44fqcw65jq41" path="res://textures/screen/score_monitor/screen_score_boss.png" id="5_buqro"]
 [ext_resource type="FontFile" uid="uid://b0yocnmps7ojr" path="res://textures/fonts/Vaticanus-G3yVG.ttf" id="5_tawgn"]
-[ext_resource type="VideoStream" uid="uid://dcvty0ehu27cy" path="res://textures/videos/cat_loss.ogv" id="6_1ktiv"]
+[ext_resource type="VideoStream" path="res://textures/videos/cat_loss.ogv" id="6_1ktiv"]
 [ext_resource type="Texture2D" uid="uid://cs0s832l0v7b5" path="res://textures/screen/score_monitor/monitor_light.png" id="8_8llwd"]
 [ext_resource type="AudioStream" uid="uid://bhymx4bbsea04" path="res://music/sfx/lanes/spotlight_switch.mp3" id="9_buqro"]
 

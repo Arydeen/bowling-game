@@ -4,8 +4,8 @@ extends Node
 
 signal currencies_changed(new_pins: int, new_tokens: int)
 
-var pins: int = 100
-var tokens: int = 900
+var pins: int = 0
+var tokens: int = 0
 
 var _global_data: Node = null
 var _last_total_pins: int = 0

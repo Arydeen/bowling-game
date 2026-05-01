@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Godot.Collections;
+using System.Collections.Generic;
 
 public partial class BossPin : Area2D
 {
@@ -18,6 +19,7 @@ public partial class BossPin : Area2D
 	public bool _hitThisShot {get; set;} = false;
 	public bool Alive = false;
 	public bool _kineticFlag { get; set; } = false; 
+	private readonly HashSet<Ball> _ballsHitThisShot = new();
 
 	private double _currentHealth;
 	private AnimatedSprite2D _sprite;
@@ -39,7 +41,7 @@ public partial class BossPin : Area2D
 	private Pinion _pinion2;
 
 	// Kinetic ball vars
-	private Tween _kineticTween;
+	private Tween _kineticTween = null;
 	private GpuParticles2D _kineticExplosion;
 	
 	// Initialization Methods --------------------------------------------------------------------------------------------------- //
@@ -71,7 +73,6 @@ public partial class BossPin : Area2D
 		_currentHealth = MaxHealth;
 
 		// Kinetic Ball Handling
-		_kineticTween = CreateTween();
 		_kineticExplosion = GetNode<GpuParticles2D>("KineticExplosionParticles");
 
 		_hitbox = GetNode<CollisionShape2D>("PinHitbox");
@@ -93,10 +94,11 @@ public partial class BossPin : Area2D
 	
 	public override void _Process(double delta)
 	{
-		if (_kineticFlag && !_kineticTween.IsRunning()) 
+		if (_kineticFlag && (_kineticTween == null || !_kineticTween.IsRunning())) 
 		{
 			StartKineticEffect();
-		} else if (!_kineticFlag && _kineticTween.IsRunning())
+		} 
+		else if (!_kineticFlag && _kineticTween != null && _kineticTween.IsRunning())
 		{
 			StopKineticEffect();
 		}
@@ -111,34 +113,40 @@ public partial class BossPin : Area2D
 
 	public void TakeDamage(Area2D area)
 	{
+		if (area == null)
+			return;
 
-		if (!area.Owner.IsInGroup("Ball")) return;
-		
-		Ball ball = (Ball)area.GetParent();
+		if (area.GetParent() is not Ball ball)
+			return;
+
+		if (!_ballsHitThisShot.Add(ball))
+			return;
+
+		_hitThisShot = true;
+
+		if (state == BossState.shield)
+		{
+			ball.StartBounce();
+			BossLaugh();
+			return;
+		}
+
 		int amount = ball.BallDamage;
 
-		if (!_hitThisShot)
+		if (_kineticFlag)
+			amount *= 2;
+
+		_currentHealth -= amount;
+		EmitSignal(SignalName.BossHealthChanged, _currentHealth, MaxHealth);
+
+		if (_currentHealth <= 0)
 		{
-			_hitThisShot = true;
-			if (state == BossState.shield) {
-				ball.StartBounce();
-				BossLaugh();
-				return;
-			}
-
-			if (_kineticFlag) { amount *= 2;}
-
-			_currentHealth -= amount;
-			EmitSignal(SignalName.BossHealthChanged, _currentHealth, MaxHealth);
-
-			if (_currentHealth <= 0)
-			{
-				Die();
-			} else
-			{
-				DamageAnimation(ball.IsSweet, false);
-				ball.StartBounce();
-			}
+			Die();
+		}
+		else
+		{
+			DamageAnimation(ball.IsSweet, false);
+			ball.StartBounce();
 		}
 	}
 
@@ -157,6 +165,12 @@ public partial class BossPin : Area2D
 			_sprite.Play();
 			FadeOut();
 		}
+	}
+
+	public void ResetShotHits()
+	{
+		_hitThisShot = false;
+		_ballsHitThisShot.Clear();
 	}
 
 	// End Damage Methods --------------------------------------------------------------------------------------------------- //

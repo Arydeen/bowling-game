@@ -30,7 +30,7 @@ public partial class Pin : Area2D
 	private Node _player;
 	private double _basePinArmor;
 
-	private Tween _kineticTween;
+	private Tween _kineticTween = null;
 	private GpuParticles2D _kineticExplosion;
 
 	public bool _kineticFlag { get; set; } = false; 
@@ -70,17 +70,17 @@ public partial class Pin : Area2D
 		_healthBar.Value = _currentHealth;
 
 		// Kinetic Ball Handling
-		_kineticTween = CreateTween();
 		_kineticExplosion = GetNode<GpuParticles2D>("KineticExplosionParticles");
 
 	}
 
 	public override void _Process(double delta)
 	{
-		if (_kineticFlag && !_kineticTween.IsRunning()) 
+		if (_kineticFlag && (_kineticTween == null || !_kineticTween.IsRunning())) 
 		{
 			StartKineticEffect();
-		} else if (!_kineticFlag && _kineticTween.IsRunning())
+		}
+		else if (!_kineticFlag && _kineticTween != null && _kineticTween.IsRunning())
 		{
 			StopKineticEffect();
 		}

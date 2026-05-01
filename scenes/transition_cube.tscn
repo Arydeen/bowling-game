@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://84hbj72d5hhq"]
+
+[ext_resource type="Script" uid="uid://cx87qqvxhdxu5" path="res://scripts/arcade/transition_cube.gd" id="1_c13xr"]
+[ext_resource type="AudioStream" uid="uid://drgbcrme200nh" path="res://music/sfx/arcade/StonePush.mp3" id="2_nuwfr"]
+
+[node name="TransitionCube" type="CanvasLayer"]
+script = ExtResource("1_c13xr")
+stone_push_sfx = ExtResource("2_nuwfr")
+
+[node name="BlackRect" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="ArcadeFace" type="TextureRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OldScreen" type="TextureRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

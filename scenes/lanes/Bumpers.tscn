@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c02awwxwnakt8"]
+[gd_scene load_steps=17 format=3 uid="uid://dybiqnh11cwoh"]
 
 [ext_resource type="Script" uid="uid://c8uvwxsa5afsl" path="res://scripts/bowling_alley/Bumpers.cs" id="1_ig4vm"]
 [ext_resource type="Texture2D" uid="uid://dlcob0i4ljhqa" path="res://textures/bumpers/bumpers.png" id="1_iycsq"]
@@ -90,11 +90,10 @@ animations = [{
 }]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_e5crk"]
-a = Vector2(8.965626, -11.028038)
+a = Vector2(8.966, -11.028)
 b = Vector2(-62, 76)
 
 [node name="Bumpers" type="Node2D"]
-visible = false
 script = ExtResource("1_ig4vm")
 Sounds = Array[AudioStream]([ExtResource("2_e5crk")])
 

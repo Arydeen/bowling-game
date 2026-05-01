@@ -27,6 +27,9 @@ public partial class Ball : CharacterBody2D
 	[Export] public int BallDamage = 0; // Impact damage of ball
 	[Export] public  bool IsSweet = false; // If landed in sweet spot
 	[Export] public PowerMeter Meter;
+	[Export] public float SplitHitboxExtraScale = 0.10f;
+	[Export] public float SplitBumperBounceBonus = 1.0f;
+	[Export] public float SplitBumperMaxPower = 450f;
 
 	private bool _aimingLeft = false;
 	private float _laneWidthLimit = 90.0f;
@@ -51,6 +54,8 @@ public partial class Ball : CharacterBody2D
 	private bool _ballBounceCooldown = false;
 	private float _ballRepelVelocityX = 0f;
 	private float _sizeMult = 1f;
+	private Area2D _hitbox;
+	private Vector2 _baseHitboxScale = Vector2.One;
 
 	public bool HasSplit => _splitUsed;
 
@@ -70,9 +75,12 @@ public partial class Ball : CharacterBody2D
 		// _ballAnimation = GetNode<SpriteFrames>("");
 		_ballSprite = GetNode<AnimatedSprite2D>("BallSprite");
 
-		GetNode<Area2D>("Hitbox").AreaEntered += OnGutterEntered;
-		GetNode<Area2D>("Hitbox").AreaEntered += HitBumper;
-		GetNode<Area2D>("Hitbox").AreaEntered += OnBumperAreaEntered;
+		_hitbox = GetNode<Area2D>("Hitbox");
+		_baseHitboxScale = _hitbox.Scale;
+
+		_hitbox.AreaEntered += OnGutterEntered;
+		_hitbox.AreaEntered += HitBumper;
+		_hitbox.AreaEntered += OnBumperAreaEntered;
 		_rollAudio = GetNode<AudioStreamPlayer2D>("RollSound");
 		_thudAudio = GetNode<AudioStreamPlayer2D>("ThudSound");
 
@@ -100,6 +108,11 @@ public partial class Ball : CharacterBody2D
 		_splitInputArmed = true;
 		_sizeMult = 1f;
 		_bumpersHitThisBall.Clear();
+
+		if (_hitbox != null)
+		{
+			_hitbox.Scale = _baseHitboxScale;
+		}
 	}
 	// End Startup Methods //
 
@@ -200,6 +213,19 @@ public partial class Ball : CharacterBody2D
 	// End Bumper Methods //
 
 	// Ball PowerUps //
+	private float GetBumperPowerForThisBall(float basePower)
+	{
+		if (!IsSplitBall)
+			return basePower;
+
+		// Smaller split balls get stronger bumper power.
+		// 75% size = 1.25x
+		// 60% size = 1.40x
+		// 25% size = 1.75x
+		float sizeBonus = 1f + ((1f - _sizeMult) * SplitBumperBounceBonus);
+
+		return Mathf.Min(basePower * sizeBonus, SplitBumperMaxPower);
+	}
 
 	private int GetPlayerSplitCount()
 	{
@@ -305,6 +331,8 @@ public partial class Ball : CharacterBody2D
 		_afterImagesSpawned = true;
 
 		_sizeMult = splitScaleMult;
+		
+		UpdateScale();
 
 		RollSpeed = source.RollSpeed;
 		BallDamage = source.BallDamage;
@@ -498,13 +526,30 @@ public partial class Ball : CharacterBody2D
 	private void UpdateScale()
 	{
 		float startY = 175; // Bottom of lane
-		float endY = 81;   // Top of lane (the pins)
+		float endY = 81;   // Top of lane
 		float minScale = 0.5f;
 		float maxScale = 1.0f;
 
-		// Remap the current Y position to a scale value
 		float t = Mathf.Remap(GlobalPosition.Y, endY, startY, minScale, maxScale);
-		Scale = new Vector2(t * _sizeMult, t * _sizeMult);
+
+		float visualScale = t * _sizeMult;
+
+		// This controls how big the ball looks.
+		Scale = new Vector2(visualScale, visualScale);
+
+		// Split balls get a hitbox that is 10% bigger than their visual size.
+		// Example: visual 0.25 -> hitbox acts like 0.35.
+		if (_hitbox != null && visualScale > 0.01f)
+		{
+			float desiredHitboxScale = visualScale;
+
+			if (IsSplitBall)
+				desiredHitboxScale = visualScale + SplitHitboxExtraScale;
+
+			float localHitboxScale = desiredHitboxScale / visualScale;
+
+			_hitbox.Scale = _baseHitboxScale * localHitboxScale;
+		}
 	}
 
 	public void StartBounce()
@@ -537,22 +582,28 @@ public partial class Ball : CharacterBody2D
 	// Physics Methods //
 	public void HitBumper(Area2D area)
 	{
-		if (area.IsInGroup("Bumpers"))
-		{
-			_thudAudio.Play();
-			string bumperName = area.Name.ToString();
+		if (!area.IsInGroup("Bumpers"))
+			return;
 
-			if (bumperName.Contains("Left"))
-			{
-				_powerVal = IsSweet ? 300 : 200f;
-				BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
-			}
-			else if (bumperName.Contains("Right"))
-			{
-				_powerVal = IsSweet ? -300 : -200f;
-				BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
-			}
+		_thudAudio.Play();
+
+		string bumperName = area.Name.ToString();
+
+		float basePower = IsSweet ? 300f : 200f;
+		float finalPower = GetBumperPowerForThisBall(basePower);
+
+		if (bumperName.Contains("Left"))
+		{
+			_powerVal = finalPower;
+			BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
 		}
+		else if (bumperName.Contains("Right"))
+		{
+			_powerVal = -finalPower;
+			BallDamage = (int)Math.Ceiling(BallDamage * 1.25);
+		}
+
+		GD.Print($"[BumperBounce] split={IsSplitBall}, sizeMult={_sizeMult}, power={_powerVal}");
 	}
 
 	public void CheckForHits()

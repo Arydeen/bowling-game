@@ -22,6 +22,7 @@ Music="*res://scripts/music.gd"
 GlobalData="*res://scripts/GlobalData.cs"
 Player="*res://scenes/player/player.tscn"
 PlayerMenuManager="*res://scripts/player/player_menu_manager.gd"
+TransitionCube="*res://scenes/transition_cube.tscn"
 
 [display]
 

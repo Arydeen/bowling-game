@@ -14,8 +14,8 @@ signal stats_changed()
 var starting_prizes: Dictionary = {
 	#&"CreamShammy": 20,
 	#&"OneNail": 1,
-	#&"AfterImage": 10,
-	#&"KineticImpact": 2,
+	&"AfterImage": 4,
+	&"KineticImpact": 2,
 	#&"SouvenirCup": 3,
 	#&"OneBumper": 1000,
 	#&"PinSlayer": 2,

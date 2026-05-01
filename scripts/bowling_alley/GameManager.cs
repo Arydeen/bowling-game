@@ -871,7 +871,7 @@ public partial class GameManager : Node2D
 	// Scoreboard Methods //
 	private void UpdateFrameText(string overrideText = null)
 	{
-		string newText = overrideText ?? GlobalData.Instance.RoundScore.ToString();
+		string newText = overrideText ?? GlobalData.Instance.TotalPins.ToString();
 
 		switch (GlobalData.Instance.FrameNum)
 		{

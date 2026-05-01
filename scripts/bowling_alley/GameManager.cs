@@ -486,20 +486,20 @@ public partial class GameManager : Node2D
 		GlobalData.Instance.FrameNum = 0;
 		GlobalData.Instance.ShotNum = 0;
 		
-		StartFrame();
+		StartFrame(resetPinsInstantly: true);
 	}
 
-	private void StartFrame(bool resetPinsInstantly = false)
+	private bool StartFrame(bool resetPinsInstantly = false)
 	{
 		if (GlobalData.Instance.FrameNum + 1 == 5)
 		{
 			StartChallenge();
-			return;
+			return false;
 		}
 		else if (GlobalData.Instance.FrameNum + 1 > 5)
 		{
 			EndChallenge();
-			return;
+			return false;
 		}
 
 		GlobalData.Instance.FrameScore = 0;
@@ -518,14 +518,20 @@ public partial class GameManager : Node2D
 		GlobalData.Instance.FirstFrame = false;
 
 		StartShot();
+		return true;
 	}
 
 	private void StartChallenge()
 	{
 		if (NextChallenge == Challenge.Night)
 		{
-			GetTree().CreateTimer(1.25f).Timeout += StartNightFrame; 
-		} else
+			GetTree().CreateTimer(0.25f).Timeout += () =>
+			{
+				StartNightFrame();
+				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+			};
+		}
+		else
 		{
 			GetTree().CreateTimer(1.25f).Timeout += StartBossFrame;
 		}
@@ -535,8 +541,13 @@ public partial class GameManager : Node2D
 	{
 		if (NextChallenge == Challenge.Night)
 		{
-			GetTree().CreateTimer(1.25f).Timeout += EndNightFrame;
-		} else
+			GetTree().CreateTimer(0.25f).Timeout += () =>
+			{
+				EndNightFrame();
+				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+			};
+		}
+		else
 		{
 			// EndBossFrame();
 		}
@@ -886,8 +897,10 @@ public partial class GameManager : Node2D
 
 			GetTree().CreateTimer(0.55f).Timeout += () =>
 			{
-				StartFrame(resetPinsInstantly: true);
-				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+				bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
+
+				if (startedPlayableFrame)
+					GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
 			};
 
 			return;
@@ -904,8 +917,10 @@ public partial class GameManager : Node2D
 
 			GetTree().CreateTimer(0.55f).Timeout += () =>
 			{
-				StartFrame(resetPinsInstantly: true);
-				GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+				bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
+
+				if (startedPlayableFrame)
+					GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
 			};
 
 			return;
@@ -918,14 +933,22 @@ public partial class GameManager : Node2D
 		{
 			AddScore(GlobalData.Instance.FrameScore, round: true);
 			UpdateFrameText();
-			StartFrame();
+
+			GetTree().CreateTimer(0.55f).Timeout += () =>
+			{
+				bool startedPlayableFrame = StartFrame(resetPinsInstantly: true);
+
+				if (startedPlayableFrame)
+					GetTree().CreateTimer(0.20f).Timeout += () => SpawnNewBall();
+			};
+
+			return;
 		}
 		else
 		{
 			StartShot();
+			GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall();
 		}
-
-		GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall();
 	}
 	// End Ball Methods //
 
@@ -986,7 +1009,7 @@ public partial class GameManager : Node2D
 
 	void SkipToNight()
 	{
-		GlobalData.Instance.FrameNum = 4;
+		GlobalData.Instance.FrameNum = 6;
 		StartNightFrame();
 	}
 

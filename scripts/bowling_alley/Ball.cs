@@ -600,7 +600,7 @@ public partial class Ball : CharacterBody2D
 			// pass 0 so Pin.cs doesn't apply its own kinetic multiplier on top
 			pin.TakeDamage(finalDamage, IsSweet, 0);
 
-			BallDamage = BallDamage / 3;
+			BallDamage = Math.Max(10, BallDamage / 3);
 
 			if (pin.Alive)
 			{

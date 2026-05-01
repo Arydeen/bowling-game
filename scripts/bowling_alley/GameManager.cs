@@ -11,7 +11,8 @@ public partial class GameManager : Node2D
 	[Export] public Vector2 BallSpawnPos = new Vector2(160, 175);
 	[Export] public PowerMeter Meter;
 	[Export] public int PinHealth = 100;
-	[Export] public double PinHealthScale = 1;
+	[Export] public double PinHealthScale = 1.3;
+	[Export] public double PinArmorScale = 1.2;
 	[Export] public bool InputLock = false;
  
 	// Public Challenge Variables
@@ -163,14 +164,22 @@ public partial class GameManager : Node2D
 			if (node is Pin pin)
 			{
 				if (!pin.Alive) { pin.FadeIn(); }
+
 				pin.Alive = true;
 				pin._hitThisShot = false;
-				pin.SetHealth(PinHealth * PinHealthScale);
-				pin.SetHealthBar(PinHealth);
+
+				double scaledHealth = PinHealth * PinHealthScale;
+
+				pin.SetHealth(scaledHealth);
+				pin.SetHealthBarMax(scaledHealth);
+				pin.SetHealthBar(scaledHealth);
+
+				pin.SetScaledPinArmor(PinArmorScale);
 
 				pin._kineticFlag = false;
 			}
 		}
+
 		ResetPinsForRound();
 		SyncBumpersForNewFrame();
 	}

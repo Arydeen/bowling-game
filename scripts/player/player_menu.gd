@@ -348,6 +348,7 @@ func _setup_stats_grid() -> void:
 	_add_stat_row(&"strength", "Strength")
 	_add_stat_row(&"speed", "Speed")
 	_add_stat_row(&"impact", "Impact")
+	_add_stat_row(&"bumpers", "Bumpers")
 	_add_stat_row(&"crit", "Critical")
 
 func _add_stat_row(key: StringName, title: String) -> void:
@@ -379,11 +380,17 @@ func _update_stats_grid() -> void:
 		return
 
 	_stat_value_labels[&"strength"].text = _fmt_num(Player.get_strength_value())
-	_stat_value_labels[&"speed"].text = _fmt_num(Player.get_speed_value())
+	_stat_value_labels[&"speed"].text = _fmt_speed(Player.get_speed_value())
 	_stat_value_labels[&"impact"].text = _fmt_num(Player.get_impact_value())
+	_stat_value_labels[&"bumpers"].text = _fmt_num(Player.get_bumpers())
 	_stat_value_labels[&"crit"].text = _fmt_percent(Player.get_crit_chance())
 
 	call_deferred("_fit_stats_bg")
+
+func _fmt_speed(v: float) -> String:
+	if v >= Player.MAX_SPEED:
+		return "MAX"
+	return _fmt_num(v)
 
 func _fmt_num(v: float) -> String:
 	if stats_decimals <= 0:
@@ -410,24 +417,30 @@ func _fit_stats_bg() -> void:
 	if not _stats_layout_cached:
 		return
 
-	if not _stats_expand_enabled:
-		stats_grid.position = _stats_base_grid_pos
-		stats_grid.size = _stats_base_grid_size
-		stats_bg.position = _stats_base_bg_pos
-		stats_bg.size = _stats_base_bg_size
-		_stats_expand_enabled = true
-		return
-
-	var need: Vector2 = stats_grid.get_combined_minimum_size()
-
-	var new_grid_w: float = maxf(stats_grid.size.x, maxf(_stats_base_grid_size.x, need.x))
-	var new_grid_h: float = _stats_base_grid_size.y
-
 	stats_grid.position = _stats_base_grid_pos
-	stats_grid.size = Vector2(new_grid_w, new_grid_h)
-
-	var new_bg_w: float = new_grid_w + _stats_pad_left + _stats_pad_right
-	var new_bg_h: float = _stats_base_bg_size.y
+	stats_grid.size = _stats_base_grid_size
 
 	stats_bg.position = _stats_base_bg_pos
-	stats_bg.size = Vector2(maxf(stats_bg.size.x, maxf(_stats_base_bg_size.x, new_bg_w)), new_bg_h)
+
+	var widest_value: float = 0.0
+
+	for lbl in _stat_value_labels.values():
+		if is_instance_valid(lbl):
+			var font = lbl.get_theme_font("font")
+			var text_w = font.get_string_size(
+				lbl.text,
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				stats_font_size
+			).x
+
+			widest_value = maxf(widest_value, text_w)
+
+	var speed_lbl: Label = _stat_value_labels[&"speed"]
+	var current_value_space: float = speed_lbl.size.x
+
+	var extra_needed: float = maxf(0.0, widest_value - current_value_space)
+
+	var new_bg_w: float = _stats_base_bg_size.x + extra_needed + 6.0
+
+	stats_bg.size = Vector2(new_bg_w, _stats_base_bg_size.y)

@@ -12,7 +12,7 @@ signal stats_changed()
 @export var clear_prizes_on_ready: bool = true
 
 var starting_prizes: Dictionary = {
-	&"CreamShammy": 2,
+	&"CreamShammy": 20,
 	&"OneNail": 1,
 	&"AfterImage": 2,
 	&"KineticImpact": 1,

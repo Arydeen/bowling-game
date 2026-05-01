@@ -14,6 +14,7 @@ public partial class Pin : Area2D
 	[Export] public CollisionShape2D Hitbox;
 
 	[Export] public double MaxHealth = 100;
+	[Export] public double PinArmor;
 	[Export] public bool Alive = true;
 
 	public bool _hitThisShot {get; set;} = false;
@@ -26,6 +27,8 @@ public partial class Pin : Area2D
 	private AnimatedSprite2D _sprite;
 	private Node2D _spritePivot;
 	private GameManager _gameManager;
+	private Node _player;
+	private double _basePinArmor;
 
 	private Tween _kineticTween;
 	private GpuParticles2D _kineticExplosion;
@@ -41,6 +44,9 @@ public partial class Pin : Area2D
 
 		// Fetch Game Manager
 		_gameManager = GetNode<GameManager>("../../GameManager");
+		_player = GetNodeOrNull<Node>("/root/Player");
+
+		_basePinArmor = PinArmor;
 
 		// Texture Handling
 		_sprite = GetNode<AnimatedSprite2D>("SpritePivot/PinSprite");
@@ -84,8 +90,20 @@ public partial class Pin : Area2D
 	// Damage Methods --------------------------------------------------------------------------------------------------- //
 	public void TakeDamage(int amount, bool sweet, int type)
 	{
+		double playerStrength = GetPlayerStrength();
 
-		if (type == 1 && _kineticFlag) { amount *= 2;}
+		// Guaranteed crit if strength is MORE than pin armor.
+		// Equal does NOT count.
+		if (playerStrength > PinArmor)
+		{
+			amount *= 2;
+			sweet = true;
+		}
+
+		if (type == 1 && _kineticFlag)
+		{
+			amount *= 2;
+		}
 
 		_currentHealth -= amount;
 		_healthBar.Value = _currentHealth;
@@ -93,7 +111,8 @@ public partial class Pin : Area2D
 		if (_currentHealth <= 0)
 		{
 			Die();
-		} else
+		}
+		else
 		{
 			DamageAnimation(sweet, false);
 		}
@@ -310,6 +329,28 @@ public partial class Pin : Area2D
 	public double GetHealthBar()
 	{
 		return _healthBar.Value;
+	}
+
+	private double GetPlayerStrength()
+	{
+		if (_player == null)
+			return 0;
+
+		if (!_player.HasMethod("get_strength_value"))
+			return 0;
+
+		Variant v = _player.Call("get_strength_value");
+		return (double)v;
+	}
+
+	public void SetHealthBarMax(double amount)
+	{
+		_healthBar.MaxValue = amount;
+	}
+
+	public void SetScaledPinArmor(double armorScale)
+	{
+		PinArmor = Math.Round(_basePinArmor * armorScale);
 	}
 
 }

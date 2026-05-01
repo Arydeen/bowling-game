@@ -22,15 +22,6 @@ border_color = Color(1, 1, 1, 0.8901961)
 
 [node name="PlayerMenu" type="CanvasLayer"]
 script = ExtResource("1_xwxel")
-prize_icon_dir = null
-drink_icon_dir = null
-stats_font_size = null
-stats_decimals = null
-icon_size_max = null
-icon_size_min = null
-shrink_start = null
-shrink_full = null
-icon_spacing = null
 count_font = ExtResource("1_4uo60")
 
 [node name="Root" type="Control" parent="."]
@@ -115,7 +106,7 @@ layout_mode = 0
 offset_left = 243.0
 offset_top = 31.0
 offset_right = 307.0
-offset_bottom = 71.0
+offset_bottom = 76.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_3cec4")
 
 [node name="StatsGrid" type="GridContainer" parent="Root/Menu"]

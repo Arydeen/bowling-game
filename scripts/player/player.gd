@@ -12,12 +12,13 @@ signal stats_changed()
 @export var clear_prizes_on_ready: bool = true
 
 var starting_prizes: Dictionary = {
-	&"CreamShammy": 20,
-	&"OneNail": 1,
-	&"AfterImage": 2,
-	&"KineticImpact": 1,
+	#&"CreamShammy": 20,
+	#&"OneNail": 1,
+	#&"AfterImage": 6,
+	#&"KineticImpact": 1,
 	&"SouvenirCup": 3,
 	&"OneBumper": 10,
+	&"PinSlayer": 2,
 }
 
 # StringName -> int
@@ -61,13 +62,19 @@ var golden_rotation_count: int = 0
 # Getters
 # -------------------------
 
+func get_pin_slayer_count() -> int:
+	return pin_slayer_count
+
 func get_discounted_drink_cost(base_cost: int) -> int:
 	if base_cost <= 1:
 		return 1
 	return max(1, base_cost - souvenir_cup_count)
 
+func get_kinetic_impact_count() -> int:
+	return kinetic_impact_count
+
 func get_kinetic_impact_mult() -> int:
-	return 1 + kinetic_impact_count
+	return kinetic_impact_count
 
 func get_after_image_count() -> int:
 	return after_image_count

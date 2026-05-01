@@ -46,5 +46,6 @@ public partial class GlobalData : Node
 		ShotNum = 0;
 		NightReq = 4;
 		FirstFrame = true;
+		KineticBall = false;
 	}
 }

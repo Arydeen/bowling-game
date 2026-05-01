@@ -90,6 +90,13 @@ public partial class Pin : Area2D
 	// Damage Methods --------------------------------------------------------------------------------------------------- //
 	public void TakeDamage(int amount, bool sweet, int type)
 	{
+		if (_gameManager != null && _gameManager.GetKineticImpactCount() <= 0)
+		{
+			_kineticFlag = false;
+		}
+
+		_gameManager.ApplyPinSlayerIfAvailable(this);
+
 		double playerStrength = GetPlayerStrength();
 
 		// Guaranteed crit if strength is MORE than pin armor.
@@ -102,7 +109,12 @@ public partial class Pin : Area2D
 
 		if (type == 1 && _kineticFlag)
 		{
-			amount *= 2;
+			int kineticMult = 1;
+
+			if (_gameManager != null)
+				kineticMult = _gameManager.GetKineticImpactDamageMultiplier();
+
+			amount *= kineticMult;
 		}
 
 		_currentHealth -= amount;
@@ -122,7 +134,6 @@ public partial class Pin : Area2D
 
 	private void ShakeDamage(Pin pin, int amount, bool sweet) 
 	{
-
 		if (!pin.Alive) return;
 
 		int shakeDamage = amount / 2;
@@ -130,13 +141,15 @@ public partial class Pin : Area2D
 		pin.SetHealth(pin.GetHealth() - shakeDamage);
 		pin.SetHealthBar(pin.GetHealth());
 
+		HandleKinetic(pin);
+
 		if (pin.GetHealth() <= 0)
 		{
 			pin.Die();
-		} else
+		} 
+		else
 		{
 			pin.DamageAnimation(sweet, true);
-			HandleKinetic(pin);
 		}
 	}
 
@@ -191,6 +204,16 @@ public partial class Pin : Area2D
 			_sprite.Play();
 			FadeOut();
 		}
+	}
+
+	public void ReduceArmorByPercent(double percent)
+	{
+		percent = Math.Max(0.0, Math.Min(1.0, percent));
+
+		double oldArmor = PinArmor;
+		PinArmor = Math.Max(0.0, Math.Round(PinArmor * (1.0 - percent)));
+
+		GD.Print($"[PinSlayer] {Name} armor reduced from {oldArmor} to {PinArmor}");
 	}
 
 	// End Damage Methods --------------------------------------------------------------------------------------------------- //
@@ -266,10 +289,16 @@ public partial class Pin : Area2D
 	// Kinetic Power Up Methods --------------------------------------------------------------------------------------------------- //
 	private static void HandleKinetic(Pin pin)
 	{
-		if (GlobalData.Instance.KineticBall)
-		{
-			pin._kineticFlag = true;
-		}
+		if (pin == null)
+			return;
+
+		if (pin._gameManager == null)
+			return;
+
+		if (pin._gameManager.GetKineticImpactCount() <= 0)
+			return;
+
+		pin._kineticFlag = true;
 	}
 
  	private void PlayKineticParticles()

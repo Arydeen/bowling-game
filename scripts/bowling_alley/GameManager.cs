@@ -21,6 +21,7 @@ public partial class GameManager : Node2D
 	private PlayerMonitor _coach;
 	private PointLight2D _spotlight;
 	private AudioStreamPlayer2D _switchNoise;
+	private bool _pinSlayerUsedThisShot = false;
 
 	private Ball _currentBall;
 	private int _totalScore = 0; // Score over the whole game
@@ -152,9 +153,76 @@ public partial class GameManager : Node2D
 		_bumpers.ApplyCapacityMidFrame(GetBumperCapacity());
 	}
 
+	// Prize Methods //
+	private int GetPinSlayerCount()
+	{
+		if (_stats == null)
+			return 0;
+
+		if (!_stats.HasMethod("get_pin_slayer_count"))
+			return 0;
+
+		Variant v = _stats.Call("get_pin_slayer_count");
+		return Math.Max(0, (int)v);
+	}
+
+	public void ApplyPinSlayerIfAvailable(Pin pin)
+	{
+		if (pin == null)
+			return;
+
+		if (_pinSlayerUsedThisShot)
+			return;
+
+		int count = GetPinSlayerCount();
+		if (count <= 0)
+			return;
+
+		_pinSlayerUsedThisShot = true;
+
+		double armorLossPercent = Math.Min(1.0, count * 0.25);
+
+		pin.ReduceArmorByPercent(armorLossPercent);
+
+		GD.Print($"[PinSlayer] count={count}, armor loss={armorLossPercent * 100.0}%");
+	}
+
+	public int GetKineticImpactCount()
+	{
+		if (_stats == null)
+			return 0;
+
+		if (!_stats.HasMethod("get_kinetic_impact_count"))
+			return 0;
+
+		Variant v = _stats.Call("get_kinetic_impact_count");
+		return Math.Max(0, (int)v);
+	}
+
+	public bool HasKineticImpactPrize()
+	{
+		return GetKineticImpactCount() > 0;
+	}
+
+	public int GetKineticImpactDamageMultiplier()
+	{
+		int count = GetKineticImpactCount();
+
+		if (count <= 0)
+			return 1;
+
+		return count + 1;
+	}
+
+	private void SyncKineticImpactFlag()
+	{
+		GlobalData.Instance.KineticBall = GetKineticImpactCount() > 0;
+	}
+
 	// Reset Methods //
 	private void ResetPins()
 	{
+		SyncKineticImpactFlag();
 		var allPins = GetTree().GetNodesInGroup("Pins");
 
 		foreach (Node node in allPins)
@@ -341,6 +409,7 @@ public partial class GameManager : Node2D
 
 	private void StartShot()
 	{
+		_pinSlayerUsedThisShot = false;
 		ResetPinsForRound();
 		GlobalData.Instance.ShotScore = 0;
 		GlobalData.Instance.ShotNum += 1;
@@ -649,9 +718,8 @@ public partial class GameManager : Node2D
 	{
 		if (Input.IsActionJustPressed("GiveKineticBall"))
 		{
-			GlobalData.Instance.KineticBall = true;
+			GD.Print($"[KineticImpact] count={GetKineticImpactCount()}, mult={GetKineticImpactDamageMultiplier()}x");
 		}
-
 		if (Input.IsActionJustPressed("SkipToNight"))
 		{
 			SkipToNight();

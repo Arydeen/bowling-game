@@ -418,28 +418,41 @@ public partial class GameManager : Node2D
 	private void ResetPins()
 	{
 		SyncKineticImpactFlag();
+
+		GlobalData.Instance.PinResetCount += 1;
+
+		bool shouldScalePins = GlobalData.Instance.PinResetCount > 4;
+
+		double healthScale = shouldScalePins ? PinHealthScale : 1.0;
+		double armorScale = shouldScalePins ? PinArmorScale : 1.0;
+
 		var allPins = GetTree().GetNodesInGroup("Pins");
 
 		foreach (Node node in allPins)
 		{
 			if (node is Pin pin)
 			{
-				if (!pin.Alive) { pin.FadeIn(); }
+				if (!pin.Alive) 
+				{ 
+					pin.FadeIn(); 
+				}
 
 				pin.Alive = true;
 				pin._hitThisShot = false;
 
-				double scaledHealth = PinHealth * PinHealthScale;
+				double scaledHealth = PinHealth * healthScale;
 
 				pin.SetHealth(scaledHealth);
 				pin.SetHealthBarMax(scaledHealth);
 				pin.SetHealthBar(scaledHealth);
 
-				pin.SetScaledPinArmor(PinArmorScale);
+				pin.SetScaledPinArmor(armorScale);
 
 				pin._kineticFlag = false;
 			}
 		}
+
+		GD.Print($"[Pins] Reset #{GlobalData.Instance.PinResetCount}, scaling active={shouldScalePins}");
 
 		ResetPinsForRound();
 		SyncBumpersForNewFrame();

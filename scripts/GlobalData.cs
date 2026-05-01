@@ -20,6 +20,7 @@ public partial class GlobalData : Node
 	public int FrameNum = 0;
 	public int ShotNum = 0;
 	public int NightReq = 4;
+	public int PinResetCount = 0;
 	public bool FirstFrame = true;
 
 	// Boss Tracking
@@ -94,6 +95,7 @@ public partial class GlobalData : Node
 		KineticBall = false;
 		PendingBossAfterShop = false;
 		BossBallsLeft = 0;
+		PinResetCount = 0;
 
 		ClearLaneSave();
 	}

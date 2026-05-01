@@ -1,12 +1,9 @@
 using Godot;
 using System;
-using System.Dynamic;
-using System.Threading;
 
 public partial class GameManager : Node2D
 {
-
-	public enum Challenge {Boss, Night}
+	public enum Challenge { Boss, Night }
 	[Export] public PackedScene BallScene;
 	[Export] public Vector2 BallSpawnPos = new Vector2(160, 175);
 	[Export] public PowerMeter Meter;
@@ -14,8 +11,7 @@ public partial class GameManager : Node2D
 	[Export] public double PinHealthScale = 1.3;
 	[Export] public double PinArmorScale = 1.2;
 	[Export] public bool InputLock = false;
- 
-	// Public Challenge Variables
+
 	[Export] public Challenge NextChallenge = Challenge.Night;
 	[Export] public bool isNight = false;
 	[Export] public bool isBoss = false;
@@ -26,7 +22,6 @@ public partial class GameManager : Node2D
 	private PointLight2D _spotlight;
 	private AudioStreamPlayer2D _switchNoise;
 
-	// Start Game Tracking Variables ------------------------------------------- //
 	private Ball _currentBall;
 	private int _totalScore = 0; // Score over the whole game
 	private int _roundScore = 0; // Score over is round (5 Frames)
@@ -58,7 +53,6 @@ public partial class GameManager : Node2D
 		_monitor = GetNode<Monitor>("../Monitor");
 		_bumpers = GetNode<Bumpers>("../Bumpers");
 		_coach = GetNode<PlayerMonitor>("../PlayerMonitor");
-
 		_spotlight = GetNode<PointLight2D>("../Spotlight");
 		_spotlight.Enabled = false;
 		_switchNoise = GetNode<AudioStreamPlayer2D>("../Spotlight/SpotlightNoise");
@@ -96,7 +90,11 @@ public partial class GameManager : Node2D
 			};
 		}
 
-		StartRound();
+		if (GlobalData.Instance.RoundNum == 0)
+		{
+			StartRound();
+		}
+		
 		SpawnNewBall();
 	}
 
@@ -257,47 +255,40 @@ public partial class GameManager : Node2D
 
 	private void StartRound()
 	{
-		if (!_firstFrame) {PinHealthScale += 0.2;}
-		_roundNum += 1;
+		if (!GlobalData.Instance.FirstFrame) { PinHealthScale += 0.2; }
+		GlobalData.Instance.RoundNum += 1;
 
-		_roundScore = 0;
-		_frameScore = 0;
-		_shotScore = 0;
-
-		_frameNum = 0;
-		_shotNum = 0;
+		GlobalData.Instance.RoundScore = 0;
+		GlobalData.Instance.FrameScore = 0;
+		GlobalData.Instance.ShotScore = 0;
+		GlobalData.Instance.FrameNum = 0;
+		GlobalData.Instance.ShotNum = 0;
+		
 		StartFrame();
 	}
 
 	private void StartFrame()
 	{
-		if (_frameNum + 1 == 5) {
+		if (GlobalData.Instance.FrameNum + 1 == 5)
+		{
 			StartChallenge();
 			return;
-		} else if (_frameNum + 1 > 5)
+		}
+		else if (GlobalData.Instance.FrameNum + 1 > 5)
 		{
 			EndChallenge();
 			return;
-		} 
-		_frameScore = 0;
-		_frameNum += 1;
+		}
 
-		_shotNum = 0;
-		_shotScore = 0;
-			
-		if (_firstFrame)
-		{
-			CallDeferred(nameof(ResetPins)); 
-		}
-		else
-		{
-			GetTree().CreateTimer(1.25f).Timeout += ResetPins;
-		}
-		_firstFrame = false;
+		GlobalData.Instance.FrameScore = 0;
+		GlobalData.Instance.FrameNum += 1;
+		GlobalData.Instance.ShotNum = 0;
+		GlobalData.Instance.ShotScore = 0;
+
+		if (!GlobalData.Instance.FirstFrame) { GetTree().CreateTimer(1.25f).Timeout += ResetPins; }
+		GlobalData.Instance.FirstFrame = false;
 
 		StartShot();
-
-		
 	}
 
 	private void StartChallenge()
@@ -325,16 +316,15 @@ public partial class GameManager : Node2D
 	private void StartNightFrame()
 	{
 		isNight = true;
-		_nightReq = _roundScore + 4;
+		GlobalData.Instance.NightReq = GlobalData.Instance.RoundScore + 4;
 		ResetDayScoreboard();
 		FadeToNight();
 		ResetPins();
 
-		_frameScore = 0;
-		_frameNum += 1;
-
-		_shotNum = 0;
-		_shotScore = 0;
+		GlobalData.Instance.FrameScore = 0;
+		GlobalData.Instance.FrameNum += 1;
+		GlobalData.Instance.ShotNum = 0;
+		GlobalData.Instance.ShotScore = 0;
 
 		StartShot();
 	}
@@ -344,41 +334,39 @@ public partial class GameManager : Node2D
 		isNight = false;
 		ResetNightScoreboard();
 		ResetPins();
-		NextChallenge = (_roundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
+		NextChallenge = (GlobalData.Instance.RoundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
 		FadeToDay();
-
 		StartRound();
 	}
 
 	private void StartShot()
 	{
 		ResetPinsForRound();
-		_shotScore = 0;
-		_shotNum += 1;
+		GlobalData.Instance.ShotScore = 0;
+		GlobalData.Instance.ShotNum += 1;
 	}
 
 	private void StartBossFrame()
 	{
 		isBoss = true;
-		// Eventual will add conditional here for different bosses
 		_boss = GetNode<BossPin>("../PinContainer/BossPin");
 		_boss.BossKilled += () =>
 		{
-			AddScore(10 * _bossBallsLeft, shot:true);
+			AddScore(10 * GlobalData.Instance.BossBallsLeft, total: true);
 			EndBossFrame(true);
 		};
 
 		ResetPins();
 		DeactivatePins();
 
-		_frameScore = 0;
-		_frameNum += 1;
-		_shotNum = 3;
-		_shotScore = 0;
+		GlobalData.Instance.FrameScore = 0;
+		GlobalData.Instance.FrameNum += 1;
+		GlobalData.Instance.ShotNum = 3;
+		GlobalData.Instance.ShotScore = 0;
 
-		_bossBallsLeft = 6;
+		GlobalData.Instance.BossBallsLeft = 6;
 		_monitor.BallsLeft.Text = "6";
-	
+
 		StartInputLockout(3.5f);
 		GetTree().CreateTimer(1.5f).Timeout += _boss.BossEnter;
 		GetTree().CreateTimer(2.2f).Timeout += ResetDayScoreboard;
@@ -394,31 +382,32 @@ public partial class GameManager : Node2D
 				ResetBossScoreboard();
 				ResetPins();
 				ActivatePins();
-				NextChallenge = (_roundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
+				NextChallenge = (GlobalData.Instance.RoundNum + 1) % 2 == 0 ? Challenge.Boss : Challenge.Night;
 				_monitor.TransitionToDay();
 				isBoss = false;
-				
 				StartRound();
 			};
-		} else
+		}
+		else
 		{
 			_monitor._video.Play();
 			_monitor._video.Finished += () => GetTree().Paused = true;
-			return;
 		}
 	}
 
 	public void StartBossShot()
 	{
-		if (_bossBallsLeft > 0)
+		if (GlobalData.Instance.BossBallsLeft > 0)
 		{
 			ResetPinsForRound();
-		} else
+		}
+		else
 		{
-			GetTree().CreateTimer(1f).Timeout += () => {
+			GetTree().CreateTimer(1f).Timeout += () =>
+			{
 				if (_boss.Alive)
 				{
-					if (GetTree().Root.FindChild("ScreenShield", true, false) is Sprite2D screenShield) {screenShield.Visible = false;}
+					if (GetTree().Root.FindChild("ScreenShield", true, false) is Sprite2D shield) shield.Visible = false;
 					ResetBossScoreboard();
 					EndBossFrame(false);
 				}
@@ -491,7 +480,7 @@ public partial class GameManager : Node2D
 
 	public void FadeToDay(float duration = 2.0f)
 	{
-		if (_roundScore < _nightReq)
+		if (GlobalData.Instance.RoundScore < GlobalData.Instance.NightReq)
 		{
 			DeactivateSpotlight();
 			_monitor.DeactivateSpotlight();
@@ -525,41 +514,30 @@ public partial class GameManager : Node2D
 	// Scoreboard Methods //
 	private void UpdateFrameText()
 	{
-		string newText = _roundScore.ToString();
-		switch(_frameNum)
+		string newText = GlobalData.Instance.RoundScore.ToString();
+		switch (GlobalData.Instance.FrameNum)
 		{
-			case (1):
-				_monitor.f1t.Text = newText;
-				break;
-			case (2):
-				_monitor.f2t.Text = newText;
-				break;
-			case (3):
-				_monitor.f3t.Text = newText;
-				break;
-			case (4):
-				_monitor.f4t.Text = newText;
-				break;
-			case (5):
-				_monitor.fnt.Text = newText;
-				break;
+			case 1: _monitor.f1t.Text = newText; break;
+			case 2: _monitor.f2t.Text = newText; break;
+			case 3: _monitor.f3t.Text = newText; break;
+			case 4: _monitor.f4t.Text = newText; break;
+			case 5: _monitor.fnt.Text = newText; break;
 		}
 	}
 
 	private void UpdateShotText()
 	{
-		string path = isNight ? $"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot{_shotNum}" : $"ScoreboardControl/ScoreboardHBox/Frame{_frameNum}/Shots/Shot{_shotNum}";
-		Label shotLabel = _monitor.GetNode<Label>(path);
+		string path = isNight 
+			? $"NightScoreboardControl/ScoreboardHBox/Frame1/Shots/Shot{GlobalData.Instance.ShotNum}" 
+			: $"ScoreboardControl/ScoreboardHBox/Frame{GlobalData.Instance.FrameNum}/Shots/Shot{GlobalData.Instance.ShotNum}";
 		
-		if (shotLabel != null)
-		{
-			shotLabel.Text = _shotScore.ToString();
-		}
+		Label shotLabel = _monitor.GetNode<Label>(path);
+		if (shotLabel != null) shotLabel.Text = GlobalData.Instance.ShotScore.ToString();
 	}
 
 	private void UpdateNightReqText()
 	{
-		_monitor.fnn.Text = _nightReq.ToString();
+		_monitor.fnn.Text = GlobalData.Instance.NightReq.ToString();
 	}
 	// End Scoreboard Methods //
 
@@ -611,34 +589,31 @@ public partial class GameManager : Node2D
 		}
 	}
 
-	private void OnBallRemoved() 
+	private void OnBallRemoved()
 	{
-		if (isBoss) {
-			_bossBallsLeft -= 1;
-			_monitor.BallsLeft.Text = _bossBallsLeft.ToString();
+		if (isBoss)
+		{
+			GlobalData.Instance.BossBallsLeft -= 1;
+			_monitor.BallsLeft.Text = GlobalData.Instance.BossBallsLeft.ToString();
 			StartBossShot();
-			GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall(); 
+			GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall();
 			return;
 		}
 
 		UpdateShotText();
-		AddScore(_shotScore, frame:true, total:true);
+		AddScore(GlobalData.Instance.ShotScore, frame: true, total: true);
 
-		if (_shotNum == 3)
+		if (GlobalData.Instance.ShotNum == 3)
 		{
-			GD.Print(_frameNum);
-			GD.Print(_shotNum);
-			AddScore(_frameScore, round:true);
+			AddScore(GlobalData.Instance.FrameScore, round: true);
 			UpdateFrameText();
 			StartFrame();
-		} 
+		}
 		else
 		{
-			GD.Print(_frameNum);
-			GD.Print(_shotNum);
 			StartShot();
 		}
-			
+
 		GetTree().CreateTimer(1.25f).Timeout += () => SpawnNewBall();
 	}
 	// End Ball Methods //
@@ -646,21 +621,21 @@ public partial class GameManager : Node2D
 	// Score Methods //
 	public int GetScore()
 	{
-		return _totalScore;
+		return GlobalData.Instance.TotalScore;
 	}
 
 	public void AddScore(int amount, bool total = false, bool round = false, bool frame = false, bool shot = false)
 	{
-		if (total) {_totalScore += amount; GlobalData.Instance.TotalPins += amount;}
-		if (round) {_roundScore += amount;}
-		if (frame) {_frameScore += amount;}
-		if (shot) {_shotScore += amount;}
+		if (total) { GlobalData.Instance.TotalScore += amount; GlobalData.Instance.TotalPins += amount; }
+		if (round) { GlobalData.Instance.RoundScore += amount; }
+		if (frame) { GlobalData.Instance.FrameScore += amount; }
+		if (shot) { GlobalData.Instance.ShotScore += amount; }
 	}
 	// End Score Methods
 
 	void SkipToNight()
 	{
-		_frameNum = 4;
+		GlobalData.Instance.FrameNum = 4;
 		StartNightFrame();
 	}
 

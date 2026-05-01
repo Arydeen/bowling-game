@@ -46,6 +46,10 @@ public partial class GameManager : Node2D
 
 	// End Boss Tracking Vars //
 
+	// Bumper Tracking Vars //
+	private Node _stats;
+	// End Bumper Tracking Vars //
+
 	// End Game Tracking Variables --------------------------------------------- //
 
 	public override void _Ready()
@@ -57,6 +61,24 @@ public partial class GameManager : Node2D
 		_spotlight = GetNode<PointLight2D>("../Spotlight");
 		_spotlight.Enabled = false;
 		_switchNoise = GetNode<AudioStreamPlayer2D>("../Spotlight/SpotlightNoise");
+
+		_stats = GetNodeOrNull<Node>("/root/Player");
+		if (_stats != null)
+		{
+			GD.Print("[GameManager] Player found at /root/Player");
+
+			if (_stats.HasSignal("stats_changed"))
+			{
+				if (!_stats.IsConnected("stats_changed", Callable.From(OnStatsChanged)))
+					_stats.Connect("stats_changed", Callable.From(OnStatsChanged));
+			}
+
+			CallDeferred(nameof(DeferredInitialBumperSync));
+		}
+		else
+		{
+			GD.PushWarning("[GameManager] Player autoload not found at /root/Player");
+		}
 
 		if (GetTree().Root.FindChild("Pinion1", true, false) is Pinion pinion)
 		{
@@ -83,6 +105,53 @@ public partial class GameManager : Node2D
 		GetTree().CreateTimer(duration).Timeout += () => InputLock = false;
 	}
 
+	// Bumper Methods //
+
+	private void DeferredInitialBumperSync()
+	{
+		if (_bumpers == null || !GodotObject.IsInstanceValid(_bumpers))
+		{
+			GD.Print("[GameManager] _bumpers is not ready yet");
+			return;
+		}
+
+		SyncBumpersForNewFrame();
+	}
+
+	private int GetBumperCapacity()
+	{
+		if (_stats == null)
+		{
+			GD.Print("[GameManager] _stats is NULL");
+			return 0;
+		}
+
+		if (!_stats.HasMethod("get_bumpers"))
+		{
+			GD.Print("[GameManager] Stats does NOT have get_bumpers()");
+			return 0;
+		}
+
+		Variant v = _stats.Call("get_bumpers");
+
+		GD.Print($"[GameManager] get_bumpers returned: {v}");
+
+		double d = (double)v;
+		return Math.Max(0, Mathf.RoundToInt((float)d));
+	}
+
+	private void SyncBumpersForNewFrame()
+	{
+		_bumpers.ApplyForNewFrame(GetBumperCapacity());
+	}
+
+	private void OnStatsChanged()
+	{
+		if (_bumpers == null || !GodotObject.IsInstanceValid(_bumpers))
+			return;
+
+		_bumpers.ApplyCapacityMidFrame(GetBumperCapacity());
+	}
 
 	// Reset Methods //
 	private void ResetPins()
@@ -103,6 +172,7 @@ public partial class GameManager : Node2D
 			}
 		}
 		ResetPinsForRound();
+		SyncBumpersForNewFrame();
 	}
 
 	public void ResetDayScoreboard()
@@ -206,7 +276,14 @@ public partial class GameManager : Node2D
 		_shotNum = 0;
 		_shotScore = 0;
 			
-		if (!_firstFrame) { GetTree().CreateTimer(1.25f).Timeout += ResetPins; }
+		if (_firstFrame)
+		{
+			CallDeferred(nameof(ResetPins)); 
+		}
+		else
+		{
+			GetTree().CreateTimer(1.25f).Timeout += ResetPins;
+		}
 		_firstFrame = false;
 
 		StartShot();

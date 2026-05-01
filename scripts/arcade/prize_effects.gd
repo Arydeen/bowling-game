@@ -22,21 +22,21 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 			player.strength += 6.0 * c
 
 		&"OneBumper":
-			player.bumpers += 1.0
+			player.bumpers += 1.0 * c
 
 		#RARE
 
 		&"LeadBall":
-			player.strength += 8.0
+			player.strength += 8.0 * c
 
 		&"RedBall": 
-			player.speed += 8.0 
+			player.speed += 8.0 * c
 
 		&"ThreeBumper":
-			player.bumpers += 3.0
+			player.bumpers += 3.0 * c
 
 		&"RubberBall":
-			player.rubber_ball_count += 1
+			player.rubber_ball_count += c
 
 		#EPIC
 		
@@ -44,15 +44,15 @@ static func apply_delta(player: Object, prize_id: StringName, delta_count: int) 
 			player.after_image_count += c
 
 		&"PinSlayer":
-			player.pin_slayer_count += 1
+			player.pin_slayer_count += c
 
 		&"Split":
-			player.split_count += 1
+			player.split_count += c
 
 		#LEGENDARY
 
 		&"GoldenRotation":
-			player.golden_rotation_count += 1
+			player.golden_rotation_count += c
 
 		&"KineticImpact":
 			player.kinetic_impact_count += c

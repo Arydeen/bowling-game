@@ -12,6 +12,7 @@ public partial class Bumpers : Node2D
 	private AnimatedSprite2D _sprite;
 	private CollisionShape2D _bumpLeft;
 	private CollisionShape2D _bumpRight;
+	private bool _pendingHide = false;
 
 	public override void _Ready()
 	{
@@ -23,42 +24,91 @@ public partial class Bumpers : Node2D
 
 		_bumpLeft.Disabled = true;
 		_bumpRight.Disabled = true;
+		Visible = false;
 
+		_sprite.AnimationFinished += OnSpriteAnimationFinished;
 		GetNode<Area2D>("BumperRight").AreaEntered += Hit;
 		GetNode<Area2D>("BumperLeft").AreaEntered += Hit;
+		GD.Print($"[Bumpers] Ready at path: {GetPath()}  instance_id={GetInstanceId()}");
+	}
+
+	public void ApplyForNewFrame(int bumperCapacity)
+	{
+		GD.Print($"[Bumpers] NewFrame cap={bumperCapacity}");
+		hitsAllowed = Math.Max(0, bumperCapacity);
+		hitCount = 0;
+
+		if (hitsAllowed > 0)
+			ShowBumpers();
+		else
+			HideBumpers();
+	}
+
+	public void ApplyCapacityMidFrame(int bumperCapacity)
+	{
+		hitsAllowed = Math.Max(0, bumperCapacity);
+
+		if (hitsAllowed > 0 && hitCount < hitsAllowed)
+			ShowBumpers(resetHitCount: false);
+		else
+			HideBumpers();
 	}
 
 	public void UpdateHitCount()
 	{
 		hitCount += 1;
-		if (hitCount >= hitsAllowed)
-		{
+
+		if (hitsAllowed <= 0 || hitCount >= hitsAllowed)
 			HideBumpers();
-		}
 	}
 
-	public void ShowBumpers()
+	public void ShowBumpers(bool resetHitCount = true)
 	{
+		_pendingHide = false;
 		Visible = true;
-		_sprite.Play();
-		hitCount = 0;
+
+		if (resetHitCount)
+			hitCount = 0;
+
 		_bumpLeft.SetDeferred(CollisionShape2D.PropertyName.Disabled, false);
 		_bumpRight.SetDeferred(CollisionShape2D.PropertyName.Disabled, false);
+
+		_sprite.Play(); // play forward
 	}
 
 	public void HideBumpers()
 	{
 		_bumpLeft.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
 		_bumpRight.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
-		_sprite.PlayBackwards();
-		if (!_sprite.IsPlaying()) {Visible = false;}
+
+		_pendingHide = true;
+		if (Visible)
+			_sprite.PlayBackwards();
+		else
+			_pendingHide = false;
+	}
+
+	private void OnSpriteAnimationFinished()
+	{
+		if (_pendingHide)
+		{
+			_pendingHide = false;
+			Visible = false;
+		}
 	}
 
 	public void Hit(Area2D area)
 	{
+		if (hitsAllowed <= 0 || hitCount >= hitsAllowed)
+			return;
+
 		UpdateHitCount();
-		_audio.Stream = Sounds[0];
-		_audio.Play();
+
+		if (Sounds.Count > 0)
+		{
+			_audio.Stream = Sounds[0];
+			_audio.Play();
+		}
 	}
 
 	public override void _Process(double delta)

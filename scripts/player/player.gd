@@ -14,9 +14,10 @@ signal stats_changed()
 var starting_prizes: Dictionary = {
 	&"CreamShammy": 2,
 	&"OneNail": 1,
-	&"AfterImage": 20,
+	&"AfterImage": 2,
 	&"KineticImpact": 1,
 	&"SouvenirCup": 3,
+	&"OneBumper": 10,
 }
 
 # StringName -> int
